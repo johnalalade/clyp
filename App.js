@@ -1,12 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import {
+  useTheme,
+  Avatar,
+  Title,
+  Caption,
+  Paragraph,
+  // Drawer,
+  Text,
+  TouchableRipple,
+  Switch
+} from 'react-native-paper';
 
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -23,6 +35,8 @@ import Settings from './Screens/settings';
 import Contact from './Screens/Contact';
 import Airtime from './Screens/Airtime';
 import Profile from './Screens/Profile';
+import axios from './Screens/axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeStackScreen = () => (
   <Tabs.Navigator>
@@ -59,6 +73,13 @@ const Drawer = createDrawerNavigator()
 export default function App() {
 
   const [loggedIn, setLoggedIn] = React.useState(false)
+  const [name, setName] = React.useState("")
+  const [email, setEmail] = React.useState("")
+  const [phone, setPhone] = React.useState("")
+  const [password, setPassword] = React.useState("")
+  const [cpassword, setCPassword] = React.useState("")
+  const [username, setUsername] = React.useState("")
+  const [country, setCountry] = React.useState("")
 
   const authContext = React.useMemo(() => {
     return {
@@ -66,10 +87,54 @@ export default function App() {
         setLoggedIn(true)
       },
       signUp: () => {
-        setLoggedIn(true)
+        // setLoggedIn(true)
+        let data = {
+          name,
+          username,
+          email,
+          phone,
+          password,
+          country
+        }
+        axios.post('/register', data)
+        .then((data) => {
+          AsyncStorage.setItem('token', data.data.token)
+          AsyncStorage.setItem('name', data.data.response.name)
+          AsyncStorage.setItem('username', data.data.response.username)
+          AsyncStorage.setItem('email', data.data.response.email)
+          AsyncStorage.setItem('phone', data.data.response.phone)
+          AsyncStorage.setItem('country', data.data.response.country)
+
+          setLoggedIn(true)
+        })
+        .catch((err) =>{
+
+        })
       },
       signOut: () => {
         setLoggedIn(false)
+      },
+
+      name: (val) => {
+        setName(val)
+      },
+      phone: (val) => {
+        setPhone(val)
+      },
+      email: (val) => {
+        setEmail(val)
+      },
+      password: (val) => {
+        setPassword(val)
+      },
+      cpassword: (val) => {
+        setCPassword(val)
+      },
+      username: (val) => {
+        setUsername(val)
+      },
+      country: (val) => {
+        setCountry(val)
       }
     }
   }, [])
@@ -81,10 +146,26 @@ export default function App() {
         {loggedIn ?
 
           <Drawer.Navigator >
+            {/* <View style={styles.drawerContent}>
+              <View style={styles.userInfoSection}>
+                <View style={{ flexDirection: 'row', marginTop: 15 }}>
+                  <Avatar.Image
+                    source={{
+                      uri: 'https://api.adorable.io/avatars/50/abott@adorable.png'
+                    }}
+                    size={50}
+                  />
+                  <View style={{ marginLeft: 15, flexDirection: 'column' }}>
+                    <Title style={styles.title}>John Doe</Title>
+                    <Caption style={styles.caption}>@j_doe</Caption>
+                  </View>
+                </View>
+              </View>
+            </View> */}
 
-            <Drawer.Screen name="Profile"  component={Profile} options={{ title: "Profile" }} options={{
+            <Drawer.Screen name="Profile" component={Profile} options={{ title: "Profile" }} options={{
               drawerIcon: ({ focused, size }) => (
-                  <FontAwesome name="user-circle" size={size}
+                <FontAwesome name="user-circle" size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
             }} />
@@ -138,11 +219,58 @@ export default function App() {
 
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  drawerContent: {
+    flex: 1,
+  },
+  userInfoSection: {
+    paddingLeft: 20,
+  },
+  title: {
+    fontSize: 16,
+    marginTop: 3,
+    fontWeight: 'bold',
+  },
+  caption: {
+    fontSize: 14,
+    lineHeight: 14,
+  },
+  row: {
+    marginTop: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  section: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  paragraph: {
+    fontWeight: 'bold',
+    marginRight: 3,
+  },
+  drawerSection: {
+    marginTop: 15,
+  },
+  bottomDrawerSection: {
+    marginBottom: 15,
+    borderTopColor: '#f4f4f4',
+    borderTopWidth: 1
+  },
+  preference: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  }
+});
+{/* <Ionicons name="card-outline" size={24} color="black" /> */ }
+{/* <Entypo name="cycle" size={24} color="black" /> */ }
+{/* <Feather name="send" size={24} color="black" /> */ }
+{/* <FontAwesome name="bank" size={24} color="black" /> */ }
