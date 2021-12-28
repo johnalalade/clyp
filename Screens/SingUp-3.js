@@ -17,40 +17,15 @@ function SignUp3({ navigation }) {
 
             <View style={styles.container}>
                 <StatusBar backgroundColor='#FF6347' barStyle="light-content" />
-                {/* <View style={styles.header}>
-                    <Text style={styles.text_header}>Register Now!</Text>
-                </View> */}
+                <View style={styles.header}>
+                    <Text style={styles.text_header}>Finish up!</Text>
+                </View>
                 <Animatable.View
                     animation="fadeInUpBig"
                     style={styles.footer}
                 >
                     <ScrollView>
-                        {/* <Text style={styles.text_footer}>Username</Text>
-                        <View style={styles.action}>
-                            <FontAwesome
-                                name="user-o"
-                                color="#05375a"
-                                size={20}
-                            />
-                            <TextInput
-                                placeholder="Your Username"
-                                style={styles.textInput}
-                                autoCapitalize="none"
-                                onChangeText={(val) => textInputChange(val)}
-                            />
-                            {data.check_textInputChange ?
-                                <Animatable.View
-                                    animation="bounceIn"
-                                >
-                                    <Feather
-                                        name="check-circle"
-                                        color="green"
-                                        size={20}
-                                    />
-                                </Animatable.View>
-                                : null}
-                        </View> */}
-
+                        
                         <Text style={[styles.text_footer, {
                             marginTop: 35
                         }]}>Password</Text>
@@ -129,18 +104,18 @@ function SignUp3({ navigation }) {
                             <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Privacy policy</Text>
                         </View>
                         <View style={styles.button}>
+
                             <TouchableOpacity
-                                style={styles.signIn}
                                 onPress={() => navigation.goBack()}
+                                style={[styles.signIn, {
+                                    borderColor: '#FF6347',
+                                    borderWidth: 1,
+                                    marginTop: 15
+                                }]}
                             >
-                                <Text
-                                    colors={['#FFA07A', '#FF6347']}
-                                    style={styles.signIn}
-                                >
-                                    <Text style={[styles.textSign, {
-                                        color: '#fff'
-                                    }]}>Previous</Text>
-                                </Text>
+                                <Text style={[styles.textSign, {
+                                    color: '#FF6347'
+                                }]}>Previous</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -175,7 +150,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     header: {
-        flex: 1,
+        flex: 0.5,
         justifyContent: 'flex-end',
         paddingHorizontal: 20,
         paddingBottom: 50
@@ -189,7 +164,7 @@ const styles = StyleSheet.create({
         paddingVertical: 30
     },
     text_header: {
-        color: '#fff',
+        color: 'black',
         fontWeight: 'bold',
         fontSize: 30
     },
@@ -200,6 +175,7 @@ const styles = StyleSheet.create({
     action: {
         flexDirection: 'row',
         marginTop: 10,
+        marginBottom: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2',
         paddingBottom: 5
@@ -211,15 +187,18 @@ const styles = StyleSheet.create({
         color: '#05375a',
     },
     button: {
+        display: "flex",
+        flexDirection: "row",
         alignItems: 'center',
+        justifyContent: 'space-evenly',
         marginTop: 50
     },
     signIn: {
-        width: '100%',
+        width: '40%',
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10
+        borderRadius: 20
     },
     textSign: {
         fontSize: 18,

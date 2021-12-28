@@ -14,13 +14,13 @@ function SignUp2({ navigation }) {
     const { email, phone, country } = React.useContext(AuthContext)
     const [myCountry, setMyCountry] = React.useState("Nigeria")
     const [countries, setCountries] = React.useState([
-        {name: 'Nigeria', code: 'NG'},
-        {name: 'Ghana', code: 'GH'},
-        {name: 'Kenya', code: 'KE'},
-        {name: 'Uganda', code: 'UG'},
-        {name: 'Tanzania, United Republic of', code: 'TZ'},
-        {name: 'South Africa', code: 'ZA'},
-        {name: 'Cote D\'Ivoire', code: 'CI'},
+        { name: 'Nigeria', code: 'NG' },
+        { name: 'Ghana', code: 'GH' },
+        { name: 'Kenya', code: 'KE' },
+        { name: 'Uganda', code: 'UG' },
+        { name: 'Tanzania, United Republic of', code: 'TZ' },
+        { name: 'South Africa', code: 'ZA' },
+        { name: 'Cote D\'Ivoire', code: 'CI' },
     ])
 
     const countryHandler = (val) => {
@@ -37,7 +37,7 @@ function SignUp2({ navigation }) {
             </View>
             <ScrollView>
                 {countries.map(item => (
-                    <TouchableOpacity key={item.code} style={(myCountry === item.name) ? styles.countryText : styles.countryTextSelected } onPress={() => countryHandler(item.name)}><Text>{item.name}</Text></TouchableOpacity>
+                    <TouchableOpacity key={item.code} style={(myCountry === item.name) ? styles.countryText : styles.countryTextSelected} onPress={() => countryHandler(item.name)}><Text>{item.name}</Text></TouchableOpacity>
                 ))}
             </ScrollView>
             {/* <FlatList 
@@ -81,15 +81,19 @@ function SignUp2({ navigation }) {
 
             <View style={styles.container}>
                 <StatusBar backgroundColor='#FF6347' barStyle="light-content" />
-                {/* <View style={styles.header}>
-                    <Text style={styles.text_header}>Register Now!</Text>
-                </View> */}
+
+                <View style={styles.header}>
+                    <Text style={styles.text_header}>Almost there!</Text>
+                </View>
+
                 <Animatable.View
                     animation="fadeInUpBig"
                     style={styles.footer}
                 >
                     <ScrollView>
-                        <Text style={styles.text_footer}>Email</Text>
+                        <Text style={[styles.text_footer, {
+                            marginTop: 35
+                        }]}>Email</Text>
                         <View style={styles.action}>
                             <FontAwesome
                                 name="user-o"
@@ -116,7 +120,9 @@ function SignUp2({ navigation }) {
                                 : null} */}
                         </View>
 
-                        <Text style={styles.text_footer}>Phone</Text>
+                        <Text style={[styles.text_footer, {
+                            marginTop: 35
+                        }]}>Phone</Text>
                         <View style={styles.action}>
                             <FontAwesome
                                 name="user-o"
@@ -143,7 +149,9 @@ function SignUp2({ navigation }) {
                                 : null} */}
                         </View>
 
-                        <Text style={styles.text_footer}>Country</Text>
+                        <Text style={[styles.text_footer, {
+                            marginTop: 35
+                        }]} >Country</Text>
                         <View style={styles.action}>
                             <FontAwesome
                                 name="user-o"
@@ -175,25 +183,31 @@ function SignUp2({ navigation }) {
 
                         <View style={styles.textPrivate}>
                             <Text style={styles.color_textPrivate}>
-                                By signing up you agree to our
+                                {/* By signing up you agree to our */}
                             </Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Terms of service</Text>
-                            <Text style={styles.color_textPrivate}>{" "}and</Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Privacy policy</Text>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>
+
+                            </Text>
+                            <Text style={styles.color_textPrivate}>
+                                {/* {" "}and */}
+                            </Text>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>
+                                {/* {" "}Privacy policy */}
+                            </Text>
                         </View>
+
                         <View style={styles.button}>
                             <TouchableOpacity
-                                style={styles.signIn}
                                 onPress={() => navigation.goBack()}
+                                style={[styles.signIn, {
+                                    borderColor: '#FF6347',
+                                    borderWidth: 1,
+                                    marginTop: 15
+                                }]}
                             >
-                                <Text
-                                    colors={['#FFA07A', '#FF6347']}
-                                    style={styles.signIn}
-                                >
-                                    <Text style={[styles.textSign, {
-                                        color: '#fff'
-                                    }]}>Previous</Text>
-                                </Text>
+                                <Text style={[styles.textSign, {
+                                    color: '#FF6347'
+                                }]}>Previous</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -242,7 +256,7 @@ const styles = StyleSheet.create({
         paddingVertical: 30
     },
     text_header: {
-        color: '#fff',
+        color: 'black',
         fontWeight: 'bold',
         fontSize: 30
     },
@@ -253,6 +267,7 @@ const styles = StyleSheet.create({
     action: {
         flexDirection: 'row',
         marginTop: 10,
+        marginBottom: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2',
         paddingBottom: 5
@@ -264,15 +279,18 @@ const styles = StyleSheet.create({
         color: '#05375a',
     },
     button: {
+        display: "flex",
+        flexDirection: "row",
         alignItems: 'center',
-        marginTop: 50
+        justifyContent: 'space-evenly',
+        marginTop: 0
     },
     signIn: {
-        width: '100%',
+        width: '40%',
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10
+        borderRadius: 20
     },
     textSign: {
         fontSize: 18,
@@ -284,7 +302,8 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     color_textPrivate: {
-        color: 'grey'
+        color: 'grey',
+        width: "100%"
     },
     panel: {
         padding: 20,
@@ -296,56 +315,56 @@ const styles = StyleSheet.create({
         // shadowOffset: {width: 0, height: 0},
         // shadowRadius: 5,
         // shadowOpacity: 0.4,
-      },
-      header: {
+    },
+    header: {
         backgroundColor: '#FFFFFF',
         shadowColor: '#333333',
-        shadowOffset: {width: -1, height: -3},
+        shadowOffset: { width: -1, height: -3 },
         shadowRadius: 2,
         shadowOpacity: 0.4,
         // elevation: 5,
         paddingTop: 20,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-      },
-      panelHeader: {
+    },
+    panelHeader: {
         alignItems: 'center',
-      },
-      panelHandle: {
+    },
+    panelHandle: {
         width: 40,
         height: 8,
         borderRadius: 4,
         backgroundColor: '#00000040',
         marginBottom: 10,
-      },
-      panelTitle: {
+    },
+    panelTitle: {
         fontSize: 27,
         height: 35,
-      },
-      panelSubtitle: {
+    },
+    panelSubtitle: {
         fontSize: 14,
         color: 'gray',
         height: 30,
         marginBottom: 10,
-      },
-      panelButton: {
+    },
+    panelButton: {
         padding: 13,
         borderRadius: 10,
         backgroundColor: '#FF6347',
         alignItems: 'center',
         marginVertical: 7,
-      },
-      panelButtonTitle: {
+    },
+    panelButtonTitle: {
         fontSize: 17,
         fontWeight: 'bold',
         color: 'white',
-      },
-      countryText: {
-          fontSize: 15,
-          fontWeight: "bold",
-          color: "black"
-      },
-      countryTextSelected: {
+    },
+    countryText: {
+        fontSize: 15,
+        fontWeight: "bold",
+        color: "black"
+    },
+    countryTextSelected: {
         fontSize: 15,
         fontWeight: "bold",
         color: "yellow"

@@ -11,18 +11,20 @@ function SignUp1({ navigation }) {
 
     return (
         <View style={styles.container}>
-            
-            <View style={styles.container}>
+
+            <View >
                 <StatusBar backgroundColor='#FF6347' barStyle="light-content" />
-                {/* <View style={styles.header}>
-                    <Text style={styles.text_header}>Register Now!</Text>
-                </View> */}
+                <View style={styles.header}>
+                    <Text style={styles.text_header}>Let's set up your account!</Text>
+                </View>
                 <Animatable.View
                     animation="fadeInUpBig"
                     style={styles.footer}
                 >
                     <ScrollView>
-                        <Text style={styles.text_footer}>Full name</Text>
+                        <Text style={[styles.text_footer, {
+                            marginTop: 35
+                        }]} >Full name</Text>
                         <View style={styles.action}>
                             <FontAwesome
                                 name="user-o"
@@ -48,7 +50,9 @@ function SignUp1({ navigation }) {
                                 : null} */}
                         </View>
 
-                        <Text style={styles.text_footer}>Username</Text>
+                        <Text style={[styles.text_footer, {
+                            marginTop: 35
+                        }]}>Username</Text>
                         <View style={styles.action}>
                             <FontAwesome
                                 name="user-o"
@@ -76,28 +80,21 @@ function SignUp1({ navigation }) {
 
                         <View style={styles.textPrivate}>
                             <Text style={styles.color_textPrivate}>
-                                By signing up you agree to our
+                                {/* By signing up you agree to our */}
                             </Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Terms of service</Text>
-                            <Text style={styles.color_textPrivate}>{" "}and</Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Privacy policy</Text>
-                        </View>
-                        <View style={styles.button}>
-                            <TouchableOpacity
-                                style={styles.signIn}
-                                onPress={() => navigation.push("sign-2")}
-                            >
-                                <Text
-                                    colors={['#FFA07A', '#FF6347']}
-                                    style={styles.signIn}
-                                >
-                                    <Text style={[styles.textSign, {
-                                        color: '#fff'
-                                    }]}>Next</Text>
-                                </Text>
-                            </TouchableOpacity>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>
 
-                            <TouchableOpacity
+                            </Text>
+                            <Text style={styles.color_textPrivate}>
+                                {/* {" "}and */}
+                            </Text>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>
+                                {/* {" "}Privacy policy */}
+                                </Text>
+                        </View>
+
+                        <View style={styles.button}>
+                            {/* <TouchableOpacity
                                 onPress={() => navigation.goBack()}
                                 style={[styles.signIn, {
                                     borderColor: '#FF6347',
@@ -107,8 +104,22 @@ function SignUp1({ navigation }) {
                             >
                                 <Text style={[styles.textSign, {
                                     color: '#FF6347'
-                                }]}>Log In</Text>
+                                }]}>Previous</Text>
+                            </TouchableOpacity> */}
+
+                            <TouchableOpacity
+                                onPress={() => navigation.push("sign-2")}
+                                style={[styles.signIn, {
+                                    borderColor: '#FF6347',
+                                    borderWidth: 1,
+                                    marginTop: 15
+                                }]}
+                            >
+                                <Text style={[styles.textSign, {
+                                    color: '#FF6347'
+                                }]}>Next</Text>
                             </TouchableOpacity>
+
                         </View>
                     </ScrollView>
                 </Animatable.View>
@@ -126,9 +137,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+        flexDirection: "column"
     },
     header: {
-        flex: 1,
+        flex: 0.5,
         justifyContent: 'flex-end',
         paddingHorizontal: 20,
         paddingBottom: 50
@@ -142,7 +154,7 @@ const styles = StyleSheet.create({
         paddingVertical: 30
     },
     text_header: {
-        color: '#fff',
+        color: 'black',
         fontWeight: 'bold',
         fontSize: 30
     },
@@ -153,6 +165,7 @@ const styles = StyleSheet.create({
     action: {
         flexDirection: 'row',
         marginTop: 10,
+        marginBottom: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2',
         paddingBottom: 5
@@ -164,15 +177,18 @@ const styles = StyleSheet.create({
         color: '#05375a',
     },
     button: {
+        display: "flex",
+        flexDirection: "row",
         alignItems: 'center',
-        marginTop: 50
+        justifyContent: 'space-evenly',
+        marginTop: 0
     },
     signIn: {
-        width: '100%',
+        width: '40%',
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10
+        borderRadius: 20
     },
     textSign: {
         fontSize: 18,
@@ -184,7 +200,8 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     color_textPrivate: {
-        color: 'grey'
+        color: 'grey',
+        width: "100%"
     }
 
 });

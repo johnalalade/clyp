@@ -44,7 +44,7 @@ const HomeStackScreen = () => (
     <Tabs.Screen name="Fiat" component={Fiat} options={{
       tabBarIcon: ({ focused, size }) => (
         <FontAwesome5 name="money-bill-wave" size={size} color={focused ? 'lightblue' : '#ccc'} />
-      ),
+      ), headerShown: false
     }} />
 
     <Tabs.Screen name="Crypto" component={Crypto} options={{
@@ -72,30 +72,51 @@ const Drawer = createDrawerNavigator()
 
 export default function App() {
 
-  const [loggedIn, setLoggedIn] = React.useState(false)
+  const [loggedIn, setLoggedIn] = React.useState(true)
   const [name, setName] = React.useState("")
   const [email, setEmail] = React.useState("")
   const [phone, setPhone] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [cpassword, setCPassword] = React.useState("")
   const [username, setUsername] = React.useState("")
-  const [country, setCountry] = React.useState("")
+  const [country, setCountry] = React.useState("Nigeria")
 
-  const authContext = React.useMemo(() => {
-    return {
+  const authContext =
+     {
       signIn: () => {
-        setLoggedIn(true)
+        let data = {
+          username: email,
+          password: password,
+        }
+
+        console.log(data)
+        axios.post('/login', data)
+        .then((data) => {
+          AsyncStorage.setItem('token', data.data.token)
+          AsyncStorage.setItem('name', data.data.response.name)
+          AsyncStorage.setItem('username', data.data.response.username)
+          AsyncStorage.setItem('email', data.data.response.email)
+          AsyncStorage.setItem('phone', data.data.response.phone)
+          AsyncStorage.setItem('country', data.data.response.country)
+
+          setLoggedIn(true)
+        })
+        .catch((err) =>{
+
+        })
       },
       signUp: () => {
         // setLoggedIn(true)
         let data = {
-          name,
-          username,
-          email,
-          phone,
-          password,
-          country
+          name: name,
+          username: username,
+          email: email,
+          phone: phone,
+          password: password,
+          country: country
         }
+
+        console.log(data)
         axios.post('/register', data)
         .then((data) => {
           AsyncStorage.setItem('token', data.data.token)
@@ -112,11 +133,21 @@ export default function App() {
         })
       },
       signOut: () => {
+        AsyncStorage.clear()
         setLoggedIn(false)
       },
 
+      setName,
+      setPhone,
+      setEmail,
+      setPassword,
+      setCPassword,
+      setUsername,
+      setCountry,
+      
       name: (val) => {
         setName(val)
+        
       },
       phone: (val) => {
         setPhone(val)
@@ -137,7 +168,7 @@ export default function App() {
         setCountry(val)
       }
     }
-  }, [])
+  
 
 
   return (
@@ -163,12 +194,12 @@ export default function App() {
               </View>
             </View> */}
 
-            <Drawer.Screen name="Profile" component={Profile} options={{ title: "Profile" }} options={{
+            {/* <Drawer.Screen name="Profile" component={Profile} options={{ title: "Profile" }} options={{
               drawerIcon: ({ focused, size }) => (
                 <FontAwesome name="user-circle" size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
-            }} />
+            }} /> */}
 
             <Drawer.Screen name="Home" component={HomeStackScreen} options={{ title: "Home" }} options={{
               drawerIcon: ({ focused, size }) => (
