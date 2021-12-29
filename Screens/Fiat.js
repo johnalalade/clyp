@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, Component } from "react";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from 'reanimated-bottom-sheet';
@@ -12,6 +12,9 @@ import FundFiat from "./Fund-Fiat";
 import { Ionicons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { PayWithFlutterwave } from 'flutterwave-react-native';
+import banks from "./available_banks";
+import { UserInterfaceIdiom } from "expo-constants";
+import axios from './axios'
 
 const FiatStack = createStackNavigator()
 
@@ -23,9 +26,22 @@ function Fiat() {
     const [currency, setcurrency] = React.useState("NGN")
     const [page, setPage] = React.useState("Fiat")
 
-    const handleOnRedirect = (data) => {
-        console.log(data);
-    };
+    const [user, setUser] = React.useState({})
+
+    // const [abanks, setBanks] = React.useState(banks)
+
+    // const [wamount, setWAmount] = React.useState(banks)
+    // const [acc_num, setAcc_Num] = React.useState(banks)
+    // const [acc_name, setAcc_Name] = React.useState(banks)
+    // const [bank, setBank] = React.useState("")
+
+    const [abanks, setBanks] = React.useState(banks)
+    const [abanks2, setBanks2] = React.useState(banks)
+    const [wamount, setWAmount] = React.useState(0)
+    const [acc_num, setAcc_Num] = React.useState("")
+    const [acc_name, setAcc_Name] = React.useState("")
+    const [camount, setCAmount] = React.useState(false)
+    const [bank, setBank] = React.useState("")
 
     const [txs, setTxs] = React.useState([
         {
@@ -49,6 +65,282 @@ function Fiat() {
             reference: 104
         }
     ])
+
+    let bs = React.createRef();
+    let fall = new Animated.Value(1);
+
+    useEffect(() => {
+        setBanks2(abanks.sort((a, b) => {
+            if (a.Name < b.Name) {
+                return -1
+            }
+            if (a.Name > b.Name) {
+                return 1
+            }
+            return 0
+        }).filter((it) => it.country === "Nigeria"))
+    }, [])
+
+
+    const handleOnRedirect = (data) => {
+        console.log(data);
+    };
+
+
+    if (page === "Fund") {
+        return (
+            <View style={styles.container}>
+
+                <View>
+                    <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
+                        <Feather name="x" size={24} color="black" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.option} onPress={() => setIsCard(true)}>
+                        <Ionicons
+                            name="card-outline"
+                            size={44}
+                            color="whitesmoke" />
+                        <Text style={styles.optionText}>
+                            Fund with bank Card
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.option} onPress={() => na}>
+                        <Entypo
+                            name="cycle"
+                            size={44}
+                            color="whitesmoke" />
+                        <Text style={styles.optionText}>
+                            Convert your crypto balance to Fiat
+                        </Text>
+                    </TouchableOpacity>
+
+                    {isCard &&
+                        <View>
+                            <Text style={{
+                                marginTop: 35, fontWeight: "600"
+                            }} >Amount</Text>
+                            <View style={styles.input}>
+                                <Ionicons
+                                    name="card-outline"
+                                    size={44}
+                                    color="grey" />
+                                <TextInput
+                                    placeholder="Amount"
+                                    style={styles.textInput}
+                                    autoCapitalize="none"
+                                    keyboardType="numeric"
+                                    returnKeyType="done"
+                                    enablesReturnKeyAutomatically
+                                    onChangeText={(val) => setAmount(val)}
+                                />
+                            </View>
+                            {amount >= 100 &&
+                                <PayWithFlutterwave
+                                    onRedirect={handleOnRedirect}
+                                    options={{
+                                        tx_ref: "XXXXXXXXX",
+                                        authorization: 'FLWPUBK-b73d166127557d9fc24d219eb9ac96e2-X',
+                                        customer: {
+                                            email: 'customer-email@example.com'
+                                        },
+                                        amount: amount,
+                                        currency: "GBP",
+                                        payment_options: 'card'
+                                    }}
+                                    customButton={(props) => (
+                                        <TouchableOpacity
+                                            style={styles.paymentButton}
+                                            onPress={props.onPress}
+                                            isBusy={props.isInitializing}
+                                            disabled={props.disabled}>
+                                            <Text style={styles.paymentButtonText}>Fund {currency} {amount}</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                />
+
+                            }
+                        </View>
+
+                    }
+
+                </View>
+
+            </View>
+        )
+    }
+
+
+    const amountHandler = (val) => {
+        if (user.balance >= 100) {
+            if (user.balance >= wamount) {
+                setWAmount(val)
+                setCAmount(true)
+            }
+            else {
+                // More than available balance
+            }
+        }
+        else {
+            // insufficient Balance
+        }
+    }
+
+    const acc_numHandler = (val) => {
+        setAcc_Num(val)
+        if (val.length === 10 && bank.Code) {
+            // toast.info("Please wait while we fetch account name")
+            axios.post('/appi', {
+                "account_number": val,
+                "account_bank": bank.Code
+            })
+                .then(data => {
+                    // this.setState({
+                    //   acc_name: data.data.acc_name.slice(0,data.data.acc_name.indexOf('"')),
+                    //   c_name: true
+                    // })
+                    setAcc_Name(data.data.acc_name.slice(0, data.data.acc_name.indexOf('"')))
+
+                    if (data.data.acc_name.slice(0, data.data.acc_name.indexOf('"')).length === 0) {
+                        //   toast.warning('Incorrect details, please check and try again...')
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+
+                })
+        }
+    }
+
+    const bankHandler = (val) => {
+        setBank(val)
+        setPage("Send")
+        if (acc_num === 10) {
+            // toast.info("Please wait while we fetch account name")
+            axios.post('/appi', {
+                "account_number": acc_num,
+                "account_bank": val.Code
+            })
+                .then(data => {
+                    // this.setState({
+                    //   acc_name: data.data.acc_name.slice(0,data.data.acc_name.indexOf('"')),
+                    //   c_name: true
+                    // })
+                    setAcc_Name(data.data.acc_name.slice(0, data.data.acc_name.indexOf('"')))
+
+                    if (data.data.acc_name.slice(0, data.data.acc_name.indexOf('"')).length === 0) {
+                        //   toast.warning('Incorrect details, please check and try again...')
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                    console.log({
+                        "account_number": acc_num,
+                        "account_bank": val.Code
+                    })
+                })
+        }
+    }
+
+    const searchHandler = (val) => {
+        setBanks2(abanks.filter(it => it.Name.indexOf(val) !== -1))
+    }
+
+
+    if (page === "Banks") {
+        return (
+            <View style={styles.wcont}>
+                <TouchableOpacity onPress={() => { setPage("Send"); setBank("") }} style={styles.cancel}>
+                    <Feather name="x" size={24} color="black" />
+                </TouchableOpacity>
+                <TextInput
+                    style={styles.numsSearch}
+                    placeholder="search"
+                    onChangeText={(val) => searchHandler(val)}
+                // returnKeyType="done"
+                />
+                <FlatList
+                    keyExtractor={(item) => item.Code}
+                    data={abanks2}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity style={styles.txTouch} onPress={() => bankHandler(item)}>
+
+                            <View>
+                                <Text style={styles.txText}>{item.Name}</Text>
+                            </View>
+
+                        </TouchableOpacity>
+                    )}
+                />
+            </View>
+        )
+    }
+
+    if (page === "Send") {
+
+        return (
+
+            <View style={styles.wcont}>
+                <View>
+
+                    <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
+                        <Feather name="x" size={24} color="black" />
+                    </TouchableOpacity>
+
+                    <Text style={styles.withdrawText}>Bank: </Text>
+                    <TouchableOpacity onPress={() => setPage("Banks")} style={styles.withdrawView}>
+
+                        <Text style={styles.nums}>{bank.Name}</Text>
+                    </TouchableOpacity>
+
+                    <Text style={styles.withdrawText}>Amount: </Text>
+                    <View style={styles.withdrawView}>
+                        <TextInput
+                            style={styles.nums}
+                            placeholder="200"
+                            onChangeText={(val) => amountHandler(val)}
+                            keyboardType="numeric"
+                            returnKeyType="done"
+                        />
+                    </View>
+
+                    <Text style={styles.withdrawText}>Account Number: </Text>
+                    <View style={styles.withdrawView}>
+
+                        <TextInput
+                            style={styles.nums}
+                            placeholder="200"
+                            onChangeText={(val) => acc_numHandler(val)}
+                            keyboardType="numeric"
+                            returnKeyType="done"
+                        />
+                    </View>
+
+                    <Text style={styles.withdrawText}>Account Name: </Text>
+                    <View style={styles.withdrawView}>
+
+                        <Text style={styles.nums}>{ }</Text>
+                    </View>
+
+                    {acc_name !== "" && camount &&
+                        <View>
+                            <TouchableOpacity
+                                style={styles.paymentButton}
+                                onPress={() => { }}
+                            >
+                                <Text style={styles.paymentButtonText}>Withdraw</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
+
+                </View>
+            </View >
+        )
+    }
+
+
+
 
     const renderInner = () => (
         <View style={styles.panel}>
@@ -92,95 +384,6 @@ function Fiat() {
         </View>
     );
 
-    let bs = React.createRef();
-    let fall = new Animated.Value(1);
-
-    if (page === "Fund") {
-        return (
-            <View style={styles.container}>
-                
-                <View>
-                <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
-                    <Feather name="x" size={24} color="black" />
-                </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.option} onPress={() => setIsCard(true)}>
-                        <Ionicons
-                            name="card-outline"
-                            size={44}
-                            color="black" />
-                        <Text style={styles.optionText}>
-                            Fund with bank Card
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.option} onPress={() => na}>
-                        <Entypo
-                            name="cycle"
-                            size={44}
-                            color="black" />
-                        <Text style={styles.optionText}>
-                            Convert your crypto balance to Fiat
-                        </Text>
-                    </TouchableOpacity>
-
-                    {isCard &&
-                        <View>
-                            <Text style={{
-                                marginTop: 35, fontWeight: "600"
-                            }} >Amount</Text>
-                            <View style={styles.input}>
-                                <Ionicons
-                                    name="card-outline"
-                                    size={44}
-                                    color="black" />
-                                <TextInput
-                                    placeholder="Amount"
-                                    style={styles.textInput}
-                                    autoCapitalize="none"
-                                    keyboardType="numeric"
-                                    enablesReturnKeyAutomatically
-                                    onChangeText={(val) => setAmount(val)}
-                                />
-                            </View>
-                            {amount <= 100 &&
-                                <PayWithFlutterwave
-                                    onRedirect={handleOnRedirect}
-                                    options={{
-                                        tx_ref: "XXXXXXXXX",
-                                        authorization: 'FLWPUBK-b73d166127557d9fc24d219eb9ac96e2-X',
-                                        customer: {
-                                            email: 'customer-email@example.com'
-                                        },
-                                        amount: amount,
-                                        currency: "GBP",
-                                        payment_options: 'card'
-                                    }}
-                                    customButton={(props) => (
-                                        <TouchableOpacity
-                                            style={styles.paymentButton}
-                                            onPress={props.onPress}
-                                            isBusy={props.isInitializing}
-                                            disabled={props.disabled}>
-                                            <Text style={styles.paymentButtonText}>Fund {currency} {amount}</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                />
-
-                            }
-                        </View>
-
-                    }
-
-                </View>
-
-            </View>
-        )
-    }
-
-    if (page === "Send") {
-
-    }
 
     if (page === "Fiat") {
         return (
@@ -207,7 +410,7 @@ function Fiat() {
                             <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Fund")}>
                                 <View style={styles.button}>
 
-                                    <Feather name="send" size={24} color="black" />
+                                    <Feather name="send" size={24} color="whitesmoke" />
                                 </View>
                                 <Text style={styles.buttonText}>
                                     Add Funds
@@ -215,10 +418,10 @@ function Fiat() {
 
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.buttonView}>
+                            <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
                                 <View style={styles.button}>
 
-                                    <Feather name="send" size={24} color="black" />
+                                    <Feather name="send" size={24} color="whitesmoke" />
                                 </View>
                                 <Text style={styles.buttonText}>
                                     Send Funds
@@ -244,7 +447,23 @@ const styles = StyleSheet.create({
         top: 0,
         marginBottom: 20,
         marginTop: 10
-      },
+    },
+    nums: {
+        paddingHorizontal: 10,
+        paddingVertical: 20,
+        backgroundColor: "whitesmoke",
+        borderRadius: 10,
+        width: "90%",
+        marginBottom: 10,
+    },
+    numsSearch: {
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        backgroundColor: "whitesmoke",
+        borderRadius: 10,
+        width: "90%",
+        marginBottom: 10,
+    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
@@ -256,6 +475,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    wcont: {
+        flex: 1,
+        backgroundColor: '#fff',
+        padding: 0,
+        paddingLeft: 15
+        // alignItems: 'center',
+        // justifyContent: 'center',
     },
     header: {
         flex: 1,
@@ -270,7 +497,7 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     text_header: {
-        color: 'black',
+        color: 'grey',
         fontWeight: 'bold',
         fontSize: 30
     },
@@ -288,7 +515,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         height: 60,
         width: 60,
-        backgroundColor: "#ff37374f",
+        backgroundColor: "#febf12",
         display: "flex",
         justifyContent: "center",
         alignItems: "center"
@@ -313,8 +540,10 @@ const styles = StyleSheet.create({
         // flex: 1,
         // justifyContent: 'flex-end',
         paddingHorizontal: 20,
-        paddingBottom: 5,
-        backgroundColor: '#FFFFFF'
+        paddingVertical: 10,
+        backgroundColor: '#febf12',
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20,
     },
     panelHeader: {
         alignItems: 'center',
@@ -368,7 +597,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         marginBottom: 12,
-        backgroundColor: "#caca05",
+        backgroundColor: "#febf12",
         padding: 10,
         borderRadius: 15
     },
@@ -394,7 +623,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginTop: 15,
-        backgroundColor: "#caca05",
+        backgroundColor: "#febf12",
         padding: 10,
         borderRadius: 15,
         height: 50

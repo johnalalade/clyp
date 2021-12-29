@@ -45,6 +45,12 @@ function Crypto() {
     }
   ])
 
+  const [amount, setAmount] = useState("")
+
+  const amountHandler = (val) => {
+    setAmount(val - ((2/100) * val))
+  }
+
   const askForCameraPermission = () => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync()
@@ -132,6 +138,10 @@ function Crypto() {
           </View>
 
         </View>
+        <TouchableOpacity style={styles.sendBtn} onPress={() => {}}>
+          <Text style={styles.sendText}> Send </Text>
+          <Feather name="send" size={20} color="whitesmoke" />
+        </TouchableOpacity>
       </View>
     )
   }
@@ -152,6 +162,92 @@ function Crypto() {
     )
   }
 
+  if (page === "Buy") {
+    return (
+      <View style={styles.containerSend}>
+
+        <TouchableOpacity onPress={() => setPage(null)} style={styles.cancel}>
+          <Feather name="x" size={24} color="black" />
+        </TouchableOpacity>
+
+        <View>
+        <Text style={styles.convertTop}>Convert Fiat to {address.name}</Text>
+
+          <Text style={styles.convertPrice}>Amount of Fiat in USD you want to convert to {address.name}</Text>
+          <Text style={styles.minimum}>Minimum amount $2</Text>
+          <View style={styles.addressInput}>
+            <Foundation name="dollar" size={30} color="black" />
+            <TextInput
+              style={styles.address}
+              placeholder="200"
+              onChangeText={(val) => amountHandler(val)}
+              keyboardType="numeric"
+              returnKeyType="done"
+            />
+          </View>
+
+          <Text style={styles.processing}>Processing fee ~ 2%</Text>
+
+          <Text style={styles.addressText}>Your {address.name} wallet will be credited with: </Text>
+          <View style={styles.addressInput}>
+          <Foundation name="dollar" size={30} color="black" />
+            
+            <Text style={styles.address}>{amount}</Text>
+          </View>
+
+        </View>
+
+        <TouchableOpacity style={styles.sendBtn} onPress={() => {}}>
+          <Text style={styles.sendText}> Convert To {address.name} </Text>
+          <Feather name="send" size={20} color="whitesmoke" />
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  if (page === "Sell") {
+    return (
+      <View style={styles.containerSend}>
+
+        <TouchableOpacity onPress={() => setPage(null)} style={styles.cancel}>
+          <Feather name="x" size={24} color="black" />
+        </TouchableOpacity>
+
+        <View> 
+        <Text style={styles.convertTop}>Convert {address.name} to Fiat</Text>
+
+          <Text style={styles.convertPrice}>Amount of {address.name} in USD you want to convert to Fiat</Text>
+          <Text style={styles.minimum}>Minimum amount $2</Text>
+          <View style={styles.addressInput}>
+            <Foundation name="dollar" size={30} color="black" />
+            <TextInput
+              style={styles.address}
+              placeholder="200"
+              onChangeText={(val) => amountHandler(val)}
+              keyboardType="numeric"
+              returnKeyType="done"
+            />
+          </View>
+
+          <Text style={styles.processing}>Processing fee ~ 2%</Text>
+
+          <Text style={styles.addressText}>Your fiat wallet will be credited with: </Text>
+          <View style={styles.addressInput}>
+          <Foundation name="dollar" size={30} color="black" />
+          <Text style={styles.address}>{amount}</Text>
+            
+          </View>
+
+        </View>
+
+        <TouchableOpacity style={styles.sendBtn} onPress={() => {}}>
+          <Text style={styles.sendText}> Convert To Fiat </Text>
+          <Feather name="send" size={20} color="whitesmoke" />
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
 
@@ -162,10 +258,10 @@ function Crypto() {
           <Text style={styles.text_header}>$100.00</Text>
           <View style={styles.buttons}>
 
-            <TouchableOpacity style={styles.buttonView} onPress={() => { }}>
+            <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
               <View style={styles.button}>
 
-                <Feather name="send" size={20} color="black" />
+                <Feather name="send" size={20} color="whitesmoke" />
               </View>
               <Text style={styles.buttonText}>
                 Fiat to {address.name}
@@ -176,7 +272,7 @@ function Crypto() {
             <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
               <View style={styles.button}>
 
-                <Feather name="send" size={20} color="black" />
+                <Feather name="send" size={20} color="whitesmoke" />
               </View>
               <Text style={styles.buttonText}>
                 Send {address.name}
@@ -184,10 +280,10 @@ function Crypto() {
 
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttonView} onPress={() => { }}>
+            <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Sell")}>
               <View style={styles.button}>
 
-                <Feather name="send" size={20} color="black" />
+                <Feather name="send" size={20} color="whitesmoke" />
               </View>
               <Text style={styles.buttonText}>
                 BTC to {address.name}
@@ -305,7 +401,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     height: 50,
     width: 50,
-    backgroundColor: "#ff37374f",
+    backgroundColor: "#febf12",
     display: "flex",
     justifyContent: "center",
     alignItems: "center"
@@ -426,9 +522,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // codeSubs: {
-  //   // mar
-  // },
+  convertTop: {
+    fontWeight: '900',
+    alignSelf: "center",
+    marginBottom: 20
+  },
+  convertPrice: {
+    fontWeight:"500"
+  },
+  minimum: {
+    fontWeight: "500",
+    color: "red"
+  },
+  processing: {
+    fontWeight: "500",
+    color: "#febf12",
+    marginBottom: 5
+  },
+  sendBtn: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 50,
+    backgroundColor: "#febf12",
+    borderRadius: 15,
+    marginHorizontal: 20,
+  },
+  sendText: {
+    fontWeight: "800",
+    color: "whitesmoke"
+  },
 });
 
 

@@ -37,7 +37,7 @@ function SignUp2({ navigation }) {
             </View>
             <ScrollView>
                 {countries.map(item => (
-                    <TouchableOpacity key={item.code} style={(myCountry === item.name) ? styles.countryText : styles.countryTextSelected} onPress={() => countryHandler(item.name)}><Text>{item.name}</Text></TouchableOpacity>
+                    <TouchableOpacity key={item.code} style={(myCountry === item.name) ? styles.countryTextSelected : styles.countryText} onPress={() => countryHandler(item.name)}><Text>{item.name}</Text></TouchableOpacity>
                 ))}
             </ScrollView>
             {/* <FlatList 
@@ -362,12 +362,18 @@ const styles = StyleSheet.create({
     countryText: {
         fontSize: 15,
         fontWeight: "bold",
-        color: "black"
+        // height: 50,
+        paddingVertical: 15,
+        paddingHorizontal: 7,
+        color: "black",
     },
     countryTextSelected: {
         fontSize: 15,
         fontWeight: "bold",
-        color: "yellow"
+        // height: 50,
+        paddingVertical: 15,
+        paddingHorizontal: 7,
+        backgroundColor: "whitesmoke"
     }
 });
 

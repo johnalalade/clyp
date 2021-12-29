@@ -43,13 +43,13 @@ const HomeStackScreen = () => (
 
     <Tabs.Screen name="Fiat" component={Fiat} options={{
       tabBarIcon: ({ focused, size }) => (
-        <FontAwesome5 name="money-bill-wave" size={size} color={focused ? 'lightblue' : '#ccc'} />
+        <FontAwesome5 name="money-bill-wave" size={size} color={focused ? '#febf12' : '#ccc'} />
       ), headerShown: false
     }} />
 
     <Tabs.Screen name="Crypto" component={Crypto} options={{
       tabBarIcon: ({ focused, size }) => (
-        <FontAwesome5 name="bitcoin" size={size} color={focused ? 'lightblue' : '#ccc'} />
+        <FontAwesome5 name="bitcoin" size={size} color={focused ? '#febf12' : '#ccc'} />
       ),
     }} />
 
