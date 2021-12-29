@@ -235,16 +235,13 @@ function Fiat() {
                 })
                 .catch(err => {
                     console.log(err)
-                    console.log({
-                        "account_number": acc_num,
-                        "account_bank": val.Code
-                    })
+                    
                 })
         }
     }
 
     const searchHandler = (val) => {
-        setBanks2(abanks.filter(it => it.Name.indexOf(val) !== -1))
+        setBanks2(abanks.filter(it => it.Name.indexOf(val) !== -1).filter((it) => it.country === "Nigeria"))
     }
 
 
@@ -320,7 +317,7 @@ function Fiat() {
                     <Text style={styles.withdrawText}>Account Name: </Text>
                     <View style={styles.withdrawView}>
 
-                        <Text style={styles.nums}>{ }</Text>
+                        <Text style={styles.nums}>{acc_name}</Text>
                     </View>
 
                     {acc_name !== "" && camount &&
