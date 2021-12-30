@@ -47,8 +47,35 @@ function Crypto() {
 
   const [amount, setAmount] = useState("")
 
+  // Airtime
+  const [airAmount, setAirAmount] = React.useState()
+  const [phone, setPhone] = React.useState()
+  const [user, setUser] = React.useState()
+  const [style, setStyle] = React.useState(styles.address)
+  const [verified, setVerified] = React.useState(false)
+
+  const airAmountHandler = (val) => {
+    setAirAmount(val)
+    if (val < 100) {
+      setStyle(styles.error)
+      setVerified(false)
+    }
+    // if(val > user.balance){
+    //     setStyle(styles.error)
+    // }
+    else {
+      setVerified(true)
+      setStyle(styles.nums)
+    }
+  }
+  const airphoneHandler = (val) => {
+    setPhone(val)
+  }
+
+  // Airtime finished
+
   const amountHandler = (val) => {
-    setAmount(val - ((2/100) * val))
+    setAmount(val - ((2 / 100) * val))
   }
 
   const askForCameraPermission = () => {
@@ -70,6 +97,52 @@ function Crypto() {
     setPage("Send")
     setRAddress(data)
     console.log("Type: " + type + "\nData: " + data)
+  }
+
+  if (page === "Airtime") {
+    return (
+      <View style={styles.airContainer}>
+        <TouchableOpacity onPress={() => setPage(null)} style={styles.cancel}>
+          <Feather name="x" size={24} color="black" />
+        </TouchableOpacity>
+
+        <Text style={styles.airText}>Amount: </Text>
+        <View style={styles.airView}>
+          <TextInput
+            style={style}
+            placeholder="100"
+            onChangeText={(val) => airAmountHandler(val)}
+            keyboardType="numeric"
+            returnKeyType="done"
+          />
+        </View>
+
+        <Text style={styles.airText}>Phone: </Text>
+        <View style={styles.airView}>
+          <TextInput
+            style={styles.address}
+            placeholder="200"
+            onChangeText={(val) => airphoneHandler(val)}
+            keyboardType="numeric"
+            returnKeyType="done"
+          />
+        </View>
+
+        {verified ?
+          <View>
+            <TouchableOpacity
+              style={styles.paymentButton}
+              onPress={() => { }}
+            >
+              <Text style={styles.paymentButtonText}>Buy</Text>
+            </TouchableOpacity>
+          </View>
+          :
+          null
+        }
+      </View>
+
+    )
   }
 
   if (page === "Scan") {
@@ -138,7 +211,7 @@ function Crypto() {
           </View>
 
         </View>
-        <TouchableOpacity style={styles.sendBtn} onPress={() => {}}>
+        <TouchableOpacity style={styles.sendBtn} onPress={() => { }}>
           <Text style={styles.sendText}> Send </Text>
           <Feather name="send" size={20} color="whitesmoke" />
         </TouchableOpacity>
@@ -155,7 +228,7 @@ function Crypto() {
         </TouchableOpacity>
 
         <View>
-          
+
 
         </View>
       </View>
@@ -171,7 +244,7 @@ function Crypto() {
         </TouchableOpacity>
 
         <View>
-        <Text style={styles.convertTop}>Convert Fiat to {address.name}</Text>
+          <Text style={styles.convertTop}>Convert Fiat to {address.name}</Text>
 
           <Text style={styles.convertPrice}>Amount of Fiat in USD you want to convert to {address.name}</Text>
           <Text style={styles.minimum}>Minimum amount $2</Text>
@@ -190,14 +263,14 @@ function Crypto() {
 
           <Text style={styles.addressText}>Your {address.name} wallet will be credited with: </Text>
           <View style={styles.addressInput}>
-          <Foundation name="dollar" size={30} color="black" />
-            
+            <Foundation name="dollar" size={30} color="black" />
+
             <Text style={styles.address}>{amount}</Text>
           </View>
 
         </View>
 
-        <TouchableOpacity style={styles.sendBtn} onPress={() => {}}>
+        <TouchableOpacity style={styles.sendBtn} onPress={() => { }}>
           <Text style={styles.sendText}> Convert To {address.name} </Text>
           <Feather name="send" size={20} color="whitesmoke" />
         </TouchableOpacity>
@@ -213,8 +286,8 @@ function Crypto() {
           <Feather name="x" size={24} color="black" />
         </TouchableOpacity>
 
-        <View> 
-        <Text style={styles.convertTop}>Convert {address.name} to Fiat</Text>
+        <View>
+          <Text style={styles.convertTop}>Convert {address.name} to Fiat</Text>
 
           <Text style={styles.convertPrice}>Amount of {address.name} in USD you want to convert to Fiat</Text>
           <Text style={styles.minimum}>Minimum amount $2</Text>
@@ -233,14 +306,14 @@ function Crypto() {
 
           <Text style={styles.addressText}>Your fiat wallet will be credited with: </Text>
           <View style={styles.addressInput}>
-          <Foundation name="dollar" size={30} color="black" />
-          <Text style={styles.address}>{amount}</Text>
-            
+            <Foundation name="dollar" size={30} color="black" />
+            <Text style={styles.address}>{amount}</Text>
+
           </View>
 
         </View>
 
-        <TouchableOpacity style={styles.sendBtn} onPress={() => {}}>
+        <TouchableOpacity style={styles.sendBtn} onPress={() => { }}>
           <Text style={styles.sendText}> Convert To Fiat </Text>
           <Feather name="send" size={20} color="whitesmoke" />
         </TouchableOpacity>
@@ -286,10 +359,21 @@ function Crypto() {
                 <Feather name="send" size={20} color="whitesmoke" />
               </View>
               <Text style={styles.buttonText}>
-                BTC to {address.name}
+                {address.name} to Fiat
               </Text>
 
             </TouchableOpacity>
+
+            {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
+              <View style={styles.button}>
+
+                <Feather name="send" size={20} color="whitesmoke" />
+              </View>
+              <Text style={styles.buttonText}>
+                {address.name} to Airtime
+              </Text>
+
+            </TouchableOpacity> */}
           </View>
         </View>
 
@@ -298,7 +382,8 @@ function Crypto() {
 
       <View style={styles.cryptos}>
         <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
-          setPage("Receive")}}>
+          setPage("Receive")
+        }}>
 
           <Text style={styles.cryptoAddress}>
             {address.address}
@@ -368,6 +453,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'space-evenly',
+  },
+  airContainer: {
+    flex: 1,
+    backgroundColor: "white",
+    paddingLeft: 20,
+  },
+  airView: {
+    marginBottom: 20,
   },
   header: {
     flex: 0.5,
@@ -528,7 +621,7 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   convertPrice: {
-    fontWeight:"500"
+    fontWeight: "500"
   },
   minimum: {
     fontWeight: "500",

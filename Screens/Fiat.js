@@ -18,7 +18,7 @@ import axios from './axios'
 
 const FiatStack = createStackNavigator()
 
-function Fiat() {
+function Fiat({ navigation }) {
 
 
     const [isCard, setIsCard] = React.useState(false)
@@ -42,6 +42,31 @@ function Fiat() {
     const [acc_name, setAcc_Name] = React.useState("")
     const [camount, setCAmount] = React.useState(false)
     const [bank, setBank] = React.useState("")
+
+    // Airtime
+    const [airAmount, setAirAmount] = React.useState()
+    const [phone, setPhone] = React.useState()
+    // const [user, setUser] = React.useState()
+    const [style, setStyle] = React.useState(styles.nums)
+    const [verified, setVerified] = React.useState(false)
+
+    const airAmountHandler = (val) => {
+        setAirAmount(val)
+        if (val < 100) {
+            setStyle(styles.error)
+            setVerified(false)
+        }
+        // if(val > user.balance){
+        //     setStyle(styles.error)
+        // }
+        else {
+            setVerified(true)
+            setStyle(styles.nums)
+        }
+    }
+    const airphoneHandler = (val) => {
+        setPhone(val)
+    }
 
     const [txs, setTxs] = React.useState([
         {
@@ -86,6 +111,54 @@ function Fiat() {
         console.log(data);
     };
 
+    if (page === "Airtime") {
+        return (
+            <View style={styles.airContainer}>
+
+                <View>
+                    <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
+                        <Feather name="x" size={24} color="black" />
+                    </TouchableOpacity>
+
+                    <Text style={styles.airText}>Amount: </Text>
+                    <View style={styles.airView}>
+                        <TextInput
+                            style={style}
+                            placeholder="100"
+                            onChangeText={(val) => airAmountHandler(val)}
+                            keyboardType="numeric"
+                            returnKeyType="done"
+                        />
+                    </View>
+
+                    <Text style={styles.airText}>Phone: </Text>
+                    <View style={styles.airView}>
+                        <TextInput
+                            style={styles.nums}
+                            placeholder="200"
+                            onChangeText={(val) => airphoneHandler(val)}
+                            keyboardType="numeric"
+                            returnKeyType="done"
+                        />
+                    </View>
+
+                    {verified ?
+                        <View>
+                            <TouchableOpacity
+                                style={styles.paymentButton}
+                                onPress={() => { }}
+                            >
+                                <Text style={styles.paymentButtonText}>Buy</Text>
+                            </TouchableOpacity>
+                        </View>
+                        :
+                        null
+                    }
+                </View>
+            </View>
+
+        )
+    }
 
     if (page === "Fund") {
         return (
@@ -106,7 +179,7 @@ function Fiat() {
                         </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.option} onPress={() => na}>
+                    <TouchableOpacity style={styles.option} onPress={() => navigation.navigate("Crypto")}>
                         <Entypo
                             name="cycle"
                             size={44}
@@ -235,7 +308,7 @@ function Fiat() {
                 })
                 .catch(err => {
                     console.log(err)
-                    
+
                 })
         }
     }
@@ -425,6 +498,17 @@ function Fiat() {
                                 </Text>
 
                             </TouchableOpacity>
+
+                            {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
+                                <View style={styles.button}>
+
+                                    <Feather name="send" size={24} color="whitesmoke" />
+                                </View>
+                                <Text style={styles.buttonText}>
+                                    Airtime
+                                </Text>
+
+                            </TouchableOpacity> */}
                         </View>
                     </View>
 
@@ -472,6 +556,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    airContainer: {
+        flex: 1,
+        backgroundColor: "white",
+        paddingLeft: 20,
+    },
+    airView: {
+        marginBottom: 20,
     },
     wcont: {
         flex: 1,
