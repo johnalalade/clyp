@@ -50,7 +50,7 @@ const HomeStackScreen = () => (
     <Tabs.Screen name="Crypto" component={Crypto} options={{
       tabBarIcon: ({ focused, size }) => (
         <FontAwesome5 name="bitcoin" size={size} color={focused ? '#febf12' : '#ccc'} />
-      ),
+      ), headerShown: false
     }} />
 
   </Tabs.Navigator>
@@ -72,7 +72,7 @@ const Drawer = createDrawerNavigator()
 
 export default function App() {
 
-  const [loggedIn, setLoggedIn] = React.useState(true)
+  const [loggedIn, setLoggedIn] = React.useState(false)
   const [name, setName] = React.useState("")
   const [email, setEmail] = React.useState("")
   const [phone, setPhone] = React.useState("")
@@ -80,95 +80,115 @@ export default function App() {
   const [cpassword, setCPassword] = React.useState("")
   const [username, setUsername] = React.useState("")
   const [country, setCountry] = React.useState("Nigeria")
+  const [currency, setCurrency] = React.useState("NGN")
+  const [rate, setRate] = React.useState(480)
 
   const authContext =
-     {
-      signIn: () => {
-        let data = {
-          username: email,
-          password: password,
-        }
-
-        console.log(data)
-        axios.post('/login', data)
-        .then((data) => {
-          AsyncStorage.setItem('token', data.data.token)
-          AsyncStorage.setItem('name', data.data.response.name)
-          AsyncStorage.setItem('username', data.data.response.username)
-          AsyncStorage.setItem('email', data.data.response.email)
-          AsyncStorage.setItem('phone', data.data.response.phone)
-          AsyncStorage.setItem('country', data.data.response.country)
-
-          setLoggedIn(true)
-        })
-        .catch((err) =>{
-
-        })
-      },
-      signUp: () => {
-        // setLoggedIn(true)
-        let data = {
-          name: name,
-          username: username,
-          email: email,
-          phone: phone,
-          password: password,
-          country: country
-        }
-
-        console.log(data)
-        axios.post('/register', data)
-        .then((data) => {
-          AsyncStorage.setItem('token', data.data.token)
-          AsyncStorage.setItem('name', data.data.response.name)
-          AsyncStorage.setItem('username', data.data.response.username)
-          AsyncStorage.setItem('email', data.data.response.email)
-          AsyncStorage.setItem('phone', data.data.response.phone)
-          AsyncStorage.setItem('country', data.data.response.country)
-
-          setLoggedIn(true)
-        })
-        .catch((err) =>{
-
-        })
-      },
-      signOut: () => {
-        AsyncStorage.clear()
-        setLoggedIn(false)
-      },
-
-      setName,
-      setPhone,
-      setEmail,
-      setPassword,
-      setCPassword,
-      setUsername,
-      setCountry,
-      
-      name: (val) => {
-        setName(val)
-        
-      },
-      phone: (val) => {
-        setPhone(val)
-      },
-      email: (val) => {
-        setEmail(val)
-      },
-      password: (val) => {
-        setPassword(val)
-      },
-      cpassword: (val) => {
-        setCPassword(val)
-      },
-      username: (val) => {
-        setUsername(val)
-      },
-      country: (val) => {
-        setCountry(val)
+  {
+    signIn: () => {
+      let data = {
+        username: email,
+        password: password,
       }
+
+      console.log(data)
+      axios.post('/login', data)
+        .then(async (data) => {
+          if (data.data.id) {
+            await AsyncStorage.setItem('token', data.data.token)
+            await AsyncStorage.setItem('id', data.data.id)
+            await AsyncStorage.setItem('name', data.data.response.name)
+            await AsyncStorage.setItem('username', data.data.response.username)
+            await AsyncStorage.setItem('email', data.data.response.email)
+            await AsyncStorage.setItem('phone', data.data.response.phone)
+            await AsyncStorage.setItem('country', data.data.response.country)
+            // await AsyncStorage.setItem('currency', data.data.response.currency)
+            // await AsyncStorage.setItem('rate', data.data.response.rate)
+
+            setLoggedIn(true)
+          }
+
+          console.log({ data: data.data })
+        })
+        .catch((err) => {
+          console.log({ err })
+        })
+    },
+    signUp: () => {
+      // setLoggedIn(true)
+      let data = {
+        name: name,
+        username: username,
+        email: email,
+        phone: phone,
+        password: password,
+        country: country,
+        currency: currency,
+        rate: rate
+      }
+
+      console.log(data)
+      axios.post('/register', data)
+        .then(async (data) => {
+          await AsyncStorage.setItem('token', data.data.token)
+          await AsyncStorage.setItem('id', data.data.id)
+          await AsyncStorage.setItem('name', data.data.response.name)
+          await AsyncStorage.setItem('username', data.data.response.username)
+          await AsyncStorage.setItem('email', data.data.response.email)
+          await AsyncStorage.setItem('phone', data.data.response.phone)
+          await AsyncStorage.setItem('country', data.data.response.country)
+          await AsyncStorage.setItem('currency', data.data.response.currency)
+          await AsyncStorage.setItem('rate', data.data.response.rate)
+
+          setLoggedIn(true)
+        })
+        .catch((err) => {
+
+        })
+    },
+    signOut: () => {
+      AsyncStorage.clear()
+      setLoggedIn(false)
+    },
+
+    setName,
+    setPhone,
+    setEmail,
+    setPassword,
+    setCPassword,
+    setUsername,
+    setCountry,
+
+    name: (val) => {
+      setName(val)
+
+    },
+    phone: (val) => {
+      setPhone(val)
+    },
+    email: (val) => {
+      setEmail(val)
+    },
+    password: (val) => {
+      setPassword(val)
+    },
+    cpassword: (val) => {
+      setCPassword(val)
+    },
+    username: (val) => {
+      setUsername(val)
+    },
+    country: (val) => {
+      setCountry(val)
+    },
+    currency: (val) => {
+      setCurrency(val)
+    },
+    rate: (val) => {
+      setRate(val)
     }
-  
+  }
+
 
 
   return (
@@ -202,6 +222,7 @@ export default function App() {
             }} /> */}
 
             <Drawer.Screen name="Home" component={HomeStackScreen} options={{ title: "Home" }} options={{
+              drawerActiveBackgroundColor: "", drawerContentContainerStyle: {}, drawerContentStyle: {},
               drawerIcon: ({ focused, size }) => (
                 <AntDesign
                   name="home"
@@ -210,16 +231,19 @@ export default function App() {
               )
             }} />
 
-            <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Settings" }} options={{
+            {country === "Nigeria" || country === "Ghana" && <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Settings" }} options={{
+              drawerActiveBackgroundColor: "", drawerContentContainerStyle: {}, drawerContentStyle: {},
               drawerIcon: ({ focused, size }) => (
                 <Feather
                   name="phone"
                   size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
-            }} />
+            }} />}
 
-            <Drawer.Screen name="Settings" component={Settings} options={{ title: "Settings" }} options={{
+            <Drawer.Screen name="Settings" component={Settings} options={{
+              title: "Settings",
+              drawerActiveBackgroundColor: "", drawerContentContainerStyle: {}, drawerContentStyle: {},
               drawerIcon: ({ focused, size }) => (
                 <Ionicons
                   name="settings"
@@ -228,7 +252,8 @@ export default function App() {
               )
             }} />
 
-            <Drawer.Screen name="Contact Us" component={Contact} options={{ title: "Settings" }} options={{
+            <Drawer.Screen name="Contact Us" component={Contact} options={{ title: "Coontact Us" }} options={{
+              drawerActiveBackgroundColor: "", drawerContentContainerStyle: {}, drawerContentStyle: {},
               drawerIcon: ({ focused, size }) => (
                 <Ionicons
                   name="chatbubbles-sharp"

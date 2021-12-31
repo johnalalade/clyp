@@ -7,6 +7,8 @@ import { Avatar, Snackbar } from "react-native-paper";
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Foundation } from '@expo/vector-icons';
+import axios from "./axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 function Crypto() {
@@ -15,21 +17,35 @@ function Crypto() {
   const [scanned, setScanned] = useState(false)
   const [text, setText] = useState("")
   const [page, setPage] = React.useState("Fiat")
+  const [verifiedSell, setVerifiedSell] = React.useState(false)
+  const [verifiedBuy, setVerifiedBuy] = React.useState(false)
+  const [verifiedSend, setVerifiedSend] = React.useState(false)
+  const [style, setStyle] = React.useState(styles.address)
+
   const [qr, setQR] = useState(null)
   const [rAddress, setRAddress] = React.useState("")
   const [rAmount, setRAmount] = React.useState(0)
+  // const [address, setAddress] = React.useState("")
+  const [pKey, setPkey] = React.useState("")
+  const [btc, setBTC] = React.useState()
+  const [bnb, setBNB] = React.useState()
+  const [eth, setETH] = React.useState()
+  const [user, setUser] = React.useState()
+
+
   const [address, setAddress0] = React.useState({
     name: "Bitcoin",
-    privateKey: "1xr4sx6tvs6rey86rrfsj767t7kh",
-    address: "1xr4sx6tvs6rey86rrfsj767t7kh",
+    privateKey: "xxxxxxxxxxxxxxxxxxxxxx",
+    address: "xxxxxxxxxxxxxxxxxxxxxxxx",
     image: ""
   })
   const [cryptos, setCryptos] = useState([
     {
-      name: "Bitcoin",
+      name: "BTC",
       privateKey: "1xr4sx6tvs6rey86rrfsj767t7kh",
       address: "1xr4sx6tvs6rey86rrfsj767t7kh",
-      image: ""
+      image: "",
+      amount: btc / 1957
     },
     {
       name: "BNB",
@@ -47,12 +63,66 @@ function Crypto() {
 
   const [amount, setAmount] = useState("")
 
+  // Request camera permission
+  useEffect(async () => {
+    let id = await AsyncStorage.getItem('id').then(value => value)
+    axios.post('/user', { userID: id })
+      .then((data) => {
+        setUser(data.data.response)
+        setAddress0(data.data.response.wallets[0])
+        console.log({data: data.data.response}) 
+        return data.data.response
+      })
+      .then(user => {
+        axios.post('/cryptobalance', { asset: "BTC", address: user.wallets[0].address })
+          .then((data) => {
+            setBTC(data.data.balance)
+            console.log(data.data.balance)
+          })
+          .catch((err) => {
+            console.log({ Err: "Unable to get BTC balance " + err })
+          })
+
+    axios.post('/cryptobalance', { asset: "BNB", address: user.wallets[1].address })
+          .then((data) => {
+            setBNB(data.data.balance)
+            console.log(data.data.balance)
+          })
+          .catch((err) => {
+            console.log({ Err: "Unable to get BNB balance " + err })
+          })
+
+    axios.post('/cryptobalance', { asset: "ETH", address: user.wallets[2].address })
+          .then((data) => {
+            setETH(data.data.balance)
+            console.log(data.data.balance)
+          })
+          .catch((err) => {
+            console.log({ Err: "Unable to get ETH balance " + err })
+          })
+      })
+      .catch(err => {
+        console.log({ Err: err })
+      })
+
+    askForCameraPermission();
+  }, [])
+
+  // What happens when we scan the bar code
+  const handleBarCodeScanned = ({ type, data }) => {
+    setScanned(true);
+    setText(data)
+    setPage("Send")
+    setRAddress(data)
+    console.log("Type: " + type + "\nData: " + data)
+  }
+
   // Airtime
-  const [airAmount, setAirAmount] = React.useState()
-  const [phone, setPhone] = React.useState()
-  const [user, setUser] = React.useState()
-  const [style, setStyle] = React.useState(styles.address)
-  const [verified, setVerified] = React.useState(false)
+  // const [airAmount, setAirAmount] = React.useState()
+  // const [phone, setPhone] = React.useState()
+  // const [user, setUser] = React.useState()
+  // const [style, setStyle] = React.useState(styles.address)
+  // const [verified, setVerified] = React.useState(false)
 
   const airAmountHandler = (val) => {
     setAirAmount(val)
@@ -72,10 +142,107 @@ function Crypto() {
     setPhone(val)
   }
 
-  // Airtime finished
+  // Amounts
 
   const amountHandler = (val) => {
     setAmount(val - ((2 / 100) * val))
+    let value = val - ((2 / 100) * val)
+
+    if (address.name === "BTC") {
+      let balance = btc / 1957
+
+      if (val > balance) {
+        setStyle(styles.error)
+        setVerifiedSell(false)
+      }
+    }
+    else if (address.name === "BNB") {
+      let balance = bnb / 242205133645110.0000
+
+
+      if (val > balance) {
+        setStyle(styles.error)
+        setVerifiedSell(false)
+      }
+    }
+    else if (address.name === "ETH") {
+      let balance = eth / 242205133645110.0000
+
+      if (val > balance) {
+        setStyle(styles.error)
+        setVerifiedSell(false)
+      }
+    }
+    else {
+      setVerifiedSell(true)
+    }
+  }
+
+  const amountHandlerBuy = (val) => {
+    setAmount(val - ((2 / 100) * val))
+    let value = val - ((2 / 100) * val)
+
+    if (address.name === "BTC") {
+      let balance = btc / 1957
+
+      if (val > user.balance / user.rate) {
+        setStyle(styles.error)
+        setVerifiedBuy(false)
+      }
+    }
+    else if (address.name === "BNB") {
+      let balance = bnb / 242205133645110.0000
+
+
+      if (val > user.balance / user.rate) {
+        setStyle(styles.error)
+        setVerifiedBuy(false)
+      }
+    }
+    else if (address.name === "ETH") {
+      let balance = eth / 242205133645110.0000
+
+      if (val > user.balance / user.rate) {
+        setStyle(styles.error)
+        setVerifiedBuy(false)
+      }
+    }
+    else {
+      setVerifiedBuy(true)
+    }
+  }
+
+  const sendamount = (val) => {
+
+    setRAmount(val)
+    if (address.name === "BTC") {
+      let balance = btc / 1957
+
+      if (val > balance) {
+        setStyle(styles.error)
+        setVerifiedSend(false)
+      }
+    }
+    else if (address.name === "BNB") {
+      let balance = bnb / 242205133645110.0000
+
+
+      if (val > balance) {
+        setStyle(styles.error)
+        setVerifiedSend(false)
+      }
+    }
+    else if (address.name === "ETH") {
+      let balance = eth / 242205133645110.0000
+
+      if (val > balance) {
+        setStyle(styles.error)
+        setVerifiedSend(false)
+      }
+    }
+    else {
+      setVerifiedSend(true)
+    }
   }
 
   const askForCameraPermission = () => {
@@ -85,19 +252,68 @@ function Crypto() {
     })()
   }
 
-  // Request camera permission
-  useEffect(() => {
-    askForCameraPermission();
-  }, [])
+  // submits
+  const send = () => {
+    let payload = {
+      address: address.address,
+      private_key: address.privateKey,
+      receiver: rAddress,
+      asset: address.name,
+      amount: rAmount,
+      userID: user._id
+    }
+    axios.post('/sendcrypto', payload)
+      .then(data => {
+        console.log({ Mymessage: "Sent $" + payload.amount + " " + payload.asset })
+        console.log({ message: data.data.message })
 
-  // What happens when we scan the bar code
-  const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
-    setText(data)
-    setPage("Send")
-    setRAddress(data)
-    console.log("Type: " + type + "\nData: " + data)
+      })
+      .catch(err => {
+        console.log({ message: "Error " + err })
+      })
   }
+
+  const sell = () => {
+    let payload = {
+      address: address.address,
+      private_key: address.privateKey,
+      asset: address.name,
+      amount: amount,
+      userID: user._id
+    }
+
+    axios.post('/sellcrypto', payload)
+      .then(data => {
+        console.log({ Mymessage: "Sold $" + payload.amount + " " + payload.asset })
+        console.log({ message: data.data.message })
+
+      })
+      .catch(err => {
+        console.log({ message: "Error " + err })
+      })
+  }
+
+  const buy = () => {
+    let payload = {
+      address: address.address,
+      private_key: address.privateKey,
+      asset: address.name,
+      amount: amount,
+      userID: user._id
+    }
+
+    axios.post('/buycrypto', payload)
+      .then(data => {
+        console.log({ Mymessage: "Bought $" + payload.amount + " " + payload.asset })
+        console.log({ message: data.data.message })
+
+      })
+      .catch(err => {
+        console.log({ message: "Error " + err })
+      })
+  }
+
+
 
   if (page === "Airtime") {
     return (
@@ -205,16 +421,20 @@ function Crypto() {
             <TextInput
               style={styles.address}
               placeholder={address.address}
-              onChangeText={(val) => setRAmount(val)}
+              onChangeText={(val) => sendamount(val)}
               keyboardType="numeric"
             />
           </View>
 
         </View>
-        <TouchableOpacity style={styles.sendBtn} onPress={() => { }}>
-          <Text style={styles.sendText}> Send </Text>
-          <Feather name="send" size={20} color="whitesmoke" />
-        </TouchableOpacity>
+        {verifiedSend ?
+          <TouchableOpacity style={styles.sendBtn} onPress={() => { send() }}>
+            <Text style={styles.sendText}> Send </Text>
+            <Feather name="send" size={20} color="whitesmoke" />
+          </TouchableOpacity>
+          :
+          null
+        }
       </View>
     )
   }
@@ -229,6 +449,15 @@ function Crypto() {
 
         <View>
 
+          <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
+
+          }}>
+
+            <Text style={styles.cryptoAddress}>
+              {address.address}
+            </Text>
+            <AntDesign name="qrcode" size={24} color="black" />
+          </TouchableOpacity>
 
         </View>
       </View>
@@ -253,7 +482,7 @@ function Crypto() {
             <TextInput
               style={styles.address}
               placeholder="200"
-              onChangeText={(val) => amountHandler(val)}
+              onChangeText={(val) => amountHandlerBuy(val)}
               keyboardType="numeric"
               returnKeyType="done"
             />
@@ -269,11 +498,14 @@ function Crypto() {
           </View>
 
         </View>
-
-        <TouchableOpacity style={styles.sendBtn} onPress={() => { }}>
-          <Text style={styles.sendText}> Convert To {address.name} </Text>
-          <Feather name="send" size={20} color="whitesmoke" />
-        </TouchableOpacity>
+        {verifiedBuy ?
+          <TouchableOpacity style={styles.sendBtn} onPress={() => { buy() }}>
+            <Text style={styles.sendText}> Convert To {address.name} </Text>
+            <Feather name="send" size={20} color="whitesmoke" />
+          </TouchableOpacity>
+          :
+          null
+        }
       </View>
     )
   }
@@ -312,11 +544,14 @@ function Crypto() {
           </View>
 
         </View>
-
-        <TouchableOpacity style={styles.sendBtn} onPress={() => { }}>
-          <Text style={styles.sendText}> Convert To Fiat </Text>
-          <Feather name="send" size={20} color="whitesmoke" />
-        </TouchableOpacity>
+        {verifiedSell ?
+          <TouchableOpacity style={styles.sendBtn} onPress={() => { sell() }}>
+            <Text style={styles.sendText}> Convert To Fiat </Text>
+            <Feather name="send" size={20} color="whitesmoke" />
+          </TouchableOpacity>
+          :
+          null
+        }
       </View>
     )
   }
@@ -328,7 +563,14 @@ function Crypto() {
 
         <View style={styles.header}>
           <Text style={styles.text_wallet}>{address.name}</Text>
-          <Text style={styles.text_header}>$100.00</Text>
+          {/* <Text style={styles.text_header}>${address.name === "BNB" && bnb / 242205133645110.0000 || address.name === "ETH" && eth / 242205133645110.0000}</Text> */}
+
+          {address.name === "BTC" ? <Text style={styles.text_header}>${btc / 1957}</Text> : null }
+
+          {address.name === "BNB" ? <Text style={styles.text_header}>${bnb / 242205133645110.0000}</Text> : null }
+
+          {address.name === "ETH" ? <Text style={styles.text_header}>${eth / 242205133645110.0000}</Text> : null }
+          
           <View style={styles.buttons}>
 
             <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
@@ -394,7 +636,7 @@ function Crypto() {
         <ScrollView horizontal={true} style={{}}>
           <View style={styles.cryptoList}>
             {
-              cryptos.map(item => (
+              user && user.wallets.map(item => (
                 <TouchableOpacity horizontal={true} style={styles.crypCont} key={item.address} onPress={() => setAddress0(item)}>
                   <Avatar.Image
                     source={{
@@ -422,7 +664,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#febf1226',
     alignItems: 'center',
     // justifyContent: 'center',
   },
@@ -450,7 +692,7 @@ const styles = StyleSheet.create({
   },
   containerInner: {
     flex: 0.7,
-    backgroundColor: '#fff',
+    backgroundColor: '#febf1226',
     alignItems: 'center',
     justifyContent: 'space-evenly',
   },

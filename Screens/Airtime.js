@@ -2,6 +2,8 @@ import React, { useEffect, Component } from "react";
 import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from '@expo/vector-icons';
+import axios from "./axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Airtime() {
     const [airAmount, setAirAmount] = React.useState("")
@@ -10,6 +12,50 @@ function Airtime() {
     const [style, setStyle] = React.useState(styles.nums)
     const [verified, setVerified] = React.useState(false)
     const [asset, setAsset] = React.useState("Fiat")
+    const [address, setAddress] = React.useState("")
+    const [pKey, setPkey] = React.useState("")
+    const [btc, setBTC] = React.useState()
+    const [bnb, setBNB] = React.useState()
+    const [eth, setETH] = React.useState()
+
+    useEffect(async () => {
+        let id = await AsyncStorage.getItem('id').then(value => value)
+        axios.post('/user', { userID: id })
+            .then((data) => {
+                setUser(data.data.response)
+            })
+            .catch(err => {
+                console.log({ Err: err })
+            })
+
+        axios.post('/cryptobalance', { asset: "BTC", address: user.wallet[0].address })
+            .then((data) => {
+                setBTC(data.data.balance)
+                console.log(data.data.balance)
+            })
+            .catch((err) => {
+                console.log({ Err: "Unable to get Crypto balance " + err })
+            })
+
+        axios.post('/cryptobalance', { asset: "BNB", address: user.wallet[1].address })
+            .then((data) => {
+                setBNB(data.data.balance)
+                console.log(data.data.balance)
+            })
+            .catch((err) => {
+                console.log({ Err: "Unable to get Crypto balance " + err })
+            })
+
+        axios.post('/cryptobalance', { asset: "ETH", address: user.wallet[2].address })
+            .then((data) => {
+                setETH(data.data.balance)
+                console.log(data.data.balance)
+            })
+            .catch((err) => {
+                console.log({ Err: "Unable to get Crypto balance " + err })
+            })
+
+    }, [])
 
     const airAmountHandler = (val) => {
         setAirAmount(val)
@@ -17,9 +63,37 @@ function Airtime() {
             setStyle(styles.error)
             setVerified(false)
         }
-        // if(val > user.balance){
-        //     setStyle(styles.error)
-        // }
+        if (asset === "Fiat" && phone.length === 0) {
+            if (val > user.balance) {
+                setStyle(styles.error)
+                setVerified(false)
+            }
+        }
+        else if (asset === "BTC" && phone.length === 0) {
+            let balance = btc / 1957 * user.rate
+
+            if (val >= balance) {
+                setStyle(styles.error)
+                setVerified(false)
+            }
+        }
+        else if (asset === "BNB" && phone.length === 0) {
+            let balance = bnb / 242205133645110.0000 * user.rate
+
+
+            if (val >= balance) {
+                setStyle(styles.error)
+                setVerified(false)
+            }
+        }
+        else if (asset === "ETH" && phone.length === 0) {
+            let balance = eth / 242205133645110.0000 * user.rate
+
+            if (val >= balance) {
+                setStyle(styles.error)
+                setVerified(false)
+            }
+        }
         else {
             setVerified(true)
             setStyle(styles.nums)
@@ -31,13 +105,61 @@ function Airtime() {
             setStyle(styles.error)
             setVerified(false)
         }
-        // if(val > user.balance){
-        //     setStyle(styles.error)
-        // }
+        if (asset === "Fiat" && phone.length === 0) {
+            if (airAmount > user.balance) {
+                setStyle(styles.error)
+                setVerified(false)
+            }
+        }
+        else if (asset === "BTC" && phone.length === 0) {
+            let balance = btc / 1957 * user.rate
+
+            if (airAmount >= balance) {
+                setStyle(styles.error)
+                setVerified(false)
+            }
+        }
+        else if (asset === "BNB" && phone.length === 0) {
+            let balance = bnb / 242205133645110.0000 * user.rate
+
+
+            if (airAmount >= balance) {
+                setStyle(styles.error)
+                setVerified(false)
+            }
+        }
+        else if (asset === "ETH" && phone.length === 0) {
+            let balance = eth / 242205133645110.0000 * user.rate
+
+            if (airAmount >= balance) {
+                setStyle(styles.error)
+                setVerified(false)
+            }
+        }
         else {
             setVerified(true)
             setStyle(styles.nums)
         }
+    }
+
+    const airTimeHandler = async () => {
+        let id = await AsyncStorage.getItem('id').then(value => value)
+        let payload = {
+            country: user.country,
+            amoutnt: airAmount,
+            phone: phone,
+            userID: id,
+            asset: asset,
+            address: address,
+            private_key: pKey
+        }
+        axios.post("/airtime", payload)
+            .then((data) => {
+                console.log({ message: data.data.message })
+            })
+            .catch(err => {
+                console.log({ Error: "Airtime error: " + err })
+            })
     }
 
     return (
@@ -65,22 +187,40 @@ function Airtime() {
             </View>
 
             <View style={styles.assets}>
-                <TouchableOpacity style={styles.asset} onPress={() => setAsset("Fiat")}>
+                <TouchableOpacity style={styles.asset} onPress={() => {
+                    setAsset("Fiat")
+                    airAmountHandler(airAmount)
+                }}>
                     {asset === "Fiat" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                     <Text>Fiat</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.asset} onPress={() => setAsset("BTC")}>
+                <TouchableOpacity style={styles.asset} onPress={() => {
+                    setAsset("BTC")
+                    setAddress(user.wallet[0].address)
+                    setPkey(user.wallet[0].privateKey)
+                    airAmountHandler(airAmount)
+                }}>
                     {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                     <Text>BTC</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.asset} onPress={() => setAsset("BNB")}>
+                <TouchableOpacity style={styles.asset} onPress={() => {
+                    setAsset("BNB")
+                    setAddress(user.wallet[1].address)
+                    setPkey(user.wallet[1].privateKey)
+                    airAmountHandler(airAmount)
+                }}>
                     {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                     <Text>BNB</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.asset} onPress={() => setAsset("ETH")}>
+                <TouchableOpacity style={styles.asset} onPress={() => {
+                    setAsset("ETH")
+                    setAddress(user.wallet[2].address)
+                    setPkey(user.wallet[2].privateKey)
+                    airAmountHandler(airAmount)
+                }}>
                     {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                     <Text>ETH</Text>
                 </TouchableOpacity>
@@ -90,7 +230,7 @@ function Airtime() {
                 <View>
                     <TouchableOpacity
                         style={styles.paymentButton}
-                        onPress={() => { }}
+                        onPress={() => airTimeHandler()}
                     >
                         <Text style={styles.paymentButtonText}>Buy</Text>
                     </TouchableOpacity>

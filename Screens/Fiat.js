@@ -15,6 +15,7 @@ import { PayWithFlutterwave } from 'flutterwave-react-native';
 import banks from "./available_banks";
 import { UserInterfaceIdiom } from "expo-constants";
 import axios from './axios'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FiatStack = createStackNavigator()
 
@@ -42,6 +43,7 @@ function Fiat({ navigation }) {
     const [acc_name, setAcc_Name] = React.useState("")
     const [camount, setCAmount] = React.useState(false)
     const [bank, setBank] = React.useState("")
+    const [bank_code, setBank_Code] = React.useState("")
 
     // Airtime
     const [airAmount, setAirAmount] = React.useState()
@@ -94,21 +96,66 @@ function Fiat({ navigation }) {
     let bs = React.createRef();
     let fall = new Animated.Value(1);
 
-    useEffect(() => {
-        setBanks2(abanks.sort((a, b) => {
-            if (a.Name < b.Name) {
-                return -1
-            }
-            if (a.Name > b.Name) {
-                return 1
-            }
-            return 0
-        }).filter((it) => it.country === "Nigeria"))
+    useEffect(async () => {
+        let id = await AsyncStorage.getItem('id').then(value => value)
+        axios.post('/user', { userID: id })
+            .then((data) => {
+                setUser(data.data.response)
+
+                console.log({ data: data.data.response })
+                return data.data.response
+            })
+            .then(resp => {
+                setBanks2(abanks.sort((a, b) => {
+                    if (a.Name < b.Name) {
+                        return -1
+                    }
+                    if (a.Name > b.Name) {
+                        return 1
+                    }
+                    return 0
+                }).filter((it) => it.country === resp.country))
+            })
+            .catch(err => {
+
+            })
+
     }, [])
 
 
-    const handleOnRedirect = (data) => {
+    const handleOnRedirect = async (data) => {
+        let id = await AsyncStorage.getItem('id').then(value => value)
+
         console.log(data);
+        let payload = {
+            amount: amount,
+            userID: id,
+            reference: data.tx_ref
+        }
+        if (data.status === "successful") {
+            axios.post('/fundaccount', payload)
+                .then(data => {
+                    if (data.data.id) {
+                        console.log("Successfully funded your fiat wallet")
+                    }
+                    return data
+                })
+                .then(res => {
+                    axios.post('/user', { userID: id })
+                        .then((data) => {
+                            setUser(data.data.response)
+                            setPage("Fiat")
+                            console.log({ data: data.data.response })
+                            return data.data.response
+                        })
+                        .catch(err => {
+
+                        })
+                })
+                .catch(err => {
+                    console.log("Failure to funded your fiat wallet: " + err)
+                })
+        }
     };
 
     if (page === "Airtime") {
@@ -216,10 +263,10 @@ function Fiat({ navigation }) {
                                         tx_ref: "XXXXXXXXX",
                                         authorization: 'FLWPUBK-b73d166127557d9fc24d219eb9ac96e2-X',
                                         customer: {
-                                            email: 'customer-email@example.com'
+                                            email: user.email
                                         },
                                         amount: amount,
-                                        currency: "GBP",
+                                        currency: user.currency,
                                         payment_options: 'card'
                                     }}
                                     customButton={(props) => (
@@ -247,7 +294,7 @@ function Fiat({ navigation }) {
 
     const amountHandler = (val) => {
         if (user.balance >= 100) {
-            if (user.balance >= wamount) {
+            if (user.balance >= val) {
                 setWAmount(val)
                 setCAmount(true)
             }
@@ -288,6 +335,7 @@ function Fiat({ navigation }) {
 
     const bankHandler = (val) => {
         setBank(val)
+        setBank_Code(val.Code)
         setPage("Send")
         if (acc_num === 10) {
             // toast.info("Please wait while we fetch account name")
@@ -315,6 +363,42 @@ function Fiat({ navigation }) {
 
     const searchHandler = (val) => {
         setBanks2(abanks.filter(it => it.Name.indexOf(val) !== -1).filter((it) => it.country === "Nigeria"))
+    }
+
+    const send = async () => {
+        let id = await AsyncStorage.getItem('id').then(value => value)
+
+        let payload = {
+            bank_code,
+            account_number: acc_num,
+            amount: wamount,
+            rate: user.rate,
+            currency: user.currency,
+            userID: id,
+
+        }
+        axios.post('/withdraw', payload)
+            .then(data => {
+                if (data.data.id) {
+                    console.log("Successfully withdraw from your fiat wallet")
+                }
+                return data
+            })
+            .then(res => {
+                axios.post('/user', { userID: id })
+                    .then((data) => {
+                        setUser(data.data.response)
+                        setPage("Fiat")
+                        console.log({ data: data.data.response })
+                        return data.data.response
+                    })
+                    .catch(err => {
+
+                    })
+            })
+            .catch(err => {
+                console.log("Failure to withdraw from your fiat wallet: " + err)
+            })
     }
 
 
@@ -397,7 +481,7 @@ function Fiat({ navigation }) {
                         <View>
                             <TouchableOpacity
                                 style={styles.paymentButton}
-                                onPress={() => { }}
+                                onPress={() => { send() }}
                             >
                                 <Text style={styles.paymentButtonText}>Withdraw</Text>
                             </TouchableOpacity>
@@ -417,7 +501,7 @@ function Fiat({ navigation }) {
 
             <FlatList
                 keyExtractor={(item) => item.reference}
-                data={txs}
+                data={user.transactions}
                 renderItem={({ item }) => (
                     <TouchableOpacity style={styles.txTouch} onPress={() => txHandler(item.name)}>
                         <Avatar.Image
@@ -474,7 +558,7 @@ function Fiat({ navigation }) {
 
                     <View style={styles.header}>
                         <Text style={styles.text_wallet}>Fiat Wallet</Text>
-                        <Text style={styles.text_header}>$100.00</Text>
+                        <Text style={styles.text_header}>${user.balance}</Text>
                         <View style={styles.buttons}>
 
                             <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Fund")}>
@@ -547,7 +631,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#febf1226',
         alignItems: 'center',
         // justifyContent: 'center',
     },
@@ -615,7 +699,7 @@ const styles = StyleSheet.create({
     },
     panel: {
         padding: 20,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#febf1226',
         paddingTop: 20,
         height: 1000,
         // borderTopLeftRadius: 20,

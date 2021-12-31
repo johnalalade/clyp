@@ -11,21 +11,26 @@ import Animated from 'react-native-reanimated';
 import { FlatList } from "react-native-gesture-handler";
 
 function SignUp2({ navigation }) {
-    const { email, phone, country } = React.useContext(AuthContext)
+    const { email, phone, country, currency, rate } = React.useContext(AuthContext)
     const [myCountry, setMyCountry] = React.useState("Nigeria")
+    const [myCurrency, setCurrency] = React.useState("NGN")
+    const [myRate, setRate] = React.useState(480)
+
     const [countries, setCountries] = React.useState([
-        { name: 'Nigeria', code: 'NG' },
-        { name: 'Ghana', code: 'GH' },
-        { name: 'Kenya', code: 'KE' },
-        { name: 'Uganda', code: 'UG' },
-        { name: 'Tanzania, United Republic of', code: 'TZ' },
-        { name: 'South Africa', code: 'ZA' },
-        { name: 'Cote D\'Ivoire', code: 'CI' },
+        { name: 'Nigeria', code: 'NG', currency: "NGN" },
+        { name: 'Ghana', code: 'GH', currency: "GHS" },
+        { name: 'Kenya', code: 'KE', currency: "KES" },
+        // { name: 'Uganda', code: 'UG', currency: "" },
+        { name: 'Tanzania, United Republic of', code: 'TZ', currency: "TZS" },
+        { name: 'South Africa', code: 'ZA', currency: "ZAR" },
+        // { name: 'Cote D\'Ivoire', code: 'CI', currency: "" },
     ])
 
     const countryHandler = (val) => {
-        setMyCountry(val)
-        country(val)
+        setMyCountry(val.name)
+        country(val.name)
+        currency(val.currency)
+        rate(val.rate)
         bs.current.snapTo(2)
     }
 
@@ -37,7 +42,7 @@ function SignUp2({ navigation }) {
             </View>
             <ScrollView>
                 {countries.map(item => (
-                    <TouchableOpacity key={item.code} style={(myCountry === item.name) ? styles.countryTextSelected : styles.countryText} onPress={() => countryHandler(item.name)}><Text>{item.name}</Text></TouchableOpacity>
+                    <TouchableOpacity key={item.code} style={(myCountry === item.name) ? styles.countryTextSelected : styles.countryText} onPress={() => countryHandler(item)}><Text>{item.name}</Text></TouchableOpacity>
                 ))}
             </ScrollView>
             {/* <FlatList 

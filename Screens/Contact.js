@@ -1,3 +1,4 @@
+import axios from "./axios";
 import React, { Component } from "react";
 import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -6,6 +7,18 @@ function Contact () {
     const [verified, setVerified] = React.useState(false)
     const [title, setTitle] = React.useState("")
     const [details, setDetails] = React.useState("")
+    const [user, setUser] = React.useState()
+
+    useEffect(async () => {
+        let id = await AsyncStorage.getItem('id').then(value => value)
+        axios.post('/user', { userID: id })
+            .then((data) => {
+                setUser(data.data.response)
+            })
+            .catch(err => {
+                console.log({ Err: err })
+            })
+    }, [])
 
     const titleHandler = (val) => {
         setTitle(val)
@@ -19,6 +32,23 @@ function Contact () {
             setVerified(false)
         }
     }
+
+    const submit = () => {
+        let request = {
+            support: details,
+            title: title,
+            id: user._id,
+            name: user.name
+        }
+        axios.post('/support', request)
+        .then(data => {
+            console.log({messsage: data.data.response})
+        })
+        .catch(err => {
+            console.log({messsage: "Unable to send request for support: "+err})
+        })
+    }
+
 
         return (
             <View style={styles.container}>
@@ -49,7 +79,7 @@ function Contact () {
                     <View>
                         <TouchableOpacity
                             style={styles.contactButton}
-                            onPress={() => { }}
+                            onPress={() => submit()}
                         >
                             <Text style={styles.contactButtonText}>Send</Text>
                         </TouchableOpacity>
