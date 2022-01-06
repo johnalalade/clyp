@@ -44,13 +44,13 @@ const HomeStackScreen = () => (
     <Tabs.Screen name="Fiat" component={Fiat} options={{
       tabBarIcon: ({ focused, size }) => (
         <FontAwesome5 name="money-bill-wave" size={size} color={focused ? '#febf12' : '#ccc'} />
-      ), headerShown: false
+      ), headerShown: false, tabBarLabelStyle: {color: "#febf12"}
     }} />
 
     <Tabs.Screen name="Crypto" component={Crypto} options={{
       tabBarIcon: ({ focused, size }) => (
         <FontAwesome5 name="bitcoin" size={size} color={focused ? '#febf12' : '#ccc'} />
-      ), headerShown: false
+      ), headerShown: false, tabBarLabelStyle: {color: "#febf12"}
     }} />
 
   </Tabs.Navigator>
@@ -82,6 +82,9 @@ export default function App() {
   const [country, setCountry] = React.useState("Nigeria")
   const [currency, setCurrency] = React.useState("NGN")
   const [rate, setRate] = React.useState(480)
+  const [rate2, setRate2] = React.useState(500)
+  const [code, setCode] = React.useState("NG")
+  const [bvn, setBVN] = React.useState("")
 
   const authContext =
   {
@@ -104,6 +107,7 @@ export default function App() {
             await AsyncStorage.setItem('country', data.data.response.country)
             // await AsyncStorage.setItem('currency', data.data.response.currency)
             // await AsyncStorage.setItem('rate', data.data.response.rate)
+            setCountry(data.data.response.country)
 
             setLoggedIn(true)
           }
@@ -124,7 +128,10 @@ export default function App() {
         password: password,
         country: country,
         currency: currency,
-        rate: rate
+        rate: rate,
+        rate2: rate2,
+        code: code,
+        bvn: bvn,
       }
 
       console.log(data)
@@ -180,12 +187,23 @@ export default function App() {
     },
     country: (val) => {
       setCountry(val)
+      AsyncStorage.setItem("country", val)
     },
+    count: country,
     currency: (val) => {
       setCurrency(val)
     },
     rate: (val) => {
       setRate(val)
+    },
+    rate2: (val) => {
+      setRate2(val)
+    },
+    code: (val) => {
+      setCode(val)
+    },
+    bvn: (val) => {
+      setBVN(val)
     }
   }
 
@@ -196,7 +214,15 @@ export default function App() {
       <NavigationContainer>
         {loggedIn ?
 
-          <Drawer.Navigator >
+          <Drawer.Navigator screenOptions={{drawerItemStyle: {backgroundColor: "#febf1226"
+          },
+          drawerStyle: {
+            backgroundColor: "#ffdd7e",
+            // width: 240,
+          },
+          drawerType: 'front',
+          drawerActiveTintColor: "white",
+          }} >
             {/* <View style={styles.drawerContent}>
               <View style={styles.userInfoSection}>
                 <View style={{ flexDirection: 'row', marginTop: 15 }}>
@@ -222,7 +248,6 @@ export default function App() {
             }} /> */}
 
             <Drawer.Screen name="Home" component={HomeStackScreen} options={{ title: "Home" }} options={{
-              drawerActiveBackgroundColor: "", drawerContentContainerStyle: {}, drawerContentStyle: {},
               drawerIcon: ({ focused, size }) => (
                 <AntDesign
                   name="home"
@@ -231,19 +256,17 @@ export default function App() {
               )
             }} />
 
-            {country === "Nigeria" || country === "Ghana" && <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Settings" }} options={{
-              drawerActiveBackgroundColor: "", drawerContentContainerStyle: {}, drawerContentStyle: {},
+            {(country === "Nigeria" || country === "Ghana") ? <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Settings" }} options={{
               drawerIcon: ({ focused, size }) => (
                 <Feather
                   name="phone"
                   size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
-            }} />}
+            }} /> : null}
 
             <Drawer.Screen name="Settings" component={Settings} options={{
               title: "Settings",
-              drawerActiveBackgroundColor: "", drawerContentContainerStyle: {}, drawerContentStyle: {},
               drawerIcon: ({ focused, size }) => (
                 <Ionicons
                   name="settings"
@@ -253,7 +276,6 @@ export default function App() {
             }} />
 
             <Drawer.Screen name="Contact Us" component={Contact} options={{ title: "Coontact Us" }} options={{
-              drawerActiveBackgroundColor: "", drawerContentContainerStyle: {}, drawerContentStyle: {},
               drawerIcon: ({ focused, size }) => (
                 <Ionicons
                   name="chatbubbles-sharp"

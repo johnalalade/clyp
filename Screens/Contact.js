@@ -1,5 +1,5 @@
 import axios from "./axios";
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
@@ -95,7 +95,7 @@ function Contact () {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#febf1226',
         padding: 20,
     },
     airText: {

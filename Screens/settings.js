@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Avatar } from "react-native-paper";
@@ -10,20 +10,62 @@ import { Entypo } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from './axios';
+import Hyperlink from 'react-native-hyperlink';
 
 function Settings({ navigation }) {
 
   const { signOut } = React.useContext(AuthContext)
+
   const [page, setPage] = React.useState("Settings")
   const [name, setName] = React.useState()
   const [username, setUsername] = React.useState()
   const [phone, setPhone] = React.useState()
   const [user, setUser] = React.useState()
 
+  useEffect(async () => {
+    let id = await AsyncStorage.getItem('id').then(value => value)
+    axios.post('/user', { userID: id })
+      .then((data) => {
+        setUser(data.data.response)
+        setName(data.data.response.name)
+        setUsername(data.data.response.username)
+        setPhone(data.data.response.phone)
+        console.log({ data: data.data.response })
+        return data.data.response
+      })
+      .catch(err => {
+        console.log({ Err: err })
+      })
+  }, [])
+
+  const submit = async () => {
+    let id = await AsyncStorage.getItem('id').then(value => value)
+
+    let payload = {
+      name: name,
+      username: username,
+      phone: phone,
+      userID: id
+    }
+
+    if (payload.name === "" || payload.username === "" || payload.phone === "") {
+      console.log({ Nope: "All field is required" })
+      return false
+    }
+    else {
+      axios.post('/update', payload)
+        .then(data => {
+          console.log(data.data.response)
+          setPage("Settings")
+        })
+    }
+  }
+
   if (page === "Profile") {
     return (
       <View style={styles.airContainer}>
-        <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
+        <TouchableOpacity onPress={() => setPage("Settings")} style={styles.cancel}>
           <Feather name="x" size={24} color="black" />
         </TouchableOpacity>
 
@@ -42,6 +84,7 @@ function Settings({ navigation }) {
             style={styles.nums}
             placeholder="100"
             onChangeText={(val) => setName(val)}
+            defaultValue={name}
           />
         </View>
 
@@ -51,6 +94,7 @@ function Settings({ navigation }) {
             style={styles.nums}
             placeholder="100"
             onChangeText={(val) => setUsername(val)}
+            defaultValue={username}
           />
         </View>
 
@@ -60,6 +104,7 @@ function Settings({ navigation }) {
             style={styles.nums}
             placeholder="200"
             onChangeText={(val) => setPhone(val)}
+            defaultValue={phone}
             keyboardType="numeric"
             returnKeyType="done"
           />
@@ -68,7 +113,7 @@ function Settings({ navigation }) {
         <View>
           <TouchableOpacity
             style={styles.profileButton}
-            onPress={() => { }}
+            onPress={() => { submit() }}
           >
             <Text style={styles.profileButtonText}>Update</Text>
           </TouchableOpacity>
@@ -93,27 +138,32 @@ function Settings({ navigation }) {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.options} onPress={() => setPage("Profile")}>
-          <View style={styles.optionView}>
-            <View style={styles.optionDet}>
-              <MaterialIcons name="privacy-tip" size={24} color="black" />
-              <Text style={styles.optionText}>Privacy Policy</Text>
+        <Hyperlink linkDefault={true} linkStyle={{ backgroundColor: null }} linkText="Privacy Policy" >
+          <View style={styles.options}>
+            <View style={styles.optionView}>
+              <View style={styles.optionDet}>
+                <MaterialIcons name="privacy-tip" size={24} color="black" />
+                <Text style={styles.optionText}>https://www.uniconne.com</Text>
+              </View>
+              <Ionicons name="chevron-forward-outline" size={24} color="black" />
             </View>
-            <Ionicons name="chevron-forward-outline" size={24} color="black" />
           </View>
-        </TouchableOpacity>
+        </Hyperlink>
 
-        <TouchableOpacity style={styles.options} onPress={() => setPage("Profile")}>
-          <View style={styles.optionView}>
-            <View style={styles.optionDet}>
-              <Entypo name="info-with-circle" size={24} color="black" />
-              <Text style={styles.optionText}>About Clyp</Text>
+
+        <Hyperlink linkStyle={{ backgroundColor: null }} linkDefault={true} linkText="About Clyp">
+          <View style={styles.options}>
+            <View style={styles.optionView}>
+              <View style={styles.optionDet}>
+                <Entypo name="info-with-circle" size={24} color="black" />
+                <Text style={styles.optionText}>https://www.clyp.com</Text>
+              </View>
+              <Ionicons name="chevron-forward-outline" size={24} color="black" />
             </View>
-            <Ionicons name="chevron-forward-outline" size={24} color="black" />
           </View>
-        </TouchableOpacity>
+        </Hyperlink>
 
-        <TouchableOpacity style={styles.options} onPress={() => AsyncStorage.clear()}>
+        <TouchableOpacity style={styles.options} onPress={() => signOut()}>
           <View style={styles.optionView}>
             <View style={styles.optionDet}>
               <AntDesign name="logout" size={24} color="black" />

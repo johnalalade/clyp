@@ -1,15 +1,17 @@
-import React, { useState, useEffect, Component } from "react";
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ScrollView, Image } from "react-native";
+import React, { useState, useEffect, Component, } from "react";
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ScrollView, Image, RefreshControl } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 // import QRCode from 'react-native-qrcode-svg';
 import { Avatar, Snackbar } from "react-native-paper";
 import { AntDesign } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Foundation } from '@expo/vector-icons';
 import axios from "./axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import RNQRGenerator from "rn-qr-generator";
 
 function Crypto() {
 
@@ -22,6 +24,14 @@ function Crypto() {
   const [verifiedSend, setVerifiedSend] = React.useState(false)
   const [style, setStyle] = React.useState(styles.address)
 
+  const [images, setImage] = React.useState([
+    require('../assets/bitcoin.png'), require('../assets/binance.png'), require('../assets/ethereum.png')
+  ])
+  const [ix, setIx] = React.useState(0)
+
+  const [cleanup, setCleanUp] = React.useState(0)
+  const [refreshing, setRefreshing] = React.useState(false)
+
   const [qr, setQR] = useState(null)
   const [rAddress, setRAddress] = React.useState("")
   const [rAmount, setRAmount] = React.useState(0)
@@ -31,6 +41,7 @@ function Crypto() {
   const [bnb, setBNB] = React.useState()
   const [eth, setETH] = React.useState()
   const [user, setUser] = React.useState()
+
 
 
   const [address, setAddress0] = React.useState({
@@ -70,7 +81,7 @@ function Crypto() {
       .then((data) => {
         setUser(data.data.response)
         setAddress0(data.data.response.wallets[0])
-        console.log({data: data.data.response}) 
+        console.log({ data: data.data.response })
         return data.data.response
       })
       .then(user => {
@@ -83,7 +94,7 @@ function Crypto() {
             console.log({ Err: "Unable to get BTC balance " + err })
           })
 
-    axios.post('/cryptobalance', { asset: "BNB", address: user.wallets[1].address })
+        axios.post('/cryptobalance', { asset: "BNB", address: user.wallets[1].address })
           .then((data) => {
             setBNB(data.data.balance)
             console.log(data.data.balance)
@@ -92,9 +103,10 @@ function Crypto() {
             console.log({ Err: "Unable to get BNB balance " + err })
           })
 
-    axios.post('/cryptobalance', { asset: "ETH", address: user.wallets[2].address })
+        axios.post('/cryptobalance', { asset: "ETH", address: user.wallets[2].address })
           .then((data) => {
             setETH(data.data.balance)
+            setRefreshing(false)
             console.log(data.data.balance)
           })
           .catch((err) => {
@@ -103,10 +115,11 @@ function Crypto() {
       })
       .catch(err => {
         console.log({ Err: err })
+        setRefreshing(false)
       })
 
     askForCameraPermission();
-  }, [])
+  }, [cleanup])
 
   // What happens when we scan the bar code
   const handleBarCodeScanned = ({ type, data }) => {
@@ -125,7 +138,7 @@ function Crypto() {
   // const [verified, setVerified] = React.useState(false)
 
   const airAmountHandler = (val) => {
-    setAirAmount(val)
+    setAirAmount(parseInt(val))
     if (val < 100) {
       setStyle(styles.error)
       setVerified(false)
@@ -145,8 +158,8 @@ function Crypto() {
   // Amounts
 
   const amountHandler = (val) => {
-    setAmount(val - ((2 / 100) * val))
-    let value = val - ((2 / 100) * val)
+    setAmount(parseInt(val) - ((2 / 100) * val))
+    let value = parseInt(val) - ((2 / 100) * val)
 
     if (address.name === "BTC") {
       let balance = btc / 1957
@@ -179,8 +192,8 @@ function Crypto() {
   }
 
   const amountHandlerBuy = (val) => {
-    setAmount(val - ((2 / 100) * val))
-    let value = val - ((2 / 100) * val)
+    setAmount(parseInt(val) - ((2 / 100) * val))
+    let value = parseInt(val) - ((2 / 100) * val)
 
     if (address.name === "BTC") {
       let balance = btc / 1957
@@ -214,7 +227,7 @@ function Crypto() {
 
   const sendamount = (val) => {
 
-    setRAmount(val)
+    setRAmount(parseInt(val))
     if (address.name === "BTC") {
       let balance = btc / 1957
 
@@ -264,8 +277,14 @@ function Crypto() {
     }
     axios.post('/sendcrypto', payload)
       .then(data => {
-        console.log({ Mymessage: "Sent $" + payload.amount + " " + payload.asset })
-        console.log({ message: data.data.message })
+        if (data.data.id) {
+          console.log({ Mymessage: "Sent $" + payload.amount + " " + payload.asset })
+          console.log({ message: data.data.message })
+        }
+        else {
+          console.log({ othermessage: data.data.message })
+        }
+
 
       })
       .catch(err => {
@@ -284,8 +303,13 @@ function Crypto() {
 
     axios.post('/sellcrypto', payload)
       .then(data => {
-        console.log({ Mymessage: "Sold $" + payload.amount + " " + payload.asset })
-        console.log({ message: data.data.message })
+        if (data.data.id) {
+          console.log({ Mymessage: "Sold $" + payload.amount + " " + payload.asset })
+          console.log({ message: data.data.message })
+        }
+        else {
+          console.log({ othermessage: data.data.message })
+        }
 
       })
       .catch(err => {
@@ -304,8 +328,13 @@ function Crypto() {
 
     axios.post('/buycrypto', payload)
       .then(data => {
-        console.log({ Mymessage: "Bought $" + payload.amount + " " + payload.asset })
-        console.log({ message: data.data.message })
+        if (data.data.id) {
+          console.log({ Mymessage: "Bought $" + payload.amount + " " + payload.asset })
+          console.log({ message: data.data.message })
+        }
+        else {
+          console.log({ othermessage: data.data.message })
+        }
 
       })
       .catch(err => {
@@ -402,6 +431,7 @@ function Crypto() {
         </TouchableOpacity>
 
         <View>
+          <Text style={styles.convertTop}>Send {address.name}</Text>
           <Text style={styles.addressText}>{address.name} Address:</Text>
           <View style={styles.addressInput}>
             <TextInput
@@ -449,8 +479,19 @@ function Crypto() {
 
         <View>
 
-          <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
+          <Image source={{ uri: qr }} style={{ width: 400, height: 400 }} />
 
+          <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
+            // setString(address.address)
+            RNQRGenerator.generate({
+              value: address.address,
+              height: 400,
+              width: 400,
+              base64: true
+            }).then(resp => {
+              setQR(resp.uri)
+              console.log({ resp })
+            })
           }}>
 
             <Text style={styles.cryptoAddress}>
@@ -557,56 +598,72 @@ function Crypto() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={{ flex: 1 }} refreshControl={
+      <RefreshControl refreshing={refreshing}
+        onRefresh={() => {
+          setRefreshing(true)
+          setCleanUp(cleanup + 1)
 
-      <View style={styles.containerInner}>
+        }} />
+    }>
+      <View style={styles.container}>
 
-        <View style={styles.header}>
-          <Text style={styles.text_wallet}>{address.name}</Text>
-          {/* <Text style={styles.text_header}>${address.name === "BNB" && bnb / 242205133645110.0000 || address.name === "ETH" && eth / 242205133645110.0000}</Text> */}
+        {/* <View style={styles.container}> */}
+        <View style={styles.containerInner}>
 
-          {address.name === "BTC" ? <Text style={styles.text_header}>${btc / 1957}</Text> : null }
+          <View style={styles.header}>
+            <Text style={styles.text_wallet}>{address.name}</Text>
+            {/* <Text style={styles.text_header}>${address.name === "BNB" && bnb / 242205133645110.0000 || address.name === "ETH" && eth / 242205133645110.0000}</Text> */}
+            <Avatar.Image
+              source={
+                images[ix]
+              }
+              style={{ backgroundColor: "white" }}
+              size={40}
+            />
 
-          {address.name === "BNB" ? <Text style={styles.text_header}>${bnb / 242205133645110.0000}</Text> : null }
+            {address.name === "BTC" ? <Text style={styles.text_header}>${btc / 1957}</Text> : null}
 
-          {address.name === "ETH" ? <Text style={styles.text_header}>${eth / 242205133645110.0000}</Text> : null }
-          
-          <View style={styles.buttons}>
+            {address.name === "BNB" ? <Text style={styles.text_header}>${bnb / 242205133645110.0000}</Text> : null}
 
-            <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
-              <View style={styles.button}>
+            {address.name === "ETH" ? <Text style={styles.text_header}>${eth / 242205133645110.0000}</Text> : null}
 
-                <Feather name="send" size={20} color="whitesmoke" />
-              </View>
-              <Text style={styles.buttonText}>
-                Fiat to {address.name}
-              </Text>
+            <View style={styles.buttons}>
 
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
+                <View style={styles.button}>
+                  <Entypo name="cycle" size={24} color="whitesmoke" />
+                  {/* <Feather name="send" size={20} color="whitesmoke" /> */}
+                </View>
+                <Text style={styles.buttonText}>
+                  Fiat to {address.name}
+                </Text>
 
-            <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
-              <View style={styles.button}>
+              </TouchableOpacity>
 
-                <Feather name="send" size={20} color="whitesmoke" />
-              </View>
-              <Text style={styles.buttonText}>
-                Send {address.name}
-              </Text>
+              <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
+                <View style={styles.button}>
 
-            </TouchableOpacity>
+                  <Feather name="send" size={20} color="whitesmoke" />
+                </View>
+                <Text style={styles.buttonText}>
+                  Send {address.name}
+                </Text>
 
-            <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Sell")}>
-              <View style={styles.button}>
+              </TouchableOpacity>
 
-                <Feather name="send" size={20} color="whitesmoke" />
-              </View>
-              <Text style={styles.buttonText}>
-                {address.name} to Fiat
-              </Text>
+              <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Sell")}>
+                <View style={styles.button}>
+                  <Entypo name="cycle" size={24} color="whitesmoke" />
+                  {/* <Feather name="send" size={20} color="whitesmoke" /> */}
+                </View>
+                <Text style={styles.buttonText}>
+                  {address.name} to Fiat
+                </Text>
 
-            </TouchableOpacity>
+              </TouchableOpacity>
 
-            {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
+              {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
               <View style={styles.button}>
 
                 <Feather name="send" size={20} color="whitesmoke" />
@@ -616,44 +673,48 @@ function Crypto() {
               </Text>
 
             </TouchableOpacity> */}
+            </View>
           </View>
+
+
         </View>
 
+        <View style={styles.cryptos}>
+          <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
+            setPage("Receive")
+          }}>
+
+            <Text style={styles.cryptoAddress}>
+              {address.address}
+            </Text>
+            <AntDesign name="qrcode" size={24} color="black" />
+          </TouchableOpacity>
+
+          <ScrollView horizontal={true} style={{}}>
+            <View style={styles.cryptoList}>
+              {
+                user && user.wallets.map((item, ix) => (
+                  <TouchableOpacity horizontal={true} style={styles.crypCont} key={item.address} onPress={() => { setAddress0(item); setIx(ix) }}>
+                    <Avatar.Image
+                      source={
+                        images[ix]
+                      }
+                      style={{ backgroundColor: "white" }}
+                      size={40}
+                    />
+                    <Text style={styles.crypText}>{item.name}</Text>
+                  </TouchableOpacity>
+                ))
+              }
+            </View>
+          </ScrollView>
+
+        </View>
+        {/* </View> */}
+
 
       </View>
-
-      <View style={styles.cryptos}>
-        <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
-          setPage("Receive")
-        }}>
-
-          <Text style={styles.cryptoAddress}>
-            {address.address}
-          </Text>
-          <AntDesign name="qrcode" size={24} color="black" />
-        </TouchableOpacity>
-
-        <ScrollView horizontal={true} style={{}}>
-          <View style={styles.cryptoList}>
-            {
-              user && user.wallets.map(item => (
-                <TouchableOpacity horizontal={true} style={styles.crypCont} key={item.address} onPress={() => setAddress0(item)}>
-                  <Avatar.Image
-                    source={{
-                      uri: 'https://api.adorable.io/avatars/50/abott@adorable.png'
-                    }}
-                    size={30}
-                  />
-                  <Text style={styles.crypText}>{item.name}</Text>
-                </TouchableOpacity>
-              ))
-            }
-          </View>
-        </ScrollView>
-
-      </View>
-
-    </View>
+    </ScrollView>
   )
 }
 
@@ -666,15 +727,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#febf1226',
     alignItems: 'center',
-    // justifyContent: 'center',
   },
 
   containerSend: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 20
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    backgroundColor: '#febf1226',
+
   },
   addressInput: {
     display: "flex",
@@ -691,8 +749,7 @@ const styles = StyleSheet.create({
     width: "90%"
   },
   containerInner: {
-    flex: 0.7,
-    backgroundColor: '#febf1226',
+
     alignItems: 'center',
     justifyContent: 'space-evenly',
   },
@@ -739,7 +796,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#febf12",
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    borderColor: "whitesmoke",
+    borderWidth: 2,
   },
   buttonText: {
     fontWeight: "bold",
@@ -750,16 +809,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingTop: 20,
     height: 1000,
-    // borderTopLeftRadius: 20,
-    // borderTopRightRadius: 20,
-    // shadowColor: '#000000',
-    // shadowOffset: {width: 0, height: 0},
-    // shadowRadius: 5,
-    // shadowOpacity: 0.4,
+
   },
   pheader: {
-    // flex: 1,
-    // justifyContent: 'flex-end',
     paddingHorizontal: 20,
     paddingBottom: 5,
     backgroundColor: '#FFFFFF'
@@ -829,12 +881,17 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     // alignItems: "center",
+    backgroundColor: "#febf1226",
     width: "100%",
-    flex: 0.3
+    flex: 1
   },
   cryptoAddress: {
 
     // width: "100%"
+  },
+  crypText: {
+    fontWeight: "600",
+    marginTop: 10,
   },
   cryptoAddressTouch: {
     paddingVertical: 20,
@@ -849,7 +906,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: 400,
     alignItems: "center",
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
+    marginTop: 50,
+    marginBottom: 30
   },
   crypCont: {
     display: "flex",

@@ -5,13 +5,15 @@ import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function SignUp3({ navigation }) {
-    const { signUp, password, cpassword } = React.useContext(AuthContext)
+    const { signUp, password, cpassword, bvn, count } = React.useContext(AuthContext)
     const [secE, setSecE] = React.useState(true)
+    const [isNainja, setIsNainja] = React.useState(AsyncStorage.getItem('country').then(value => value))
 
     const sec = () => setSecE(!secE)
-    
+
     return (
         <View style={styles.container}>
 
@@ -25,7 +27,41 @@ function SignUp3({ navigation }) {
                     style={styles.footer}
                 >
                     <ScrollView>
-                        
+
+                        {(count === "Nigeria") ? <View>
+                            <Text style={[styles.text_footer, {
+                                marginTop: 35
+                            }]}>BVN</Text>
+                            <View style={styles.action}>
+                                <FontAwesome name="bank" size={20} color="#05375a" />
+                                <TextInput
+                                    placeholder="Bank Verification Number"
+                                    // secureTextEntry={secE}
+                                    style={styles.textInput}
+                                    autoCapitalize="none"
+                                    onChangeText={(val) => bvn(val)}
+                                />
+                                <TouchableOpacity
+                                    onPress={sec}
+                                >
+                                    {secE ?
+                                        <Feather
+                                            name="eye-off"
+                                            color="grey"
+                                            size={20}
+                                        />
+                                        :
+                                        <Feather
+                                            name="eye"
+                                            color="grey"
+                                            size={20}
+                                        />
+                                    }
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                            : null}
+
                         <Text style={[styles.text_footer, {
                             marginTop: 35
                         }]}>Password</Text>
@@ -99,9 +135,9 @@ function SignUp3({ navigation }) {
                             <Text style={styles.color_textPrivate}>
                                 By signing up you agree to our
                             </Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Terms of service</Text>
-                            <Text style={styles.color_textPrivate}>{" "}and</Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Privacy policy</Text>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>Terms of service</Text>
+                            <Text style={styles.color_textPrivate}>and</Text>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>Privacy policy</Text>
                         </View>
                         <View style={styles.button}>
 
@@ -119,7 +155,7 @@ function SignUp3({ navigation }) {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() =>  signUp()}
+                                onPress={() => signUp()}
                                 style={[styles.signIn, {
                                     borderColor: '#FF6347',
                                     borderWidth: 1,
@@ -135,8 +171,6 @@ function SignUp3({ navigation }) {
                 </Animatable.View>
             </View>
 
-            {/* <Button title="Previous" onPress={() => navigation.goBack()} />
-            <Button title="Sign Up" onPress={() => signUp()} /> */}
         </View>
     )
 
@@ -150,7 +184,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     header: {
-        flex: 0.5,
+        flex: 0.32,
         justifyContent: 'flex-end',
         paddingHorizontal: 20,
         paddingBottom: 50

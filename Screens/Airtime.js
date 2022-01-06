@@ -1,67 +1,77 @@
 import React, { useEffect, Component } from "react";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import { StyleSheet, Text, View, TextInput, Alert, Modal } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from '@expo/vector-icons';
 import axios from "./axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function Airtime() {
+function Airtime({ navigation }) {
     const [airAmount, setAirAmount] = React.useState("")
     const [phone, setPhone] = React.useState("")
     const [user, setUser] = React.useState()
+    const [country, setCountry] = React.useState()
     const [style, setStyle] = React.useState(styles.nums)
     const [verified, setVerified] = React.useState(false)
-    const [asset, setAsset] = React.useState("Fiat")
+    const [asset, setAsset] = React.useState("FIAT")
     const [address, setAddress] = React.useState("")
     const [pKey, setPkey] = React.useState("")
     const [btc, setBTC] = React.useState()
     const [bnb, setBNB] = React.useState()
     const [eth, setETH] = React.useState()
+    const [modalOpen, setModalOpen] = React.useState(true)
 
     useEffect(async () => {
         let id = await AsyncStorage.getItem('id').then(value => value)
         axios.post('/user', { userID: id })
             .then((data) => {
                 setUser(data.data.response)
+                console.log({ data: data.data.response })
+                return data.data.response
+            })
+            .then(user => {
+                axios.post('/cryptobalance', { asset: "BTC", address: user.wallets[0].address })
+                    .then((data) => {
+                        setBTC(data.data.balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get BTC balance " + err })
+                    })
+
+                axios.post('/cryptobalance', { asset: "BNB", address: user.wallets[1].address })
+                    .then((data) => {
+                        setBNB(data.data.balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get BNB balance " + err })
+                    })
+
+                axios.post('/cryptobalance', { asset: "ETH", address: user.wallets[2].address })
+                    .then((data) => {
+                        setETH(data.data.balance)
+                        // setRefreshing(false)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get ETH balance " + err })
+                    })
             })
             .catch(err => {
                 console.log({ Err: err })
             })
 
-        axios.post('/cryptobalance', { asset: "BTC", address: user.wallet[0].address })
-            .then((data) => {
-                setBTC(data.data.balance)
-                console.log(data.data.balance)
-            })
-            .catch((err) => {
-                console.log({ Err: "Unable to get Crypto balance " + err })
-            })
-
-        axios.post('/cryptobalance', { asset: "BNB", address: user.wallet[1].address })
-            .then((data) => {
-                setBNB(data.data.balance)
-                console.log(data.data.balance)
-            })
-            .catch((err) => {
-                console.log({ Err: "Unable to get Crypto balance " + err })
-            })
-
-        axios.post('/cryptobalance', { asset: "ETH", address: user.wallet[2].address })
-            .then((data) => {
-                setETH(data.data.balance)
-                console.log(data.data.balance)
-            })
-            .catch((err) => {
-                console.log({ Err: "Unable to get Crypto balance " + err })
-            })
-
     }, [])
 
     const airAmountHandler = (val) => {
-        setAirAmount(val)
+        setAirAmount(parseInt(val))
         if (val < 100 && phone.length === 0) {
             setStyle(styles.error)
             setVerified(false)
+        }
+        else {
+            setStyle(styles.nums)
+            setVerified(true)
         }
         if (asset === "Fiat" && phone.length === 0) {
             if (val > user.balance) {
@@ -105,7 +115,7 @@ function Airtime() {
             setStyle(styles.error)
             setVerified(false)
         }
-        if (asset === "Fiat" && phone.length === 0) {
+        else if (asset === "Fiat" && phone.length === 0) {
             if (airAmount > user.balance) {
                 setStyle(styles.error)
                 setVerified(false)
@@ -145,8 +155,8 @@ function Airtime() {
     const airTimeHandler = async () => {
         let id = await AsyncStorage.getItem('id').then(value => value)
         let payload = {
-            country: user.country,
-            amoutnt: airAmount,
+            country: user.code,
+            amount: airAmount,
             phone: phone,
             userID: id,
             asset: asset,
@@ -155,10 +165,35 @@ function Airtime() {
         }
         axios.post("/airtime", payload)
             .then((data) => {
-                console.log({ message: data.data.message })
+                if (data.data.id) {
+                    console.log({ successMessage: data.data.message })
+                    Alert.alert("Airtime Purcahse successful", `${(user.country === "Nigeria") ? `Comrade, your airtime purchase of ${payload.amount} was successful...` : `Your airtime purchase of ${payload.amount} was successful`}`, [
+                        (user.country === "Nigeria") ? {
+                            text: 'Oppor', onPress: () => {
+                                navigation.navigate("Home")
+                            }
+                        } : {
+                            text: 'Ok', onPress: () => {
+                                navigation.navigate("Home")
+                            }
+                        }
+                    ])
+                }
+                else { console.log({ message: data.data.message }) }
             })
             .catch(err => {
                 console.log({ Error: "Airtime error: " + err })
+                Alert.alert("Airtime Purcahse failed", `${(user.country === "Nigeria") ? `Comrade, your airtime purchase of ${payload.amount} didn't go through, but no fear...` : `Your airtime purchase of ${payload.amount} didn't go through`}`, [
+                    (user.country === "Nigeria") ? {
+                        text: 'Oppor', onPress: () => {
+                            navigation.navigate("Home")
+                        }
+                    } : {
+                        text: 'Ok', onPress: () => {
+                            navigation.navigate("Home")
+                        }
+                    }
+                ])
             })
     }
 
@@ -188,17 +223,17 @@ function Airtime() {
 
             <View style={styles.assets}>
                 <TouchableOpacity style={styles.asset} onPress={() => {
-                    setAsset("Fiat")
+                    setAsset("FIAT")
                     airAmountHandler(airAmount)
                 }}>
-                    {asset === "Fiat" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                    {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                     <Text>Fiat</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.asset} onPress={() => {
                     setAsset("BTC")
-                    setAddress(user.wallet[0].address)
-                    setPkey(user.wallet[0].privateKey)
+                    setAddress(user.wallets[0].address)
+                    setPkey(user.wallets[0].privateKey)
                     airAmountHandler(airAmount)
                 }}>
                     {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
@@ -207,8 +242,8 @@ function Airtime() {
 
                 <TouchableOpacity style={styles.asset} onPress={() => {
                     setAsset("BNB")
-                    setAddress(user.wallet[1].address)
-                    setPkey(user.wallet[1].privateKey)
+                    setAddress(user.wallets[1].address)
+                    setPkey(user.wallets[1].privateKey)
                     airAmountHandler(airAmount)
                 }}>
                     {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
@@ -217,8 +252,8 @@ function Airtime() {
 
                 <TouchableOpacity style={styles.asset} onPress={() => {
                     setAsset("ETH")
-                    setAddress(user.wallet[2].address)
-                    setPkey(user.wallet[2].privateKey)
+                    setAddress(user.wallets[2].address)
+                    setPkey(user.wallets[2].privateKey)
                     airAmountHandler(airAmount)
                 }}>
                     {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
@@ -238,21 +273,33 @@ function Airtime() {
                 :
                 null
             }
+
+            {/* <Modal visible={modalOpen} animationType="slide" style={styles.modal}>
+                <View style={styles.modal}>
+                    <Text style={styles.modalHeader}>
+                    Airtime Purcahse successful
+                    </Text>
+                    <Text style={styles.modalText}>
+                        {`${(country === "Nigeria") ? `Comrade, your airtime purchase of ${airAmount} was successful...` : `Your airtime purchase of ${airAmount} was successful`}`}
+                    </Text>
+                </View>
+            </Modal> */}
         </View>
 
     )
 }
 
 const styles = StyleSheet.create({
+    
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#febf1226',
         alignItems: 'center',
         justifyContent: 'center',
     },
     airContainer: {
         flex: 1,
-        backgroundColor: "white",
+        backgroundColor: "#febf1226",
         paddingLeft: 20,
         paddingTop: 20,
     },

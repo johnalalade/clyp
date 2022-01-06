@@ -5,24 +5,25 @@ import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import { Fontisto } from '@expo/vector-icons';
 
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
 import { FlatList } from "react-native-gesture-handler";
 
 function SignUp2({ navigation }) {
-    const { email, phone, country, currency, rate } = React.useContext(AuthContext)
+    const { email, phone, country, currency, rate, rate2, code } = React.useContext(AuthContext)
     const [myCountry, setMyCountry] = React.useState("Nigeria")
     const [myCurrency, setCurrency] = React.useState("NGN")
     const [myRate, setRate] = React.useState(480)
 
     const [countries, setCountries] = React.useState([
-        { name: 'Nigeria', code: 'NG', currency: "NGN" },
-        { name: 'Ghana', code: 'GH', currency: "GHS" },
-        { name: 'Kenya', code: 'KE', currency: "KES" },
-        // { name: 'Uganda', code: 'UG', currency: "" },
-        { name: 'Tanzania, United Republic of', code: 'TZ', currency: "TZS" },
-        { name: 'South Africa', code: 'ZA', currency: "ZAR" },
+        { name: 'Nigeria', code: 'NG', currency: "NGN", rate: 500, rate2: 480  },
+        { name: 'Ghana', code: 'GH', currency: "GHS", rate: 6, rate2: 6.5 },
+        { name: 'Kenya', code: 'KE', currency: "KES", rate: 112, rate2: 114, },
+        // { name: 'Uganda', code: 'UG', currency: "", rate:  },
+        { name: 'Tanzania, United Republic of', code: 'TZ', currency: "TZS", rate: 2303, rate2: 2306 },
+        { name: 'South Africa', code: 'ZA', currency: "ZAR", rate: 15, rate2: 16 },
         // { name: 'Cote D\'Ivoire', code: 'CI', currency: "" },
     ])
 
@@ -31,6 +32,8 @@ function SignUp2({ navigation }) {
         country(val.name)
         currency(val.currency)
         rate(val.rate)
+        rate2(val.rate2)
+        code(val.code)
         bs.current.snapTo(2)
     }
 
@@ -100,11 +103,7 @@ function SignUp2({ navigation }) {
                             marginTop: 35
                         }]}>Email</Text>
                         <View style={styles.action}>
-                            <FontAwesome
-                                name="user-o"
-                                color="#05375a"
-                                size={20}
-                            />
+                            <Fontisto name="email" size={20} color="#05375a" />
                             <TextInput
                                 placeholder="email@eamil.com"
                                 style={styles.textInput}
@@ -129,11 +128,10 @@ function SignUp2({ navigation }) {
                             marginTop: 35
                         }]}>Phone</Text>
                         <View style={styles.action}>
-                            <FontAwesome
-                                name="user-o"
-                                color="#05375a"
+                            <Feather
+                                name="phone"
                                 size={20}
-                            />
+                                color="#05375a" />
                             <TextInput
                                 placeholder="+XXXXX"
                                 style={styles.textInput}
@@ -158,11 +156,7 @@ function SignUp2({ navigation }) {
                             marginTop: 35
                         }]} >Country</Text>
                         <View style={styles.action}>
-                            <FontAwesome
-                                name="user-o"
-                                color="#05375a"
-                                size={20}
-                            />
+                            <FontAwesome name="flag-checkered" size={24} color="#05375a" />
                             <TouchableOpacity
                                 style={styles.textInput}
                                 onPress={() => bs.current.snapTo(1)}

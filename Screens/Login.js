@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, Component } from "react";
 import { StyleSheet, Text, View, TextInput, Button, StatusBar, TouchableOpacity, ScrollView } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import * as Animatable from 'react-native-animatable';
@@ -6,11 +6,22 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { useTheme } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function SignIn({ navigation }) {
     const { email, password, signIn } = React.useContext(AuthContext)
 
     const [secE, setSecE] = React.useState(true)
+    const [mail, setMail] = React.useState()
+
+    useEffect(async () =>{
+        let mail = await AsyncStorage.getItem('email').then(value => value)
+        if(mail){
+            setMail(mail)
+            email(mail)
+        }
+        
+    }, [])
 
     const sec = () => setSecE(!secE)
 
@@ -44,6 +55,7 @@ function SignIn({ navigation }) {
                                 style={styles.textInput}
                                 autoCapitalize="none"
                                 onChangeText={(val) => email(val)}
+                                defaultValue={mail}
                             />
 
                         </View>

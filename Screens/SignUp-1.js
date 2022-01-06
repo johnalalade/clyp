@@ -5,6 +5,7 @@ import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import { Ionicons } from '@expo/vector-icons';
 
 function SignUp1({ navigation }) {
     const { name, username } = React.useContext(AuthContext)
@@ -15,7 +16,7 @@ function SignUp1({ navigation }) {
             <View >
                 <StatusBar backgroundColor='#FF6347' barStyle="light-content" />
                 <View style={styles.header}>
-                    <Text style={styles.text_header}>Let's set up your account!</Text>
+                    <Text style={styles.text_header}>Let's make you a Clyper</Text>
                 </View>
                 <Animatable.View
                     animation="fadeInUpBig"
@@ -32,7 +33,7 @@ function SignUp1({ navigation }) {
                                 size={20}
                             />
                             <TextInput
-                                placeholder="Your Username"
+                                placeholder="Full Name"
                                 style={styles.textInput}
                                 autoCapitalize="none"
                                 onChangeText={(val) => name(val)}
@@ -54,11 +55,7 @@ function SignUp1({ navigation }) {
                             marginTop: 35
                         }]}>Username</Text>
                         <View style={styles.action}>
-                            <FontAwesome
-                                name="user-o"
-                                color="#05375a"
-                                size={20}
-                            />
+                            <Ionicons name="at-circle-sharp" size={20} color="#05375a" />
                             <TextInput
                                 placeholder="Your Username"
                                 style={styles.textInput}
@@ -90,7 +87,7 @@ function SignUp1({ navigation }) {
                             </Text>
                             <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>
                                 {/* {" "}Privacy policy */}
-                                </Text>
+                            </Text>
                         </View>
 
                         <View style={styles.button}>

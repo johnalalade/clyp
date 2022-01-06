@@ -1,8 +1,10 @@
 import React, { useEffect, Component } from "react";
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ScrollView, RefreshControl, Alert } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
+import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FlatList } from "react-native-gesture-handler";
 import { Avatar } from "react-native-paper";
 import { NavigationContainer } from '@react-navigation/native';
@@ -10,6 +12,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import FiatPage from "./Fiat-Page";
 import FundFiat from "./Fund-Fiat";
 import { Ionicons } from '@expo/vector-icons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { PayWithFlutterwave } from 'flutterwave-react-native';
 import banks from "./available_banks";
@@ -22,12 +26,17 @@ const FiatStack = createStackNavigator()
 function Fiat({ navigation }) {
 
 
-    const [isCard, setIsCard] = React.useState(false)
+    const [option, setOption] = React.useState("None")
+
     const [amount, setAmount] = React.useState(0)
     const [currency, setcurrency] = React.useState("NGN")
     const [page, setPage] = React.useState("Fiat")
+    const [id, setID] = React.useState()
 
     const [user, setUser] = React.useState({})
+
+    const [cleanup, setCleanUp] = React.useState(0)
+    const [refreshing, setRefreshing] = React.useState(false)
 
     // const [abanks, setBanks] = React.useState(banks)
 
@@ -98,10 +107,12 @@ function Fiat({ navigation }) {
 
     useEffect(async () => {
         let id = await AsyncStorage.getItem('id').then(value => value)
+        setID(id)
         axios.post('/user', { userID: id })
             .then((data) => {
                 setUser(data.data.response)
-
+                setTxs(data.data.response.transactions)
+                setRefreshing(false)
                 console.log({ data: data.data.response })
                 return data.data.response
             })
@@ -117,10 +128,10 @@ function Fiat({ navigation }) {
                 }).filter((it) => it.country === resp.country))
             })
             .catch(err => {
-
+                setRefreshing(false)
             })
 
-    }, [])
+    }, [cleanup])
 
 
     const handleOnRedirect = async (data) => {
@@ -137,21 +148,32 @@ function Fiat({ navigation }) {
                 .then(data => {
                     if (data.data.id) {
                         console.log("Successfully funded your fiat wallet")
-                    }
-                    return data
-                })
-                .then(res => {
-                    axios.post('/user', { userID: id })
-                        .then((data) => {
-                            setUser(data.data.response)
-                            setPage("Fiat")
-                            console.log({ data: data.data.response })
-                            return data.data.response
-                        })
-                        .catch(err => {
+                        axios.post('/user', { userID: id })
+                            .then((data) => {
+                                setUser(data.data.response)
+                                setPage("Fiat")
+                                console.log({ data: data.data.response })
+                                return data.data.response
+                            })
+                            .catch(err => {
 
-                        })
+                            })
+                        return data
+                    }
+
                 })
+                // .then(res => {
+                //     axios.post('/user', { userID: id })
+                //         .then((data) => {
+                //             setUser(data.data.response)
+                //             setPage("Fiat")
+                //             console.log({ data: data.data.response })
+                //             return data.data.response
+                //         })
+                //         .catch(err => {
+
+                //         })
+                // })
                 .catch(err => {
                     console.log("Failure to funded your fiat wallet: " + err)
                 })
@@ -209,93 +231,153 @@ function Fiat({ navigation }) {
 
     if (page === "Fund") {
         return (
-            <View style={styles.container}>
+            <ScrollView style={{ flex: 1 }}>
+                <View style={styles.container}>
+                    <View>
+                        <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
+                            <Feather name="x" size={24} color="black" />
+                        </TouchableOpacity>
 
-                <View>
-                    <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
-                        <Feather name="x" size={24} color="black" />
-                    </TouchableOpacity>
+                        <TouchableOpacity style={styles.option} onPress={() => setOption("Bank")}>
+                            <FontAwesome name="bank" size={35} color="whitesmoke" />
+                            <Text style={styles.optionText}>
+                                Fund with bank transfer
+                            </Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.option} onPress={() => setIsCard(true)}>
-                        <Ionicons
-                            name="card-outline"
-                            size={44}
-                            color="whitesmoke" />
-                        <Text style={styles.optionText}>
-                            Fund with bank Card
-                        </Text>
-                    </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.option} onPress={() => navigation.navigate("Crypto")}>
-                        <Entypo
-                            name="cycle"
-                            size={44}
-                            color="whitesmoke" />
-                        <Text style={styles.optionText}>
-                            Convert your crypto balance to Fiat
-                        </Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity style={styles.option} onPress={() => setOption("Card")}>
+                            <Ionicons
+                                name="card-outline"
+                                size={44}
+                                color="whitesmoke" />
+                            <Text style={styles.optionText}>
+                                Fund with bank Card
+                            </Text>
+                        </TouchableOpacity>
 
-                    {isCard &&
-                        <View>
-                            <Text style={{
-                                marginTop: 35, fontWeight: "600"
-                            }} >Amount</Text>
-                            <View style={styles.input}>
-                                <Ionicons
-                                    name="card-outline"
-                                    size={44}
-                                    color="grey" />
-                                <TextInput
-                                    placeholder="Amount"
-                                    style={styles.textInput}
-                                    autoCapitalize="none"
-                                    keyboardType="numeric"
-                                    returnKeyType="done"
-                                    enablesReturnKeyAutomatically
-                                    onChangeText={(val) => setAmount(val)}
-                                />
+                        <TouchableOpacity style={styles.option} onPress={() => navigation.navigate("Crypto")}>
+                            <Entypo
+                                name="cycle"
+                                size={44}
+                                color="whitesmoke" />
+                            <Text style={styles.optionText}>
+                                Convert your crypto balance to Fiat
+                            </Text>
+                        </TouchableOpacity>
+
+                        {(option === "Card") ?
+                            <View>
+                                <Text style={{
+                                    marginTop: 35, fontWeight: "600"
+                                }} >Amount</Text>
+                                <View style={styles.input}>
+                                    <Ionicons
+                                        name="card-outline"
+                                        size={44}
+                                        color="grey" />
+                                    <TextInput
+                                        placeholder="Amount"
+                                        style={styles.textInput}
+                                        autoCapitalize="none"
+                                        keyboardType="numeric"
+                                        returnKeyType="done"
+                                        enablesReturnKeyAutomatically
+                                        onChangeText={(val) => setAmount(parseInt(val))}
+                                    />
+                                </View>
+                                {amount >= 100 &&
+                                    <PayWithFlutterwave
+                                        onRedirect={handleOnRedirect}
+                                        options={{
+                                            tx_ref: + user._id + Date.now,
+                                            authorization: 'FLWPUBK-b73d166127557d9fc24d219eb9ac96e2-X',
+                                            customer: {
+                                                email: user.email
+                                            },
+                                            amount: amount,
+                                            currency: user.currency,
+                                            payment_options: 'card'
+                                        }}
+                                        customButton={(props) => (
+                                            <TouchableOpacity
+                                                style={styles.paymentButton}
+                                                onPress={props.onPress}
+                                                isBusy={props.isInitializing}
+                                                disabled={props.disabled}>
+                                                <Text style={styles.paymentButtonText}>Fund {currency} {amount}</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                    />
+
+                                }
                             </View>
-                            {amount >= 100 &&
-                                <PayWithFlutterwave
-                                    onRedirect={handleOnRedirect}
-                                    options={{
-                                        tx_ref: "XXXXXXXXX",
-                                        authorization: 'FLWPUBK-b73d166127557d9fc24d219eb9ac96e2-X',
-                                        customer: {
-                                            email: user.email
-                                        },
-                                        amount: amount,
-                                        currency: user.currency,
-                                        payment_options: 'card'
-                                    }}
-                                    customButton={(props) => (
-                                        <TouchableOpacity
-                                            style={styles.paymentButton}
-                                            onPress={props.onPress}
-                                            isBusy={props.isInitializing}
-                                            disabled={props.disabled}>
-                                            <Text style={styles.paymentButtonText}>Fund {currency} {amount}</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                />
+                            : null
+                        }
 
-                            }
-                        </View>
+                        {(option === "Bank") ?
+                            <View>
 
-                    }
+                                <Text style={{
+                                    marginTop: 35, fontWeight: "600"
+                                }} >Account Name:</Text>
+                                <View style={styles.input}>
+                                    <Ionicons
+                                        name="card-outline"
+                                        size={44}
+                                        color="grey" />
+                                    <Text style={styles.textInput}
+                                        onPress={(val) => { }}
+                                    >
+                                        {user.name}
+                                    </Text>
+                                </View>
 
+                                <Text style={{
+                                    marginTop: 35, fontWeight: "600"
+                                }} >Account Number:</Text>
+                                <View style={styles.input}>
+                                    <Ionicons
+                                        name="card-outline"
+                                        size={44}
+                                        color="grey" />
+                                    <Text style={styles.textInput}
+                                        onPress={(val) => { }}
+                                    >
+                                        {user.account_number}
+                                    </Text>
+                                </View>
+
+                                <Text style={{
+                                    marginTop: 35, fontWeight: "600"
+                                }} >Bank:</Text>
+                                <View style={styles.input}>
+                                    <Ionicons
+                                        name="card-outline"
+                                        size={44}
+                                        color="grey" />
+                                    <Text style={styles.textInput}
+                                        onPress={(val) => { }}
+                                    >
+                                        {user.bank_name}
+                                    </Text>
+                                </View>
+
+                            </View> : null
+                        }
+
+                    </View>
                 </View>
-
-            </View>
+            </ScrollView>
         )
     }
 
 
     const amountHandler = (val) => {
+        setWAmount(val)
         if (user.balance >= 100) {
-            if (user.balance >= val) {
-                setWAmount(val)
+            if ((user.balance / user.rate) >= parseInt(val) && (val * user.rate2) >= 100) {
+
                 setCAmount(true)
             }
             else {
@@ -319,11 +401,11 @@ function Fiat({ navigation }) {
                     // this.setState({
                     //   acc_name: data.data.acc_name.slice(0,data.data.acc_name.indexOf('"')),
                     //   c_name: true
-                    // })
-                    setAcc_Name(data.data.acc_name.slice(0, data.data.acc_name.indexOf('"')))
+                    // }) .slice(0, data.data.acc_name.indexOf('"'))
+                    setAcc_Name(data.data.acc_name)
 
-                    if (data.data.acc_name.slice(0, data.data.acc_name.indexOf('"')).length === 0) {
-                        //   toast.warning('Incorrect details, please check and try again...')
+                    if (data.data.message) {
+                        Alert.alert("Incorrect details", "Account name could not be fetched")
                     }
                 })
                 .catch(err => {
@@ -348,10 +430,10 @@ function Fiat({ navigation }) {
                     //   acc_name: data.data.acc_name.slice(0,data.data.acc_name.indexOf('"')),
                     //   c_name: true
                     // })
-                    setAcc_Name(data.data.acc_name.slice(0, data.data.acc_name.indexOf('"')))
+                    setAcc_Name(data.data.acc_name)
 
-                    if (data.data.acc_name.slice(0, data.data.acc_name.indexOf('"')).length === 0) {
-                        //   toast.warning('Incorrect details, please check and try again...')
+                    if (data.data.message) {
+                        Alert.alert("Incorrect details", "Account name could not be fetched")
                     }
                 })
                 .catch(err => {
@@ -373,6 +455,7 @@ function Fiat({ navigation }) {
             account_number: acc_num,
             amount: wamount,
             rate: user.rate,
+            rate2: user.rate2,
             currency: user.currency,
             userID: id,
 
@@ -381,21 +464,54 @@ function Fiat({ navigation }) {
             .then(data => {
                 if (data.data.id) {
                     console.log("Successfully withdraw from your fiat wallet")
+                    axios.post('/user', { userID: id })
+                        .then((data) => {
+                            setUser(data.data.response)
+                            Alert.alert("Withdrawal Successful", `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, your withdrawal of ${payload.amount} was successful...` : `Your withdrawal of ${payload.amount} was successful`}`, [
+                                (user.country === "Nigeria") ? {
+                                    text: 'Oppor', onPress: () => {
+                                        setPage("Fiat")
+                                    }
+                                } : {
+                                    text: 'Ok', onPress: () => {
+                                        setPage("Fiat")
+                                    }
+                                }
+                            ])
+                            // setPage("Fiat")
+                            console.log({ data: data.data.response })
+                            return data.data.response
+                        })
+                        .catch(err => {
+                            console.log({ Error: "Withdrawal error: " + err })
+                            Alert.alert("Withdrawal failed", `${(user.country === "Nigeria") ? `Comrade, your withdrawal of ${payload.amount} didn't go through, but no fear...` : `Your withdrawal of ${payload.amount} didn't go through`}`, [
+                                (user.country === "Nigeria") ? {
+                                    text: 'ok', onPress: () => {
+                                        setPage("Fiat")
+                                    }
+                                } : {
+                                    text: 'Ok', onPress: () => {
+                                        setPage("Fiat")
+                                    }
+                                }
+                            ])
+                        })
+                    // return data
                 }
-                return data
-            })
-            .then(res => {
-                axios.post('/user', { userID: id })
-                    .then((data) => {
-                        setUser(data.data.response)
-                        setPage("Fiat")
-                        console.log({ data: data.data.response })
-                        return data.data.response
-                    })
-                    .catch(err => {
 
-                    })
             })
+            // .then(res => {
+            //     axios.post('/user', { userID: id })
+            //         .then((data) => {
+            //             setUser(data.data.response)
+            //             setPage("Fiat")
+            //             console.log({ data: data.data.response })
+            //             return data.data.response
+            //         })
+            //         .catch(err => {
+
+            //         })
+            // })
             .catch(err => {
                 console.log("Failure to withdraw from your fiat wallet: " + err)
             })
@@ -448,7 +564,8 @@ function Fiat({ navigation }) {
                         <Text style={styles.nums}>{bank.Name}</Text>
                     </TouchableOpacity>
 
-                    <Text style={styles.withdrawText}>Amount: </Text>
+                    <Text style={styles.withdrawText}>Amount ($): </Text>
+                    <Text style={styles.withdrawText}>Note: 0ur dollar rate is {user.rate2} per $: </Text>
                     <View style={styles.withdrawView}>
                         <TextInput
                             style={styles.nums}
@@ -458,6 +575,7 @@ function Fiat({ navigation }) {
                             returnKeyType="done"
                         />
                     </View>
+                    <Text style={styles.getText}>You get: {wamount ? (`${user.currency} ${wamount * user.rate2}`) : null} </Text>
 
                     <Text style={styles.withdrawText}>Account Number: </Text>
                     <View style={styles.withdrawView}>
@@ -477,7 +595,7 @@ function Fiat({ navigation }) {
                         <Text style={styles.nums}>{acc_name}</Text>
                     </View>
 
-                    {acc_name !== "" && camount &&
+                    {acc_name !== "" && (user.balance / user.rate) >= wamount && (wamount * user.rate2) >= 100 &&
                         <View>
                             <TouchableOpacity
                                 style={styles.paymentButton}
@@ -500,19 +618,20 @@ function Fiat({ navigation }) {
         <View style={styles.panel}>
 
             <FlatList
-                keyExtractor={(item) => item.reference}
+                keyExtractor={(item) => item.reference + item.name + item.amount}
                 data={user.transactions}
                 renderItem={({ item }) => (
                     <TouchableOpacity style={styles.txTouch} onPress={() => txHandler(item.name)}>
-                        <Avatar.Image
+                        <FontAwesome5 name="money-bill-wave-alt" size={30} color="#febf12" />
+                        {/* <Avatar.Image
                             source={{
                                 uri: 'https://api.adorable.io/avatars/50/abott@adorable.png'
                             }}
                             size={50}
-                        />
+                        /> */}
                         <View>
                             <Text style={styles.txText}>{item.name}</Text>
-                            <Text style={styles.txTextSub}>{item.name}</Text>
+                            <Text style={styles.txTextSub}>{item.amount}</Text>
                         </View>
 
                     </TouchableOpacity>
@@ -541,12 +660,10 @@ function Fiat({ navigation }) {
 
     if (page === "Fiat") {
         return (
-
-            <View style={styles.container}>
-
+            <View style={{ flex: 1 }}>
                 <BottomSheet
                     ref={bs}
-                    snapPoints={[500, 130]}
+                    snapPoints={[500, 230]}
                     renderContent={renderInner}
                     renderHeader={renderHeader}
                     initialSnap={1}
@@ -554,36 +671,52 @@ function Fiat({ navigation }) {
                     enabledGestureInteraction={true}
                 />
 
-                <View style={styles.container}>
+                <ScrollView style={{ flex: 1 }} refreshControl={
+                    <RefreshControl refreshing={refreshing}
+                        onRefresh={() => {
+                            setRefreshing(true)
+                            setCleanUp(cleanup + 1)
 
-                    <View style={styles.header}>
-                        <Text style={styles.text_wallet}>Fiat Wallet</Text>
-                        <Text style={styles.text_header}>${user.balance}</Text>
-                        <View style={styles.buttons}>
+                        }} />
+                }>
+                    <View style={styles.container}>
 
-                            <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Fund")}>
-                                <View style={styles.button}>
+                        <View style={styles.container2}>
 
-                                    <Feather name="send" size={24} color="whitesmoke" />
-                                </View>
-                                <Text style={styles.buttonText}>
-                                    Add Funds
-                                </Text>
-
+                            <TouchableOpacity onPress={() => navigation.navigate("Settings")} style={styles.cancel}>
+                                <Text style={styles.name}> Yo, {user.username}</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
-                                <View style={styles.button}>
+                            <View style={styles.header}>
+                                <Text style={styles.text_wallet}>Fiat Wallet</Text>
+                                <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" />
+                                <Text style={styles.text_header}>${((user.balance / user.rate).toString()).slice(0, 4)}</Text>
+                                <Text style={styles.text_sub_header}>${((user.ledger_balance / user.rate).toString()).slice(0, 4)}</Text>
+                                <View style={styles.buttons}>
 
-                                    <Feather name="send" size={24} color="whitesmoke" />
-                                </View>
-                                <Text style={styles.buttonText}>
-                                    Send Funds
-                                </Text>
+                                    <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Fund")}>
+                                        <View style={styles.button}>
+                                            <MaterialIcons name="add" size={40} color="whitesmoke" />
+                                            {/* <Feather name="send" size={24} color="whitesmoke" /> */}
+                                        </View>
+                                        <Text style={styles.buttonText}>
+                                            Add Funds
+                                        </Text>
 
-                            </TouchableOpacity>
+                                    </TouchableOpacity>
 
-                            {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
+                                    <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
+                                        <View style={styles.button}>
+
+                                            <Feather name="send" size={24} color="whitesmoke" />
+                                        </View>
+                                        <Text style={styles.buttonText}>
+                                            Send Funds
+                                        </Text>
+
+                                    </TouchableOpacity>
+
+                                    {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
                                 <View style={styles.button}>
 
                                     <Feather name="send" size={24} color="whitesmoke" />
@@ -593,13 +726,14 @@ function Fiat({ navigation }) {
                                 </Text>
 
                             </TouchableOpacity> */}
+                                </View>
+                            </View>
+
+                            {/* <Text>Fiat Screen!</Text>
+                <Button title="Fund" onPress={() => this.props.navigation.goBack()} /> */}
                         </View>
                     </View>
-
-                    {/* <Text>Fiat Screen!</Text>
-                <Button title="Fund" onPress={() => this.props.navigation.goBack()} /> */}
-                </View>
-
+                </ScrollView>
             </View>
 
         )
@@ -619,7 +753,10 @@ const styles = StyleSheet.create({
         backgroundColor: "whitesmoke",
         borderRadius: 10,
         width: "90%",
-        marginBottom: 10,
+        marginBottom: 15,
+    },
+    getText: {
+        marginBottom: 10
     },
     numsSearch: {
         paddingHorizontal: 10,
@@ -629,8 +766,19 @@ const styles = StyleSheet.create({
         width: "90%",
         marginBottom: 10,
     },
+    name: {
+        fontWeight: "bold",
+        fontSize: 10
+    },
     container: {
         flex: 1,
+        backgroundColor: '#febf1226',
+        alignItems: 'center',
+        paddingBottom: 100
+        // justifyContent: 'center',
+    },
+    container2: {
+        flex: 0.7,
         backgroundColor: '#febf1226',
         alignItems: 'center',
         // justifyContent: 'center',
@@ -663,18 +811,22 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         alignItems: "center",
         paddingHorizontal: 20,
-        paddingBottom: 50
+        paddingBottom: 20
     },
     text_wallet: {
         fontWeight: '300',
-        fontSize: 20
+        fontSize: 20,
+        paddingBottom: 10,
     },
     text_header: {
         color: 'grey',
         fontWeight: 'bold',
-        fontSize: 30
+        fontSize: 30,
+        paddingBottom: 10,
+        paddingTop: 5
     },
     buttons: {
+        marginTop: 35,
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-evenly",
@@ -682,16 +834,19 @@ const styles = StyleSheet.create({
         width: 500
     },
     buttonView: {
-        alignItems: "center"
+        alignItems: "center",
+        justifyContent: "space-between"
     },
     button: {
         borderRadius: 50,
-        height: 60,
-        width: 60,
+        height: 50,
+        width: 50,
         backgroundColor: "#febf12",
         display: "flex",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        borderColor: "whitesmoke",
+        borderWidth: 2,
     },
     buttonText: {
         fontWeight: "bold",
@@ -701,7 +856,7 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#febf1226',
         paddingTop: 20,
-        height: 1000,
+        height: 1500,
         // borderTopLeftRadius: 20,
         // borderTopRightRadius: 20,
         // shadowColor: '#000000',
