@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Component, } from "react";
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ScrollView, Image, RefreshControl } from "react-native";
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ScrollView, Image, RefreshControl, Alert } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 // import QRCode from 'react-native-qrcode-svg';
@@ -11,7 +11,10 @@ import { Foundation } from '@expo/vector-icons';
 import axios from "./axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import RNQRGenerator from "rn-qr-generator";
+import * as Clipboard from 'expo-clipboard';
+import QRCode from 'react-native-qrcode-svg';
+// import { QRCode as CustomQRCode } from 'react-native-custom-qr-codes-expo';
+// import RNQRGenerator from "rn-qr-generator";
 
 function Crypto() {
 
@@ -477,29 +480,35 @@ function Crypto() {
           <Feather name="x" size={24} color="black" />
         </TouchableOpacity>
 
-        <View>
+        <View style={styles.qrView} >
 
-          <Image source={{ uri: qr }} style={{ width: 400, height: 400 }} />
+        <Text style={styles.qrtext}>Click to copy or scan QR code to get your {address.name} address </Text>
 
-          <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
-            // setString(address.address)
-            RNQRGenerator.generate({
-              value: address.address,
-              height: 400,
-              width: 400,
-              base64: true
-            }).then(resp => {
-              setQR(resp.uri)
-              console.log({ resp })
-            })
-          }}>
+          {/* <Image source={require('../assets/bitcoin.png')} style={{ width: 400, height: 400 }} /> */}
+          <TouchableOpacity style={styles.codes} onPress={() => {
+              Clipboard.setString(address.address);
+              Alert.alert("Copied", `${(user.country === "Nigeria") ? `Comrade, you've copied your ${address.name} address...` : `Your ${address.name} address has been copied Successfully`}`,)
+            }}>
+            <QRCode value={address.address} size={200} />
 
-            <Text style={styles.cryptoAddress}>
-              {address.address}
-            </Text>
-            <AntDesign name="qrcode" size={24} color="black" />
+            <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
+              Clipboard.setString(address.address);
+              Alert.alert("Copied", `${(user.country === "Nigeria") ? `Comrade, you've copied your ${address.name} address...` : `Your ${address.name} address has been copied Successfully`}`,)
+            }} >
+
+              {/* <CustomQRCode
+              codeStyle="circle"
+              linearGradient={['green', 'red']}
+              content="QR code with circles"
+            /> */}
+              <Text style={styles.cryptoAddress}>
+                {address.address}
+              </Text>
+              <AntDesign name="qrcode" size={24} color="black" />
+            </TouchableOpacity>
           </TouchableOpacity>
 
+          <Text style={styles.qrtext2}>Send only {address.name} to this address </Text>
         </View>
       </View>
     )
@@ -624,7 +633,7 @@ function Crypto() {
 
             {address.name === "BTC" ? <Text style={styles.text_header}>${btc / 1957}</Text> : null}
 
-            {address.name === "BNB" ? <Text style={styles.text_header}>${bnb / 242205133645110.0000}</Text> : null}
+            {address.name === "BNB" ? <Text style={styles.text_header}>${bnb / 2000000000000000.0000}</Text> : null}
 
             {address.name === "ETH" ? <Text style={styles.text_header}>${eth / 242205133645110.0000}</Text> : null}
 
@@ -946,6 +955,25 @@ const styles = StyleSheet.create({
   sendText: {
     fontWeight: "800",
     color: "whitesmoke"
+  },
+  codes: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1
+  },
+  qrView: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1
+  },
+  qrtext: {
+    fontWeight: "500"
+  },
+  qrtext2: {
+    fontWeight: "bold",
+    marginBottom: 50
   },
 });
 
