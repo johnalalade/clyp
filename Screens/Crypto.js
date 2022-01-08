@@ -228,32 +228,80 @@ function Crypto() {
     }
   }
 
-  const sendamount = (val) => {
+  const toHexadecimal = (number) => {
+    var result = [], i;
+    for (i = number; i > 0; i = parseInt(i / 16)) {
+      result.push(i % 16);
+    }
 
-    setRAmount(parseInt(val))
+    for (i = 0; i < result.length; i++) {
+      switch (result[i]) {
+        case 10:
+          result[i] = "A";
+          break;
+
+        case 11:
+          result[i] = "B";
+          break;
+
+        case 12:
+          result[i] = "C";
+          break;
+
+        case 13:
+          result[i] = "D";
+          break;
+
+        case 14:
+          result[i] = "E";
+          break;
+
+        case 15:
+          result[i] = "F";
+          break;
+      }
+    }
+    return result.reverse().join("");
+  }
+
+  const sendamount = (val) => {
+    console.log(Number(val))
+
+    setRAmount(Number(val))
+
     if (address.name === "BTC") {
-      let balance = btc / 1957
+      let balance = btc
 
       if (val > balance) {
         setStyle(styles.error)
         setVerifiedSend(false)
+      }
+      else {
+        // setRAmount(Number(val))
+        setVerifiedSend(true)
       }
     }
     else if (address.name === "BNB") {
-      let balance = bnb / 242205133645110.0000
+      let balance = bnb
 
 
       if (val > balance) {
         setStyle(styles.error)
         setVerifiedSend(false)
       }
+      else {
+        setVerifiedSend(true)
+      }
     }
     else if (address.name === "ETH") {
-      let balance = eth / 242205133645110.0000
+      let balance = eth
 
       if (val > balance) {
         setStyle(styles.error)
         setVerifiedSend(false)
+      }
+      else {
+        setVerifiedSend(true)
       }
     }
     else {
@@ -283,8 +331,30 @@ function Crypto() {
         if (data.data.id) {
           console.log({ Mymessage: "Sent $" + payload.amount + " " + payload.asset })
           console.log({ message: data.data.message })
+          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully sent $${payload.amount} ${payload.asset}...` : `You've successfully sent $${payload.amount} ${payload.asset}...`}`, [
+            (user.country === "Nigeria") ? {
+              text: 'Oppor', onPress: () => {
+                setPage("Crypto")
+              }
+            } : {
+              text: 'Ok', onPress: () => {
+                setPage("Crypto")
+              }
+            }
+          ])
         }
         else {
+          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+            (user.country === "Nigeria") ? {
+              text: 'Alright', onPress: () => {
+                setPage("Crypto")
+              }
+            } : {
+              text: 'Ok', onPress: () => {
+                setPage("Crypto")
+              }
+            }
+          ])
           console.log({ othermessage: data.data.message })
         }
 
@@ -309,8 +379,31 @@ function Crypto() {
         if (data.data.id) {
           console.log({ Mymessage: "Sold $" + payload.amount + " " + payload.asset })
           console.log({ message: data.data.message })
+
+          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted $${payload.amount} ${payload.asset} to fiat...` : `You've successfully converted $${payload.amount} ${payload.asset} to fiat...`}`, [
+            (user.country === "Nigeria") ? {
+              text: 'Oppor', onPress: () => {
+                setPage("Crypto")
+              }
+            } : {
+              text: 'Ok', onPress: () => {
+                setPage("Crypto")
+              }
+            }
+          ])
         }
         else {
+          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+            (user.country === "Nigeria") ? {
+              text: 'Alright', onPress: () => {
+                setPage("Crypto")
+              }
+            } : {
+              text: 'Ok', onPress: () => {
+                setPage("Crypto")
+              }
+            }
+          ])
           console.log({ othermessage: data.data.message })
         }
 
@@ -334,8 +427,30 @@ function Crypto() {
         if (data.data.id) {
           console.log({ Mymessage: "Bought $" + payload.amount + " " + payload.asset })
           console.log({ message: data.data.message })
+          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted your fiat balance to $${payload.amount} ${payload.asset}...` : `You've successfully converted your fiat balance to $${payload.amount} ${payload.asset} to fiat...`}`, [
+            (user.country === "Nigeria") ? {
+              text: 'Oppor', onPress: () => {
+                setPage("Crypto")
+              }
+            } : {
+              text: 'Ok', onPress: () => {
+                setPage("Crypto")
+              }
+            }
+          ])
         }
         else {
+          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+            (user.country === "Nigeria") ? {
+              text: 'Alright', onPress: () => {
+                setPage("Crypto")
+              }
+            } : {
+              text: 'Ok', onPress: () => {
+                setPage("Crypto")
+              }
+            }
+          ])
           console.log({ othermessage: data.data.message })
         }
 
@@ -442,6 +557,7 @@ function Crypto() {
               placeholder={address.address}
               defaultValue={rAddress}
               onChangeText={(val) => setRAddress(val)}
+              returnKeyType="done"
             />
             <TouchableOpacity onPress={() => setPage("Scan")}>
               <MaterialCommunityIcons name="qrcode-scan" size={30} color="black" />
@@ -456,6 +572,8 @@ function Crypto() {
               placeholder={address.address}
               onChangeText={(val) => sendamount(val)}
               keyboardType="numeric"
+              returnKeyType="done"
+
             />
           </View>
 
@@ -482,13 +600,13 @@ function Crypto() {
 
         <View style={styles.qrView} >
 
-        <Text style={styles.qrtext}>Click to copy or scan QR code to get your {address.name} address </Text>
+          <Text style={styles.qrtext}>Click to copy or scan QR code to get your {address.name} address </Text>
 
           {/* <Image source={require('../assets/bitcoin.png')} style={{ width: 400, height: 400 }} /> */}
           <TouchableOpacity style={styles.codes} onPress={() => {
-              Clipboard.setString(address.address);
-              Alert.alert("Copied", `${(user.country === "Nigeria") ? `Comrade, you've copied your ${address.name} address...` : `Your ${address.name} address has been copied Successfully`}`,)
-            }}>
+            Clipboard.setString(address.address);
+            Alert.alert("Copied", `${(user.country === "Nigeria") ? `Comrade, you've copied your ${address.name} address...` : `Your ${address.name} address has been copied Successfully`}`,)
+          }}>
             <QRCode value={address.address} size={200} />
 
             <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
@@ -631,11 +749,11 @@ function Crypto() {
               size={40}
             />
 
-            {address.name === "BTC" ? <Text style={styles.text_header}>${btc / 1957}</Text> : null}
+            {address.name === "BTC" ? <Text style={styles.text_header}>${btc}</Text> : null}
 
-            {address.name === "BNB" ? <Text style={styles.text_header}>${bnb / 2000000000000000.0000}</Text> : null}
+            {address.name === "BNB" ? <Text style={styles.text_header}>${bnb}</Text> : null}
 
-            {address.name === "ETH" ? <Text style={styles.text_header}>${eth / 242205133645110.0000}</Text> : null}
+            {address.name === "ETH" ? <Text style={styles.text_header}>${eth}</Text> : null}
 
             <View style={styles.buttons}>
 

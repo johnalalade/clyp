@@ -29,7 +29,7 @@ function Airtime({ navigation }) {
                 return data.data.response
             })
             .then(user => {
-                axios.post('/cryptobalance', { asset: "BTC", address: user.wallets[0].address })
+                axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address })
                     .then((data) => {
                         setBTC(data.data.balance)
                         console.log(data.data.balance)
@@ -38,7 +38,7 @@ function Airtime({ navigation }) {
                         console.log({ Err: "Unable to get BTC balance " + err })
                     })
 
-                axios.post('/cryptobalance', { asset: "BNB", address: user.wallets[1].address })
+                axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[1].address })
                     .then((data) => {
                         setBNB(data.data.balance)
                         console.log(data.data.balance)
@@ -47,7 +47,7 @@ function Airtime({ navigation }) {
                         console.log({ Err: "Unable to get BNB balance " + err })
                     })
 
-                axios.post('/cryptobalance', { asset: "ETH", address: user.wallets[2].address })
+                axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[2].address })
                     .then((data) => {
                         setETH(data.data.balance)
                         // setRefreshing(false)
@@ -64,7 +64,7 @@ function Airtime({ navigation }) {
     }, [])
 
     const airAmountHandler = (val) => {
-        setAirAmount(parseInt(val))
+        setAirAmount(Number(val))
         if (val < 100 && phone.length === 0) {
             setStyle(styles.error)
             setVerified(false)
@@ -80,7 +80,7 @@ function Airtime({ navigation }) {
             }
         }
         else if (asset === "BTC" && phone.length === 0) {
-            let balance = btc / 1957 * user.rate
+            let balance = btc * user.rate
 
             if (val >= balance) {
                 setStyle(styles.error)
@@ -88,7 +88,7 @@ function Airtime({ navigation }) {
             }
         }
         else if (asset === "BNB" && phone.length === 0) {
-            let balance = bnb / 242205133645110.0000 * user.rate
+            let balance = bnb * user.rate
 
 
             if (val >= balance) {
@@ -97,7 +97,7 @@ function Airtime({ navigation }) {
             }
         }
         else if (asset === "ETH" && phone.length === 0) {
-            let balance = eth / 242205133645110.0000 * user.rate
+            let balance = eth * user.rate
 
             if (val >= balance) {
                 setStyle(styles.error)
@@ -122,7 +122,7 @@ function Airtime({ navigation }) {
             }
         }
         else if (asset === "BTC" && phone.length === 0) {
-            let balance = btc / 1957 * user.rate
+            let balance = btc * user.rate
 
             if (airAmount >= balance) {
                 setStyle(styles.error)
@@ -130,7 +130,7 @@ function Airtime({ navigation }) {
             }
         }
         else if (asset === "BNB" && phone.length === 0) {
-            let balance = bnb / 242205133645110.0000 * user.rate
+            let balance = bnb * user.rate
 
 
             if (airAmount >= balance) {
@@ -139,7 +139,7 @@ function Airtime({ navigation }) {
             }
         }
         else if (asset === "ETH" && phone.length === 0) {
-            let balance = eth / 242205133645110.0000 * user.rate
+            let balance = eth * user.rate
 
             if (airAmount >= balance) {
                 setStyle(styles.error)
@@ -179,7 +179,20 @@ function Airtime({ navigation }) {
                         }
                     ])
                 }
-                else { console.log({ message: data.data.message }) }
+                else {
+                    Alert.alert("Airtime Purcahse failed", `${(user.country === "Nigeria") ? `Comrade, your airtime purchase of ${payload.amount} didn't go through, but no fear...` : `Your airtime purchase of ${payload.amount} didn't go through`}`, [
+                        (user.country === "Nigeria") ? {
+                            text: 'Oppor', onPress: () => {
+                                navigation.navigate("Home")
+                            }
+                        } : {
+                            text: 'Ok', onPress: () => {
+                                navigation.navigate("Home")
+                            }
+                        }
+                    ])
+                    console.log({ message: data.data.message })
+                }
             })
             .catch(err => {
                 console.log({ Error: "Airtime error: " + err })
@@ -290,7 +303,7 @@ function Airtime({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    
+
     container: {
         flex: 1,
         backgroundColor: '#febf1226',
