@@ -18,6 +18,7 @@ function Airtime({ navigation }) {
     const [btc, setBTC] = React.useState()
     const [bnb, setBNB] = React.useState()
     const [eth, setETH] = React.useState()
+    const [balance, setBalance] = React.useState()
     const [modalOpen, setModalOpen] = React.useState(true)
 
     useEffect(async () => {
@@ -25,6 +26,7 @@ function Airtime({ navigation }) {
         axios.post('/user', { userID: id })
             .then((data) => {
                 setUser(data.data.response)
+                setBalance(data.data.response.balance)
                 console.log({ data: data.data.response })
                 return data.data.response
             })
@@ -65,49 +67,41 @@ function Airtime({ navigation }) {
 
     const airAmountHandler = (val) => {
         setAirAmount(Number(val))
-        if (val < 100 && phone.length === 0) {
-            setStyle(styles.error)
-            setVerified(false)
-        }
-        else {
-            setStyle(styles.nums)
-            setVerified(true)
-        }
-        if (asset === "Fiat" && phone.length === 0) {
-            if (val > user.balance) {
-                setStyle(styles.error)
-                setVerified(false)
-            }
-        }
-        else if (asset === "BTC" && phone.length === 0) {
-            let balance = btc * user.rate
+        // if (asset === "Fiat") {
+        //     if (val > user.balance) {
+        //         setStyle(styles.error)
+        //         setVerified(false)
+        //     }
+        // }
+        // else if (asset === "BTC") {
+        //     let balance = btc * user.rate
 
-            if (val >= balance) {
-                setStyle(styles.error)
-                setVerified(false)
-            }
-        }
-        else if (asset === "BNB" && phone.length === 0) {
-            let balance = bnb * user.rate
+        //     if (val >= balance) {
+        //         setStyle(styles.error)
+        //         setVerified(false)
+        //     }
+        // }
+        // else if (asset === "BNB") {
+        //     let balance = bnb * user.rate
 
 
-            if (val >= balance) {
-                setStyle(styles.error)
-                setVerified(false)
-            }
-        }
-        else if (asset === "ETH" && phone.length === 0) {
-            let balance = eth * user.rate
+        //     if (val >= balance) {
+        //         setStyle(styles.error)
+        //         setVerified(false)
+        //     }
+        // }
+        // else if (asset === "ETH") {
+        //     let balance = eth * user.rate
 
-            if (val >= balance) {
-                setStyle(styles.error)
-                setVerified(false)
-            }
-        }
-        else {
-            setVerified(true)
-            setStyle(styles.nums)
-        }
+        //     if (val >= balance) {
+        //         setStyle(styles.error)
+        //         setVerified(false)
+        //     }
+        // }
+        // else {
+        //     setVerified(true)
+        //     setStyle(styles.nums)
+        // }
     }
     const airphoneHandler = (val) => {
         setPhone(val)
@@ -163,11 +157,17 @@ function Airtime({ navigation }) {
             address: address,
             private_key: pKey
         }
+        // if(balance < payload.amount){
+        //     return false
+        // }
+        if(payload.phone < 11){
+            return false
+        }
         axios.post("/airtime", payload)
             .then((data) => {
                 if (data.data.id) {
                     console.log({ successMessage: data.data.message })
-                    Alert.alert("Airtime Purcahse successful", `${(user.country === "Nigeria") ? `Comrade, your airtime purchase of ${payload.amount} was successful...` : `Your airtime purchase of ${payload.amount} was successful`}`, [
+                    Alert.alert("Airtime Purchase successful", `${(user.country === "Nigeria") ? `Comrade, your airtime purchase of ${payload.amount} was successful...` : `Your airtime purchase of ${payload.amount} was successful`}`, [
                         (user.country === "Nigeria") ? {
                             text: 'Oppor', onPress: () => {
                                 navigation.navigate("Home")
@@ -212,6 +212,8 @@ function Airtime({ navigation }) {
 
     return (
         <View style={styles.airContainer}>
+
+            <Text style={styles.balance}>Balance: &#x20A6; {balance} </Text>
             <Text style={styles.airText}>Amount: </Text>
             <View style={styles.airView}>
                 <TextInput
@@ -238,6 +240,7 @@ function Airtime({ navigation }) {
                 <TouchableOpacity style={styles.asset} onPress={() => {
                     setAsset("FIAT")
                     airAmountHandler(airAmount)
+                    setBalance(user.balance)
                 }}>
                     {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                     <Text>Fiat</Text>
@@ -248,6 +251,7 @@ function Airtime({ navigation }) {
                     setAddress(user.wallets[0].address)
                     setPkey(user.wallets[0].privateKey)
                     airAmountHandler(airAmount)
+                    setBalance(btc)
                 }}>
                     {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                     <Text>BTC</Text>
@@ -258,6 +262,7 @@ function Airtime({ navigation }) {
                     setAddress(user.wallets[1].address)
                     setPkey(user.wallets[1].privateKey)
                     airAmountHandler(airAmount)
+                    setBalance(bnb)
                 }}>
                     {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                     <Text>BNB</Text>
@@ -268,6 +273,7 @@ function Airtime({ navigation }) {
                     setAddress(user.wallets[2].address)
                     setPkey(user.wallets[2].privateKey)
                     airAmountHandler(airAmount)
+                    setBalance(eth)
                 }}>
                     {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                     <Text>ETH</Text>

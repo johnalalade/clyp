@@ -88,7 +88,7 @@ function Crypto() {
         return data.data.response
       })
       .then(user => {
-        axios.post('/cryptobalance', { asset: "BTC", address: user.wallets[0].address })
+        axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address })
           .then((data) => {
             setBTC(data.data.balance)
             console.log(data.data.balance)
@@ -97,7 +97,7 @@ function Crypto() {
             console.log({ Err: "Unable to get BTC balance " + err })
           })
 
-        axios.post('/cryptobalance', { asset: "BNB", address: user.wallets[1].address })
+        axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[1].address })
           .then((data) => {
             setBNB(data.data.balance)
             console.log(data.data.balance)
@@ -106,7 +106,7 @@ function Crypto() {
             console.log({ Err: "Unable to get BNB balance " + err })
           })
 
-        axios.post('/cryptobalance', { asset: "ETH", address: user.wallets[2].address })
+        axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[2].address })
           .then((data) => {
             setETH(data.data.balance)
             setRefreshing(false)
@@ -329,9 +329,9 @@ function Crypto() {
     axios.post('/sendcrypto', payload)
       .then(data => {
         if (data.data.id) {
-          console.log({ Mymessage: "Sent $" + payload.amount + " " + payload.asset })
+          console.log({ Mymessage: `Sent NGN` + + payload.amount + " " + payload.asset })
           console.log({ message: data.data.message })
-          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully sent $${payload.amount} ${payload.asset}...` : `You've successfully sent $${payload.amount} ${payload.asset}...`}`, [
+          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully sent NGN ${payload.amount} ${payload.asset}...` : `You've successfully sent NGN ${payload.amount} ${payload.asset}...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Oppor', onPress: () => {
                 setPage("Crypto")
@@ -344,7 +344,7 @@ function Crypto() {
           ])
         }
         else {
-          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Alright', onPress: () => {
                 setPage("Crypto")
@@ -380,7 +380,7 @@ function Crypto() {
           console.log({ Mymessage: "Sold $" + payload.amount + " " + payload.asset })
           console.log({ message: data.data.message })
 
-          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted $${payload.amount} ${payload.asset} to fiat...` : `You've successfully converted $${payload.amount} ${payload.asset} to fiat...`}`, [
+          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted NGN ${payload.amount} ${payload.asset} to fiat...` : `You've successfully converted NGN ${payload.amount} ${payload.asset} to fiat...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Oppor', onPress: () => {
                 setPage("Crypto")
@@ -393,7 +393,7 @@ function Crypto() {
           ])
         }
         else {
-          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Alright', onPress: () => {
                 setPage("Crypto")
@@ -425,9 +425,9 @@ function Crypto() {
     axios.post('/buycrypto', payload)
       .then(data => {
         if (data.data.id) {
-          console.log({ Mymessage: "Bought $" + payload.amount + " " + payload.asset })
+          console.log({ Mymessage: "Bought NGN" + payload.amount + " " + payload.asset })
           console.log({ message: data.data.message })
-          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted your fiat balance to $${payload.amount} ${payload.asset}...` : `You've successfully converted your fiat balance to $${payload.amount} ${payload.asset} to fiat...`}`, [
+          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted your fiat balance to NGN ${payload.amount} ${payload.asset}...` : `You've successfully converted your fiat balance to NGN${payload.amount} ${payload.asset} to fiat...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Oppor', onPress: () => {
                 setPage("Crypto")
@@ -440,7 +440,7 @@ function Crypto() {
           ])
         }
         else {
-          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of $${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Alright', onPress: () => {
                 setPage("Crypto")
@@ -643,8 +643,8 @@ function Crypto() {
         <View>
           <Text style={styles.convertTop}>Convert Fiat to {address.name}</Text>
 
-          <Text style={styles.convertPrice}>Amount of Fiat in USD you want to convert to {address.name}</Text>
-          <Text style={styles.minimum}>Minimum amount $2</Text>
+          <Text style={styles.convertPrice}>Amount of Fiat in NGN you want to convert to {address.name}</Text>
+          <Text style={styles.minimum}>Minimum amount &#x20A6; 500</Text>
           <View style={styles.addressInput}>
             <Foundation name="dollar" size={30} color="black" />
             <TextInput
@@ -689,8 +689,8 @@ function Crypto() {
         <View>
           <Text style={styles.convertTop}>Convert {address.name} to Fiat</Text>
 
-          <Text style={styles.convertPrice}>Amount of {address.name} in USD you want to convert to Fiat</Text>
-          <Text style={styles.minimum}>Minimum amount $2</Text>
+          <Text style={styles.convertPrice}>Amount of {address.name} in NGN you want to convert to Fiat</Text>
+          <Text style={styles.minimum}>Minimum amount NGN 500</Text>
           <View style={styles.addressInput}>
             <Foundation name="dollar" size={30} color="black" />
             <TextInput
@@ -749,11 +749,11 @@ function Crypto() {
               size={40}
             />
 
-            {address.name === "BTC" ? <Text style={styles.text_header}>${btc}</Text> : null}
+            {address.name === "BTC" ? <Text style={styles.text_header}>&#x20A6; {btc}</Text> : null}
 
-            {address.name === "BNB" ? <Text style={styles.text_header}>${bnb}</Text> : null}
+            {address.name === "BNB" ? <Text style={styles.text_header}>&#x20A6; {bnb}</Text> : null}
 
-            {address.name === "ETH" ? <Text style={styles.text_header}>${eth}</Text> : null}
+            {address.name === "ETH" ? <Text style={styles.text_header}>&#x20A6; {eth}</Text> : null}
 
             <View style={styles.buttons}>
 

@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   useTheme,
@@ -34,9 +34,21 @@ import Crypto from './Screens/Crypto';
 import Settings from './Screens/settings';
 import Contact from './Screens/Contact';
 import Airtime from './Screens/Airtime';
+import Bills from './Screens/Bills';
 import Profile from './Screens/Profile';
 import axios from './Screens/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// import Constants from 'expo-constants';
+// import * as Notifications from 'expo-notifications';
+
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: false,
+//     shouldSetBadge: false,
+//   }),
+// });
 
 const HomeStackScreen = () => (
   <Tabs.Navigator>
@@ -44,13 +56,13 @@ const HomeStackScreen = () => (
     <Tabs.Screen name="Fiat" component={Fiat} options={{
       tabBarIcon: ({ focused, size }) => (
         <FontAwesome5 name="money-bill-wave" size={size} color={focused ? '#febf12' : '#ccc'} />
-      ), headerShown: false, tabBarLabelStyle: {color: "#febf12"}
+      ), headerShown: false, tabBarLabelStyle: { color: "#febf12" }
     }} />
 
     <Tabs.Screen name="Crypto" component={Crypto} options={{
       tabBarIcon: ({ focused, size }) => (
         <FontAwesome5 name="bitcoin" size={size} color={focused ? '#febf12' : '#ccc'} />
-      ), headerShown: false, tabBarLabelStyle: {color: "#febf12"}
+      ), headerShown: false, tabBarLabelStyle: { color: "#febf12" }
     }} />
 
   </Tabs.Navigator>
@@ -73,6 +85,7 @@ const Drawer = createDrawerNavigator()
 export default function App() {
 
   const [loggedIn, setLoggedIn] = React.useState(false)
+  const [isNew, setisNew] = React.useState(false)
   const [name, setName] = React.useState("")
   const [email, setEmail] = React.useState("")
   const [phone, setPhone] = React.useState("")
@@ -85,6 +98,31 @@ export default function App() {
   const [rate2, setRate2] = React.useState(500)
   const [code, setCode] = React.useState("NG")
   const [bvn, setBVN] = React.useState("")
+
+  // const [expoPushToken, setExpoPushToken] = useState('');
+  // const [notification, setNotification] = useState(false);
+  // const notificationListener = useRef();
+  // const responseListener = useRef();
+
+  // useEffect(() => {
+  //   registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+  //   // This listener is fired whenever a notification is received while the app is foregrounded
+  //   notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+  //     setNotification(notification);
+  //   });
+
+  //   // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+  //   responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+  //     console.log(response);
+  //   });
+
+  //   return () => {
+  //     Notifications.removeNotificationSubscription(notificationListener.current);
+  //     Notifications.removeNotificationSubscription(responseListener.current);
+  //   };
+  // }, []);
+
 
   const authContext =
   {
@@ -214,14 +252,16 @@ export default function App() {
       <NavigationContainer>
         {loggedIn ?
 
-          <Drawer.Navigator screenOptions={{drawerItemStyle: {backgroundColor: "#febf1226"
-          },
-          drawerStyle: {
-            backgroundColor: "#ffdd7e",
-            // width: 240,
-          },
-          drawerType: 'front',
-          drawerActiveTintColor: "white",
+          <Drawer.Navigator screenOptions={{
+            drawerItemStyle: {
+              backgroundColor: "#febf1226"
+            },
+            drawerStyle: {
+              backgroundColor: "#ffdd7e",
+              // width: 240,
+            },
+            drawerType: 'front',
+            drawerActiveTintColor: "white",
           }} >
             {/* <View style={styles.drawerContent}>
               <View style={styles.userInfoSection}>
@@ -256,12 +296,19 @@ export default function App() {
               )
             }} />
 
-            {(country === "Nigeria" || country === "Ghana") ? <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Settings" }} options={{
+            {(country === "Nigeria" || country === "Ghana") ? <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Airtime" }} options={{
               drawerIcon: ({ focused, size }) => (
                 <Feather
                   name="phone"
                   size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
+              )
+            }} /> : null}
+
+            {(country === "Nigeria") ? <Drawer.Screen name="Pay Bills" component={Bills} options={{ title: "Bills" }} options={{
+              drawerIcon: ({ focused, size }) => (
+                <AntDesign name="filetext1" size={size}
+                color={focused ? 'lightblue' : '#ccc'} />
               )
             }} /> : null}
 
@@ -286,16 +333,29 @@ export default function App() {
 
           </Drawer.Navigator>
           :
-          <AuthStack.Navigator>
+          (
+            !isNew ?
+              <AuthStack.Navigator >
             <AuthStack.Screen name="SignIn" component={SignIn} options={{ title: "Clyp" }} />
             <AuthStack.Screen name="SignUp" component={SignUp} options={{ title: "Clyp" }} />
           </AuthStack.Navigator>
+          : 
+          <div>
+
+          </div>
+
+          )
         }
-      </NavigationContainer>
-    </AuthContext.Provider>
+    </NavigationContainer>
+    </AuthContext.Provider >
   )
 
 }
+
+{/* < AuthStack.Navigator >
+        <AuthStack.Screen name="SignIn" component={SignIn} options={{ title: "Clyp" }} />
+        <AuthStack.Screen name="SignUp" component={SignUp} options={{ title: "Clyp" }} />
+      </AuthStack.Navigator> */}
 
 const styles = StyleSheet.create({
   container: {
@@ -348,6 +408,60 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   }
 });
+
+
+// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.dev/notifications
+// async function sendPushNotification(expoPushToken) {
+//   const message = {
+//     to: expoPushToken,
+//     sound: 'default',
+//     title: 'Original Title',
+//     body: 'And here is the body!',
+//     data: { someData: 'goes here' },
+//   };
+
+//   await fetch('https://exp.host/--/api/v2/push/send', {
+//     method: 'POST',
+//     headers: {
+//       Accept: 'application/json',
+//       'Accept-encoding': 'gzip, deflate',
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify(message),
+//   });
+// }
+
+// async function registerForPushNotificationsAsync() {
+//   let token;
+//   if (Constants.isDevice) {
+//     const { status: existingStatus } = await Notifications.getPermissionsAsync();
+//     let finalStatus = existingStatus;
+//     if (existingStatus !== 'granted') {
+//       const { status } = await Notifications.requestPermissionsAsync();
+//       finalStatus = status;
+//     }
+//     if (finalStatus !== 'granted') {
+//       alert('Failed to get push token for push notification!');
+//       return;
+//     }
+//     token = (await Notifications.getExpoPushTokenAsync()).data;
+//     console.log(token);
+//   } else {
+//     alert('Must use physical device for Push Notifications');
+//   }
+
+//   if (Platform.OS === 'android') {
+//     Notifications.setNotificationChannelAsync('default', {
+//       name: 'default',
+//       importance: Notifications.AndroidImportance.MAX,
+//       vibrationPattern: [0, 250, 250, 250],
+//       lightColor: '#FF231F7C',
+//     });
+//   }
+
+//   return token;
+// }
+
 {/* <Ionicons name="card-outline" size={24} color="black" /> */ }
 {/* <Entypo name="cycle" size={24} color="black" /> */ }
 {/* <Feather name="send" size={24} color="black" /> */ }

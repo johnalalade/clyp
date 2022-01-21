@@ -564,8 +564,8 @@ function Fiat({ navigation }) {
                         <Text style={styles.nums}>{bank.Name}</Text>
                     </TouchableOpacity>
 
-                    <Text style={styles.withdrawText}>Amount ($): </Text>
-                    <Text style={styles.withdrawText}>Note: 0ur dollar rate is {user.rate2} per $: </Text>
+                    <Text style={styles.withdrawText}>Amount (NGN): </Text>
+                    {/* <Text style={styles.withdrawText}>Note: 0ur dollar rate is {user.rate2} per $: </Text> */}
                     <View style={styles.withdrawView}>
                         <TextInput
                             style={styles.nums}
@@ -575,7 +575,7 @@ function Fiat({ navigation }) {
                             returnKeyType="done"
                         />
                     </View>
-                    <Text style={styles.getText}>You get: {wamount ? (`${user.currency} ${wamount * user.rate2}`) : null} </Text>
+                    {/* <Text style={styles.getText}>You get: {wamount ? (`${user.currency} ${wamount * user.rate2}`) : null} </Text> */}
 
                     <Text style={styles.withdrawText}>Account Number: </Text>
                     <View style={styles.withdrawView}>
@@ -690,8 +690,9 @@ function Fiat({ navigation }) {
                             <View style={styles.header}>
                                 <Text style={styles.text_wallet}>Fiat Wallet</Text>
                                 <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" />
-                                <Text style={styles.text_header}>${((user.balance / user.rate).toString()).slice(0, 4)}</Text>
-                                <Text style={styles.text_sub_header}>${((user.ledger_balance / user.rate).toString()).slice(0, 4)}</Text>
+                                <Text style={styles.text_header}> &#x20A6; {(user.balance/1).toString().slice(0,6)}</Text
+                                >
+                                <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance/1).toString().slice(0,6)}</Text>
                                 <View style={styles.buttons}>
 
                                     <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Fund")}>
@@ -772,14 +773,14 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: '#febf1226',
+        // backgroundColor: '#febf1226',
         alignItems: 'center',
         paddingBottom: 100
         // justifyContent: 'center',
     },
     container2: {
         flex: 0.7,
-        backgroundColor: '#febf1226',
+        // backgroundColor: '#febf1226',
         alignItems: 'center',
         // justifyContent: 'center',
     },
@@ -854,7 +855,8 @@ const styles = StyleSheet.create({
     },
     panel: {
         padding: 20,
-        backgroundColor: '#febf1226',
+        // backgroundColor: '#febf1226',
+        backgroundColor: 'white',
         paddingTop: 20,
         height: 1500,
         // borderTopLeftRadius: 20,
