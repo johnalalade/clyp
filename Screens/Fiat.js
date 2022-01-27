@@ -392,6 +392,9 @@ function Fiat({ navigation }) {
             userID: id,
 
         }
+        if(payload.amount == 0){
+            return false
+        }
         if (payload.amount > user.balance) {
             Alert.alert("Insufficient Balance", `${(user.country === "Nigeria") ? `Comrade, you don't have sufficient balance fotr this transaction!, but you be boss...` : `You don't have sufficient balance fotr this transaction!`}`, [
                 (user.country === "Nigeria") ? {
@@ -426,6 +429,11 @@ function Fiat({ navigation }) {
                                     }
                                 }
                             ])
+                            setWAmount(0)
+                            setAcc_Name("")
+                            setBank("")
+                            setBank_Code("")
+                            setAcc_Num("")
                             // setPage("Fiat")
                             console.log({ data: data.data.response })
                             return data.data.response
