@@ -107,13 +107,14 @@ function SignUp1({ navigation }) {
                             <TouchableOpacity
                                 onPress={() => navigation.push("sign-2")}
                                 style={[styles.signIn, {
-                                    borderColor: '#FF6347',
+                                    borderColor: 'whitesmoke',
+                                    backgroundColor: "#febf12",
                                     borderWidth: 1,
                                     marginTop: 15
                                 }]}
                             >
                                 <Text style={[styles.textSign, {
-                                    color: '#FF6347'
+                                    color: 'white'
                                 }]}>Next</Text>
                             </TouchableOpacity>
 

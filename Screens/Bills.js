@@ -1,5 +1,5 @@
 import React, { useEffect, Component, useState } from "react";
-import { StyleSheet, Text, View, TextInput, Alert, Modal } from "react-native";
+import { StyleSheet, Text, View, TextInput, Alert, RefreshControl, } from "react-native";
 import { FlatList, ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -10,7 +10,7 @@ import data_bundles from "./data_bundles";
 import internet from "./internet";
 import power from "./power";
 import toll from "./toll";
-import { Avatar } from "react-native-paper";
+import { ActivityIndicator, Avatar } from "react-native-paper";
 
 
 function Bills({ navigation }) {
@@ -31,8 +31,12 @@ function Bills({ navigation }) {
     const [btc, setBTC] = React.useState()
     const [bnb, setBNB] = React.useState()
     const [eth, setETH] = React.useState()
+    const [usdt, setUSDT] = React.useState()
     const [balance, setBalance] = React.useState()
     const [acc_name, setAcc_Name] = React.useState("")
+    const [cleanup, setCleanUp] = React.useState(0)
+    const [refreshing, setRefreshing] = React.useState(false)
+    const [loading, setLoading] = React.useState(false)
 
 
 
@@ -73,12 +77,22 @@ function Bills({ navigation }) {
                     .catch((err) => {
                         console.log({ Err: "Unable to get ETH balance " + err })
                     })
+
+                axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[3].address })
+                    .then((data) => {
+                        setUSDT(data.data.balance)
+                        setRefreshing(false)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get USDT balance " + err })
+                    })
             })
             .catch(err => {
                 console.log({ Err: err })
             })
 
-    }, [])
+    }, [cleanup])
 
     const billSelectHandler = (val) => {
         setAmount(val.amount)
@@ -118,9 +132,11 @@ function Bills({ navigation }) {
             address: address,
             private_key: pKey
         }
+        setLoading(true)
 
         if (payload.asset === "FIAT") {
             if (payload.amount + payload.fee > user.balance) {
+                setLoading(false)
                 Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
                     (user.country === "Nigeria") ? {
                         text: 'Fund', onPress: () => {
@@ -139,7 +155,8 @@ function Bills({ navigation }) {
             }
         }
         if (payload.asset === "BTC") {
-            if (payload.amount + payload.fee > btc) {
+            if (payload.amount + payload.fee > (btc + (btc / 2))) {
+                setLoading(false)
                 Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
                     (user.country === "Nigeria") ? {
                         text: 'Fund', onPress: () => {
@@ -158,7 +175,8 @@ function Bills({ navigation }) {
             }
         }
         if (payload.asset === "BNB") {
-            if (payload.amount + payload.fee > bnb) {
+            if (payload.amount + payload.fee > (bnb + (bnb / 4))) {
+                setLoading(false)
                 Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
                     (user.country === "Nigeria") ? {
                         text: 'Fund', onPress: () => {
@@ -177,7 +195,28 @@ function Bills({ navigation }) {
             }
         }
         if (payload.asset === "ETH") {
-            if (payload.amount + payload.fee > eth) {
+            if (payload.amount + payload.fee > (eth / (eth / 2))) {
+                setLoading(false)
+                Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
+                    (user.country === "Nigeria") ? {
+                        text: 'Fund', onPress: () => {
+                            navigation.navigate("Crypto")
+                        }
+                    } : {
+                        text: 'Fund', onPress: () => {
+                            navigation.navigate("Crypto")
+                        }
+                    },
+                    {
+                        text: 'Ok'
+                    }
+                ])
+                return false
+            }
+        }
+        if (payload.asset === "USDT") {
+            if (payload.amount + payload.fee > (usdt / (usdt / 2))) {
+                setLoading(false)
                 Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
                     (user.country === "Nigeria") ? {
                         text: 'Fund', onPress: () => {
@@ -198,6 +237,7 @@ function Bills({ navigation }) {
         axios.post("/bills", payload)
             .then((data) => {
                 if (data.data.id) {
+                    setLoading(false)
                     console.log({ successMessage: data.data.message })
                     Alert.alert("Bill Payment successful", `${(user.country === "Nigeria") ? `Comrade, your bill payment of ${payload.amount} for ${payload.biller} was successful...` : `Your bill payment of ${payload.amount} for ${payload.biller} was successful...`}`, [
                         (user.country === "Nigeria") ? {
@@ -212,6 +252,7 @@ function Bills({ navigation }) {
                     ])
                 }
                 else {
+                    setLoading(false)
                     Alert.alert("Bill payment failed", `${(user.country === "Nigeria") ? `Comrade, your bill payment of ${payload.amount} for ${payload.biller} didn't go through, but no fear...` : `Your bill payment of ${payload.amount} for ${payload.biller} didn't go through, but no fear...`}`, [
                         (user.country === "Nigeria") ? {
                             text: 'Oppor', onPress: () => {
@@ -227,6 +268,7 @@ function Bills({ navigation }) {
                 }
             })
             .catch(err => {
+                setLoading(false)
                 console.log({ Error: "Airtime error: " + err })
                 Alert.alert("Bill payment failed", `${(user.country === "Nigeria") ? `Comrade, your bill payment of ${payload.amount} for ${payload.biller} didn't go through, but no fear...` : `Your bill payment of ${payload.amount} for ${payload.biller} didn't go through, but no fear...`}`, [
                     (user.country === "Nigeria") ? {
@@ -266,6 +308,14 @@ function Bills({ navigation }) {
         }
     }
 
+    if (loading) {
+        return (
+            <View style={{ opacity: 0.5, flex: 1, display: 'flex', flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <ActivityIndicator size="large" color="#febf12" />
+            </View>
+        )
+    }
+
     if (page === "Cables") {
         return (
             <ScrollView>
@@ -277,7 +327,7 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Cables & Entertainment</Text>
 
-                    <Text style={styles.balance}>Balance: &#x20A6; {balance} </Text>
+                    <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
 
                     <Text style={styles.billText}>Option: </Text>
                     <TouchableOpacity onPress={() => {
@@ -346,6 +396,17 @@ function Bills({ navigation }) {
                             {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                             <Text>ETH</Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.asset} onPress={() => {
+                            setAsset("USDT")
+                            setAddress(user.wallets[3].address)
+                            setPkey(user.wallets[3].privateKey)
+                            setBalance(usdt)
+                        }}>
+                            {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                            <Text>USDT</Text>
+                        </TouchableOpacity>
+
                     </View>
 
                     {verified ?
@@ -377,9 +438,9 @@ function Bills({ navigation }) {
                 /> */}
                 <FlatList
                     keyExtractor={(item) => item.id}
-                    data={cables.filter(i => i.country === user.code).sort((a,b) => {
-                        if(a.name > b.name) return 1
-                        if(a.name < b.name) return -1
+                    data={cables.filter(i => i.country === user.code).sort((a, b) => {
+                        if (a.name > b.name) return 1
+                        if (a.name < b.name) return -1
                         return 0
                     })}
                     renderItem={({ item }) => (
@@ -399,7 +460,7 @@ function Bills({ navigation }) {
     if (page === "data_bundle") {
         return (
             <ScrollView>
-                <View>
+                <View style={styles.wcont}>
 
                     <TouchableOpacity onPress={() => { setPage(null); setBill(null) }} style={styles.cancel}>
                         <Feather name="x" size={24} color="black" />
@@ -407,7 +468,7 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Data Bundles</Text>
 
-                    <Text style={styles.balance}>Balance: &#x20A6; {balance} </Text>
+                    <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
 
                     <Text style={styles.billText}>Option: </Text>
                     <TouchableOpacity onPress={() => {
@@ -478,6 +539,17 @@ function Bills({ navigation }) {
                             {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                             <Text>ETH</Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.asset} onPress={() => {
+                            setAsset("USDT")
+                            setAddress(user.wallets[3].address)
+                            setPkey(user.wallets[3].privateKey)
+                            setBalance(usdt)
+                        }}>
+                            {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                            <Text>USDT</Text>
+                        </TouchableOpacity>
+
                     </View>
 
                     <View>
@@ -509,9 +581,9 @@ function Bills({ navigation }) {
                 /> */}
                 <FlatList
                     keyExtractor={(item) => item.id}
-                    data={data_bundles.filter(i => i.country === user.code).sort((a,b) => {
-                        if(a.name > b.name) return 1
-                        if(a.name < b.name) return -1
+                    data={data_bundles.filter(i => i.country === user.code).sort((a, b) => {
+                        if (a.name > b.name) return 1
+                        if (a.name < b.name) return -1
                         return 0
                     })}
                     renderItem={({ item }) => (
@@ -531,7 +603,7 @@ function Bills({ navigation }) {
     if (page === "power") {
         return (
             <ScrollView>
-                <View>
+                <View style={styles.wcont}>
 
                     <TouchableOpacity onPress={() => { setPage(null); setBill(null) }} style={styles.cancel}>
                         <Feather name="x" size={24} color="black" />
@@ -539,7 +611,7 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Power & Utilities</Text>
 
-                    <Text style={styles.balance}>Balance: &#x20A6; {balance} </Text>
+                    <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
 
                     <Text style={styles.billText}>Option: </Text>
                     <TouchableOpacity onPress={() => {
@@ -607,6 +679,17 @@ function Bills({ navigation }) {
                             {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                             <Text>ETH</Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.asset} onPress={() => {
+                            setAsset("USDT")
+                            setAddress(user.wallets[3].address)
+                            setPkey(user.wallets[3].privateKey)
+                            setBalance(usdt)
+                        }}>
+                            {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                            <Text>USDT</Text>
+                        </TouchableOpacity>
+
                     </View>
 
                     {verified ?
@@ -639,9 +722,9 @@ function Bills({ navigation }) {
                 /> */}
                 <FlatList
                     keyExtractor={(item) => item.id}
-                    data={power.filter(i => i.country === user.code).sort((a,b) => {
-                        if(a.name > b.name) return 1
-                        if(a.name < b.name) return -1
+                    data={power.filter(i => i.country === user.code).sort((a, b) => {
+                        if (a.name > b.name) return 1
+                        if (a.name < b.name) return -1
                         return 0
                     })}
                     renderItem={({ item }) => (
@@ -661,7 +744,7 @@ function Bills({ navigation }) {
     if (page === "internet") {
         return (
             <ScrollView>
-                <View>
+                <View style={styles.wcont}>
 
                     <TouchableOpacity onPress={() => { setPage(null); setBill(null) }} style={styles.cancel}>
                         <Feather name="x" size={24} color="black" />
@@ -669,7 +752,7 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Internet Subscription</Text>
 
-                    <Text style={styles.balance}>Balance: &#x20A6; {balance} </Text>
+                    <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
 
                     <Text style={styles.billText}>Option: </Text>
                     <TouchableOpacity onPress={() => {
@@ -737,6 +820,17 @@ function Bills({ navigation }) {
                             {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                             <Text>ETH</Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.asset} onPress={() => {
+                            setAsset("USDT")
+                            setAddress(user.wallets[3].address)
+                            setPkey(user.wallets[3].privateKey)
+                            setBalance(usdt)
+                        }}>
+                            {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                            <Text>USDT</Text>
+                        </TouchableOpacity>
+
                     </View>
 
                     {verified ?
@@ -769,9 +863,9 @@ function Bills({ navigation }) {
                 /> */}
                 <FlatList
                     keyExtractor={(item) => item.id}
-                    data={internet.filter(i => i.country === user.code).sort((a,b) => {
-                        if(a.name > b.name) return 1
-                        if(a.name < b.name) return -1
+                    data={internet.filter(i => i.country === user.code).sort((a, b) => {
+                        if (a.name > b.name) return 1
+                        if (a.name < b.name) return -1
                         return 0
                     })}
                     renderItem={({ item }) => (
@@ -790,7 +884,14 @@ function Bills({ navigation }) {
 
 
     return (
-        <ScrollView>
+        <ScrollView refreshControl={
+            <RefreshControl refreshing={refreshing}
+                onRefresh={() => {
+                    setRefreshing(true)
+                    setCleanUp(cleanup + 1)
+
+                }} />
+        }>
             <View style={styles.container}>
                 <TouchableOpacity style={styles.options} onPress={() => { setPage("Cables") }}>
 
@@ -851,7 +952,7 @@ const styles = StyleSheet.create({
     cancel: {
         top: 0,
         marginBottom: 20,
-        marginTop: 10
+        marginTop: 10,
     },
     convertTop: {
         fontWeight: '900',
@@ -863,6 +964,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         padding: 0,
         paddingLeft: 15,
+    },
+    balance: {
+        fontWeight: '600',
+        marginBottom: 5,
     },
     nums: {
         paddingHorizontal: 10,
@@ -913,13 +1018,16 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     container: {
-        flex: 1
+        flex: 1,
+        padding: 15,
+
     },
     options: {
         // backgroundColor: "white",
         backgroundColor: '#febf1226',
         marginBottom: 10,
-        padding: 20
+        padding: 20,
+        borderRadius: 20
     },
     optionHead: {
         fontWeight: "900",

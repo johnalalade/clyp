@@ -199,26 +199,27 @@ function SignUp2({ navigation }) {
                             <TouchableOpacity
                                 onPress={() => navigation.goBack()}
                                 style={[styles.signIn, {
-                                    borderColor: '#FF6347',
+                                    borderColor: '#febf12',
                                     borderWidth: 1,
                                     marginTop: 15
                                 }]}
                             >
                                 <Text style={[styles.textSign, {
-                                    color: '#FF6347'
+                                    color: '#febf12'
                                 }]}>Previous</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
                                 onPress={() => navigation.push("sign-3")}
                                 style={[styles.signIn, {
-                                    borderColor: '#FF6347',
+                                    borderColor: 'whitesmoke',
+                                    backgroundColor: '#febf12',
                                     borderWidth: 1,
                                     marginTop: 15
                                 }]}
                             >
                                 <Text style={[styles.textSign, {
-                                    color: '#FF6347'
+                                    color: 'white'
                                 }]}>Next</Text>
                             </TouchableOpacity>
                         </View>

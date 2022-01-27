@@ -13,8 +13,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import * as Clipboard from 'expo-clipboard';
 import QRCode from 'react-native-qrcode-svg';
-// import { QRCode as CustomQRCode } from 'react-native-custom-qr-codes-expo';
-// import RNQRGenerator from "rn-qr-generator";
+import { ActivityIndicator } from "react-native-paper";
+
 
 function Crypto() {
 
@@ -26,9 +26,10 @@ function Crypto() {
   const [verifiedBuy, setVerifiedBuy] = React.useState(false)
   const [verifiedSend, setVerifiedSend] = React.useState(false)
   const [style, setStyle] = React.useState(styles.address)
+  const [loading, setLoading] = React.useState(false)
 
   const [images, setImage] = React.useState([
-    require('../assets/bitcoin.png'), require('../assets/binance.png'), require('../assets/ethereum.png')
+    require('../assets/bitcoin.png'), require('../assets/binance.png'), require('../assets/ethereum.png'), require('../assets/tether.png')
   ])
   const [ix, setIx] = React.useState(0)
 
@@ -43,6 +44,7 @@ function Crypto() {
   const [btc, setBTC] = React.useState()
   const [bnb, setBNB] = React.useState()
   const [eth, setETH] = React.useState()
+  const [usdt, setUSDT] = React.useState()
   const [user, setUser] = React.useState()
 
 
@@ -53,27 +55,27 @@ function Crypto() {
     address: "xxxxxxxxxxxxxxxxxxxxxxxx",
     image: ""
   })
-  const [cryptos, setCryptos] = useState([
-    {
-      name: "BTC",
-      privateKey: "1xr4sx6tvs6rey86rrfsj767t7kh",
-      address: "1xr4sx6tvs6rey86rrfsj767t7kh",
-      image: "",
-      amount: btc / 1957
-    },
-    {
-      name: "BNB",
-      privateKey: "1BNBxr4sx6tvs6rey86rrfsj767t7kh",
-      address: "1BNBxr4sx6tvs6rey86rrfsj767t7kh",
-      image: ""
-    },
-    {
-      name: "ETH",
-      privateKey: "1ETHxr4sx6tvs6rey86rrfsj767t7kh",
-      address: "1ETHxr4sx6tvs6rey86rrfsj767t7kh",
-      image: ""
-    }
-  ])
+  // const [cryptos, setCryptos] = useState([
+  //   {
+  //     name: "BTC",
+  //     privateKey: "1xr4sx6tvs6rey86rrfsj767t7kh",
+  //     address: "1xr4sx6tvs6rey86rrfsj767t7kh",
+  //     image: "",
+  //     amount: btc / 1957
+  //   },
+  //   {
+  //     name: "BNB",
+  //     privateKey: "1BNBxr4sx6tvs6rey86rrfsj767t7kh",
+  //     address: "1BNBxr4sx6tvs6rey86rrfsj767t7kh",
+  //     image: ""
+  //   },
+  //   {
+  //     name: "ETH",
+  //     privateKey: "1ETHxr4sx6tvs6rey86rrfsj767t7kh",
+  //     address: "1ETHxr4sx6tvs6rey86rrfsj767t7kh",
+  //     image: ""
+  //   }
+  // ])
 
   const [amount, setAmount] = useState("")
 
@@ -109,11 +111,21 @@ function Crypto() {
         axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[2].address })
           .then((data) => {
             setETH(data.data.balance)
-            setRefreshing(false)
+            // setRefreshing(false)
             console.log(data.data.balance)
           })
           .catch((err) => {
             console.log({ Err: "Unable to get ETH balance " + err })
+          })
+
+        axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[3].address })
+          .then((data) => {
+            setUSDT(data.data.balance)
+            setRefreshing(false)
+            console.log(data.data.balance)
+          })
+          .catch((err) => {
+            console.log({ Err: "Unable to get USDT balance " + err })
           })
       })
       .catch(err => {
@@ -131,31 +143,6 @@ function Crypto() {
     setPage("Send")
     setRAddress(data)
     console.log("Type: " + type + "\nData: " + data)
-  }
-
-  // Airtime
-  // const [airAmount, setAirAmount] = React.useState()
-  // const [phone, setPhone] = React.useState()
-  // const [user, setUser] = React.useState()
-  // const [style, setStyle] = React.useState(styles.address)
-  // const [verified, setVerified] = React.useState(false)
-
-  const airAmountHandler = (val) => {
-    setAirAmount(parseInt(val))
-    if (val < 100) {
-      setStyle(styles.error)
-      setVerified(false)
-    }
-    // if(val > user.balance){
-    //     setStyle(styles.error)
-    // }
-    else {
-      setVerified(true)
-      setStyle(styles.nums)
-    }
-  }
-  const airphoneHandler = (val) => {
-    setPhone(val)
   }
 
   // Amounts
@@ -326,11 +313,14 @@ function Crypto() {
       amount: rAmount,
       userID: user._id
     }
+    setLoading(true)
+
     axios.post('/sendcrypto', payload)
       .then(data => {
         if (data.data.id) {
           console.log({ Mymessage: `Sent NGN` + + payload.amount + " " + payload.asset })
           console.log({ message: data.data.message })
+          setLoading(false)
           Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully sent NGN ${payload.amount} ${payload.asset}...` : `You've successfully sent NGN ${payload.amount} ${payload.asset}...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Oppor', onPress: () => {
@@ -344,6 +334,7 @@ function Crypto() {
           ])
         }
         else {
+          setLoading(false)
           Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Alright', onPress: () => {
@@ -361,6 +352,18 @@ function Crypto() {
 
       })
       .catch(err => {
+        setLoading(false)
+        Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+          (user.country === "Nigeria") ? {
+            text: 'Alright', onPress: () => {
+              setPage("Crypto")
+            }
+          } : {
+            text: 'Ok', onPress: () => {
+              setPage("Crypto")
+            }
+          }
+        ])
         console.log({ message: "Error " + err })
       })
   }
@@ -373,13 +376,14 @@ function Crypto() {
       amount: amount,
       userID: user._id
     }
+    setLoading(true)
 
     axios.post('/sellcrypto', payload)
       .then(data => {
         if (data.data.id) {
           console.log({ Mymessage: "Sold $" + payload.amount + " " + payload.asset })
           console.log({ message: data.data.message })
-
+          setLoading(false)
           Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted NGN ${payload.amount} ${payload.asset} to fiat...` : `You've successfully converted NGN ${payload.amount} ${payload.asset} to fiat...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Oppor', onPress: () => {
@@ -393,6 +397,7 @@ function Crypto() {
           ])
         }
         else {
+          setLoading(false)
           Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Alright', onPress: () => {
@@ -409,6 +414,18 @@ function Crypto() {
 
       })
       .catch(err => {
+        setLoading(false)
+        Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+          (user.country === "Nigeria") ? {
+            text: 'Alright', onPress: () => {
+              setPage("Crypto")
+            }
+          } : {
+            text: 'Ok', onPress: () => {
+              setPage("Crypto")
+            }
+          }
+        ])
         console.log({ message: "Error " + err })
       })
   }
@@ -421,12 +438,14 @@ function Crypto() {
       amount: amount,
       userID: user._id
     }
+    setLoading(true)
 
     axios.post('/buycrypto', payload)
       .then(data => {
         if (data.data.id) {
           console.log({ Mymessage: "Bought NGN" + payload.amount + " " + payload.asset })
           console.log({ message: data.data.message })
+          setLoading(false)
           Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted your fiat balance to NGN ${payload.amount} ${payload.asset}...` : `You've successfully converted your fiat balance to NGN${payload.amount} ${payload.asset} to fiat...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Oppor', onPress: () => {
@@ -440,6 +459,7 @@ function Crypto() {
           ])
         }
         else {
+          setLoading(false)
           Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Alright', onPress: () => {
@@ -456,57 +476,32 @@ function Crypto() {
 
       })
       .catch(err => {
+        setLoading(false)
+        Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+          (user.country === "Nigeria") ? {
+            text: 'Alright', onPress: () => {
+              setPage("Crypto")
+            }
+          } : {
+            text: 'Ok', onPress: () => {
+              setPage("Crypto")
+            }
+          }
+        ])
         console.log({ message: "Error " + err })
       })
   }
 
 
-
-  if (page === "Airtime") {
+  if (loading) {
     return (
-      <View style={styles.airContainer}>
-        <TouchableOpacity onPress={() => setPage(null)} style={styles.cancel}>
-          <Feather name="x" size={24} color="black" />
-        </TouchableOpacity>
-
-        <Text style={styles.airText}>Amount: </Text>
-        <View style={styles.airView}>
-          <TextInput
-            style={style}
-            placeholder="100"
-            onChangeText={(val) => airAmountHandler(val)}
-            keyboardType="numeric"
-            returnKeyType="done"
-          />
-        </View>
-
-        <Text style={styles.airText}>Phone: </Text>
-        <View style={styles.airView}>
-          <TextInput
-            style={styles.address}
-            placeholder="200"
-            onChangeText={(val) => airphoneHandler(val)}
-            keyboardType="numeric"
-            returnKeyType="done"
-          />
-        </View>
-
-        {verified ?
-          <View>
-            <TouchableOpacity
-              style={styles.paymentButton}
-              onPress={() => { }}
-            >
-              <Text style={styles.paymentButtonText}>Buy</Text>
-            </TouchableOpacity>
-          </View>
-          :
-          null
-        }
+      <View style={{ opacity: 0.5, flex: 1, display: 'flex', flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator size="large" color="#febf12" />
       </View>
-
     )
   }
+
+
 
   if (page === "Scan") {
     if (page === "Scan" && hasPermission === null) {
@@ -755,6 +750,8 @@ function Crypto() {
 
             {address.name === "ETH" ? <Text style={styles.text_header}>&#x20A6; {eth}</Text> : null}
 
+            {address.name === "USDT" ? <Text style={styles.text_header}>&#x20A6; {usdt}</Text> : null}
+
             <View style={styles.buttons}>
 
               <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
@@ -821,7 +818,7 @@ function Crypto() {
             <View style={styles.cryptoList}>
               {
                 user && user.wallets.map((item, ix) => (
-                  <TouchableOpacity horizontal={true} style={styles.crypCont} key={item.address} onPress={() => { setAddress0(item); setIx(ix) }}>
+                  <TouchableOpacity horizontal={true} style={styles.crypCont} key={item.address+item.name} onPress={() => { setAddress0(item); setIx(ix) }}>
                     <Avatar.Image
                       source={
                         images[ix]
@@ -837,7 +834,7 @@ function Crypto() {
           </ScrollView>
 
         </View>
-        {/* </View> */}
+        {/* </View>  #febf1226*/}
 
 
       </View>
@@ -852,14 +849,17 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#febf1226',
+    // backgroundColor: 'white',
     alignItems: 'center',
   },
 
   containerSend: {
     flex: 1,
     backgroundColor: '#febf1226',
-
+    paddingHorizontal: 10
+  },
+  addressText: {
+    marginBottom: 5,
   },
   addressInput: {
     display: "flex",
@@ -894,7 +894,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingBottom: 50
+    paddingBottom: 50,
+    backgroundColor: "white",
+    marginHorizontal: 10,
+    borderRadius: 10,
+    borderColor: "#bebbbb",
+    borderWidth: 1,
+
   },
   text_wallet: {
     fontWeight: '300',
@@ -1008,7 +1014,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     // alignItems: "center",
-    backgroundColor: "#febf1226",
+    // backgroundColor: "#febf1226",
     width: "100%",
     flex: 1
   },
@@ -1026,7 +1032,12 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around"
+    justifyContent: "space-around",
+    backgroundColor: "white",
+    margin: 10,
+    borderRadius: 10,
+    borderColor: "#febf12",
+    borderWidth: 1,
   },
   cryptoList: {
     display: "flex",

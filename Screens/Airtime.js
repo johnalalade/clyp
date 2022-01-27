@@ -1,9 +1,10 @@
 import React, { useEffect, Component } from "react";
-import { StyleSheet, Text, View, TextInput, Alert, Modal } from "react-native";
+import { StyleSheet, Text, View, TextInput, Alert, ScrollView, RefreshControl } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from '@expo/vector-icons';
 import axios from "./axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator } from "react-native-paper";
 
 function Airtime({ navigation }) {
     const [airAmount, setAirAmount] = React.useState("")
@@ -18,8 +19,12 @@ function Airtime({ navigation }) {
     const [btc, setBTC] = React.useState()
     const [bnb, setBNB] = React.useState()
     const [eth, setETH] = React.useState()
+    const [usdt, setUSDT] = React.useState()
     const [balance, setBalance] = React.useState()
     const [modalOpen, setModalOpen] = React.useState(true)
+    const [cleanup, setCleanUp] = React.useState(0)
+    const [refreshing, setRefreshing] = React.useState(false)
+    const [loading, setLoading] = React.useState(false)
 
     useEffect(async () => {
         let id = await AsyncStorage.getItem('id').then(value => value)
@@ -58,92 +63,36 @@ function Airtime({ navigation }) {
                     .catch((err) => {
                         console.log({ Err: "Unable to get ETH balance " + err })
                     })
+
+                axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[3].address })
+                    .then((data) => {
+                        setUSDT(data.data.balance)
+                        setRefreshing(false)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get USDT balance " + err })
+                    })
             })
             .catch(err => {
                 console.log({ Err: err })
             })
 
-    }, [])
+    }, [cleanup])
 
     const airAmountHandler = (val) => {
         setAirAmount(Number(val))
-        // if (asset === "Fiat") {
-        //     if (val > user.balance) {
-        //         setStyle(styles.error)
-        //         setVerified(false)
-        //     }
-        // }
-        // else if (asset === "BTC") {
-        //     let balance = btc * user.rate
 
-        //     if (val >= balance) {
-        //         setStyle(styles.error)
-        //         setVerified(false)
-        //     }
-        // }
-        // else if (asset === "BNB") {
-        //     let balance = bnb * user.rate
-
-
-        //     if (val >= balance) {
-        //         setStyle(styles.error)
-        //         setVerified(false)
-        //     }
-        // }
-        // else if (asset === "ETH") {
-        //     let balance = eth * user.rate
-
-        //     if (val >= balance) {
-        //         setStyle(styles.error)
-        //         setVerified(false)
-        //     }
-        // }
-        // else {
-        //     setVerified(true)
-        //     setStyle(styles.nums)
-        // }
     }
     const airphoneHandler = (val) => {
         setPhone(val)
-        if (val.length === 0 && airAmount < 100) {
-            setStyle(styles.error)
+        if (val.length < 11 ) {
             setVerified(false)
         }
-        else if (asset === "Fiat" && phone.length === 0) {
-            if (airAmount > user.balance) {
-                setStyle(styles.error)
-                setVerified(false)
-            }
-        }
-        else if (asset === "BTC" && phone.length === 0) {
-            let balance = btc * user.rate
-
-            if (airAmount >= balance) {
-                setStyle(styles.error)
-                setVerified(false)
-            }
-        }
-        else if (asset === "BNB" && phone.length === 0) {
-            let balance = bnb * user.rate
-
-
-            if (airAmount >= balance) {
-                setStyle(styles.error)
-                setVerified(false)
-            }
-        }
-        else if (asset === "ETH" && phone.length === 0) {
-            let balance = eth * user.rate
-
-            if (airAmount >= balance) {
-                setStyle(styles.error)
-                setVerified(false)
-            }
-        }
-        else {
+        else{
             setVerified(true)
-            setStyle(styles.nums)
         }
+        
     }
 
     const airTimeHandler = async () => {
@@ -157,15 +106,33 @@ function Airtime({ navigation }) {
             address: address,
             private_key: pKey
         }
-        // if(balance < payload.amount){
-        //     return false
-        // }
-        if(payload.phone < 11){
+        setLoading(true)
+        if (payload.amount > balance) {
+            setLoading(false)
+            Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
+                (user.country === "Nigeria") ? {
+                    text: 'Fund', onPress: () => {
+                        navigation.navigate("Home")
+                    }
+                } : {
+                    text: 'Fund', onPress: () => {
+                        navigation.navigate("Home")
+                    }
+                },
+                {
+                    text: 'Ok'
+                }
+            ])
+            return false
+        }
+        if (payload.phone < 11) {
+            setLoading(false)
             return false
         }
         axios.post("/airtime", payload)
             .then((data) => {
                 if (data.data.id) {
+                    setLoading(false)
                     console.log({ successMessage: data.data.message })
                     Alert.alert("Airtime Purchase successful", `${(user.country === "Nigeria") ? `Comrade, your airtime purchase of ${payload.amount} was successful...` : `Your airtime purchase of ${payload.amount} was successful`}`, [
                         (user.country === "Nigeria") ? {
@@ -180,6 +147,7 @@ function Airtime({ navigation }) {
                     ])
                 }
                 else {
+                    setLoading(false)
                     Alert.alert("Airtime Purcahse failed", `${(user.country === "Nigeria") ? `Comrade, your airtime purchase of ${payload.amount} didn't go through, but no fear...` : `Your airtime purchase of ${payload.amount} didn't go through`}`, [
                         (user.country === "Nigeria") ? {
                             text: 'Oppor', onPress: () => {
@@ -195,6 +163,7 @@ function Airtime({ navigation }) {
                 }
             })
             .catch(err => {
+                setLoading(false)
                 console.log({ Error: "Airtime error: " + err })
                 Alert.alert("Airtime Purcahse failed", `${(user.country === "Nigeria") ? `Comrade, your airtime purchase of ${payload.amount} didn't go through, but no fear...` : `Your airtime purchase of ${payload.amount} didn't go through`}`, [
                     (user.country === "Nigeria") ? {
@@ -210,101 +179,118 @@ function Airtime({ navigation }) {
             })
     }
 
+    if(loading){
+        return(
+            <View style={{ opacity: 0.5, flex: 1, display: 'flex', flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <ActivityIndicator size="large" color="#febf12" />
+            </View>
+        )
+    }
+
     return (
-        <View style={styles.airContainer}>
+        <ScrollView style={{ flex: 1 }} refreshControl={
+            <RefreshControl refreshing={refreshing}
+                onRefresh={() => {
+                    setRefreshing(true)
+                    setCleanUp(cleanup + 1)
 
-            <Text style={styles.balance}>Balance: &#x20A6; {balance} </Text>
-            <Text style={styles.airText}>Amount: </Text>
-            <View style={styles.airView}>
-                <TextInput
-                    style={style}
-                    placeholder="100"
-                    onChangeText={(val) => airAmountHandler(val)}
-                    keyboardType="numeric"
-                    returnKeyType="done"
-                />
-            </View>
+                }} />
+        }>
+            <View style={styles.airContainer}>
 
-            <Text style={styles.airText}>Phone: </Text>
-            <View style={styles.airView}>
-                <TextInput
-                    style={styles.nums}
-                    placeholder="200"
-                    onChangeText={(val) => airphoneHandler(val)}
-                    keyboardType="numeric"
-                    returnKeyType="done"
-                />
-            </View>
+                <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                <Text style={styles.airText}>Amount: </Text>
+                <View style={styles.airView}>
+                    <TextInput
+                        style={styles.nums}
+                        placeholder="100"
+                        onChangeText={(val) => airAmountHandler(val)}
+                        keyboardType="numeric"
+                        returnKeyType="done"
+                    />
+                </View>
 
-            <View style={styles.assets}>
-                <TouchableOpacity style={styles.asset} onPress={() => {
-                    setAsset("FIAT")
-                    airAmountHandler(airAmount)
-                    setBalance(user.balance)
-                }}>
-                    {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                    <Text>Fiat</Text>
-                </TouchableOpacity>
+                <Text style={styles.airText}>Phone: </Text>
+                <View style={styles.airView}>
+                    <TextInput
+                        style={styles.nums}
+                        placeholder="200"
+                        onChangeText={(val) => airphoneHandler(val)}
+                        keyboardType="numeric"
+                        returnKeyType="done"
+                    />
+                </View>
 
-                <TouchableOpacity style={styles.asset} onPress={() => {
-                    setAsset("BTC")
-                    setAddress(user.wallets[0].address)
-                    setPkey(user.wallets[0].privateKey)
-                    airAmountHandler(airAmount)
-                    setBalance(btc)
-                }}>
-                    {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                    <Text>BTC</Text>
-                </TouchableOpacity>
+                <View style={styles.assets}>
+                    <TouchableOpacity style={styles.asset} onPress={() => {
+                        setAsset("FIAT")
+                        airAmountHandler(airAmount)
+                        setBalance(user.balance)
+                    }}>
+                        {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                        <Text>Fiat</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles.asset} onPress={() => {
-                    setAsset("BNB")
-                    setAddress(user.wallets[1].address)
-                    setPkey(user.wallets[1].privateKey)
-                    airAmountHandler(airAmount)
-                    setBalance(bnb)
-                }}>
-                    {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                    <Text>BNB</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.asset} onPress={() => {
+                        setAsset("BTC")
+                        setAddress(user.wallets[0].address)
+                        setPkey(user.wallets[0].privateKey)
+                        airAmountHandler(airAmount)
+                        setBalance(btc)
+                    }}>
+                        {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                        <Text>BTC</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles.asset} onPress={() => {
-                    setAsset("ETH")
-                    setAddress(user.wallets[2].address)
-                    setPkey(user.wallets[2].privateKey)
-                    airAmountHandler(airAmount)
-                    setBalance(eth)
-                }}>
-                    {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                    <Text>ETH</Text>
-                </TouchableOpacity>
-            </View>
+                    <TouchableOpacity style={styles.asset} onPress={() => {
+                        setAsset("BNB")
+                        setAddress(user.wallets[1].address)
+                        setPkey(user.wallets[1].privateKey)
+                        airAmountHandler(airAmount)
+                        setBalance(bnb)
+                    }}>
+                        {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                        <Text>BNB</Text>
+                    </TouchableOpacity>
 
-            {verified ?
-                <View>
-                    <TouchableOpacity
-                        style={styles.paymentButton}
-                        onPress={() => airTimeHandler()}
-                    >
-                        <Text style={styles.paymentButtonText}>Buy</Text>
+                    <TouchableOpacity style={styles.asset} onPress={() => {
+                        setAsset("ETH")
+                        setAddress(user.wallets[2].address)
+                        setPkey(user.wallets[2].privateKey)
+                        airAmountHandler(airAmount)
+                        setBalance(eth)
+                    }}>
+                        {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                        <Text>ETH</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.asset} onPress={() => {
+                        setAsset("USDT")
+                        setAddress(user.wallets[3].address)
+                        setPkey(user.wallets[3].privateKey)
+                        airAmountHandler(airAmount)
+                        setBalance(usdt)
+                    }}>
+                        {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                        <Text>USDT</Text>
                     </TouchableOpacity>
                 </View>
-                :
-                null
-            }
 
-            {/* <Modal visible={modalOpen} animationType="slide" style={styles.modal}>
-                <View style={styles.modal}>
-                    <Text style={styles.modalHeader}>
-                    Airtime Purcahse successful
-                    </Text>
-                    <Text style={styles.modalText}>
-                        {`${(country === "Nigeria") ? `Comrade, your airtime purchase of ${airAmount} was successful...` : `Your airtime purchase of ${airAmount} was successful`}`}
-                    </Text>
-                </View>
-            </Modal> */}
-        </View>
+                {verified ?
+                    <View>
+                        <TouchableOpacity
+                            style={styles.paymentButton}
+                            onPress={() => airTimeHandler()}
+                        >
+                            <Text style={styles.paymentButtonText}>Buy</Text>
+                        </TouchableOpacity>
+                    </View>
+                    :
+                    null
+                }
 
+            </View>
+        </ScrollView>
     )
 }
 

@@ -4,32 +4,41 @@ import { AuthContext } from "../context/AuthContext";
 import * as Animatable from 'react-native-animatable';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
-import { useTheme } from 'react-native-paper';
+import { ActivityIndicator, useTheme } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function SignIn({ navigation }) {
-    const { email, password, signIn } = React.useContext(AuthContext)
+    const { email, password, signIn, load } = React.useContext(AuthContext)
 
     const [secE, setSecE] = React.useState(true)
     const [mail, setMail] = React.useState()
+    const [loading, setLoading] = React.useState(false)
 
-    useEffect(async () =>{
+    useEffect(async () => {
         let mail = await AsyncStorage.getItem('email').then(value => value)
-        if(mail){
+        if (mail) {
             setMail(mail)
             email(mail)
         }
-        
+
     }, [])
 
     const sec = () => setSecE(!secE)
 
     const { colors } = useTheme();
 
+    if (loading) {
+        return (
+            <View style={{ opacity: 0.5, flex: 1, display: 'flex', flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <ActivityIndicator size="large" color="#febf12" />
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
-           
+
             <View style={styles.container}>
                 <StatusBar backgroundColor='#FF6347' barStyle="light-content" />
                 <View style={styles.header}>
@@ -105,15 +114,16 @@ function SignIn({ navigation }) {
                         <View style={styles.button}>
 
                             <TouchableOpacity
-                                onPress={() => signIn()}
+                                onPress={() => { signIn(); setLoading(true); setTimeout(() => { setLoading(false) }, 3000) }}
                                 style={[styles.signIn, {
-                                    borderColor: '#FF6347',
+                                    backgroundColor: "#febf12",
+                                    borderColor: 'whitesmoke',
                                     borderWidth: 1,
                                     marginTop: 15
                                 }]}
                             >
                                 <Text style={[styles.textSign, {
-                                    color: '#FF6347'
+                                    color: 'white'
                                 }]}>Login</Text>
                             </TouchableOpacity>
                         </View>

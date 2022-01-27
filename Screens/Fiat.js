@@ -9,8 +9,6 @@ import { FlatList } from "react-native-gesture-handler";
 import { Avatar } from "react-native-paper";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import FiatPage from "./Fiat-Page";
-import FundFiat from "./Fund-Fiat";
 import { Ionicons } from '@expo/vector-icons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -20,6 +18,8 @@ import banks from "./available_banks";
 import { UserInterfaceIdiom } from "expo-constants";
 import axios from './axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator } from "react-native-paper";
+import * as Clipboard from 'expo-clipboard';
 
 const FiatStack = createStackNavigator()
 
@@ -60,24 +60,8 @@ function Fiat({ navigation }) {
     // const [user, setUser] = React.useState()
     const [style, setStyle] = React.useState(styles.nums)
     const [verified, setVerified] = React.useState(false)
+    const [loading, setLoading] = React.useState(false)
 
-    const airAmountHandler = (val) => {
-        setAirAmount(val)
-        if (val < 100) {
-            setStyle(styles.error)
-            setVerified(false)
-        }
-        // if(val > user.balance){
-        //     setStyle(styles.error)
-        // }
-        else {
-            setVerified(true)
-            setStyle(styles.nums)
-        }
-    }
-    const airphoneHandler = (val) => {
-        setPhone(val)
-    }
 
     const [txs, setTxs] = React.useState([
         {
@@ -180,54 +164,14 @@ function Fiat({ navigation }) {
         }
     };
 
-    if (page === "Airtime") {
+    if (loading) {
         return (
-            <View style={styles.airContainer}>
-
-                <View>
-                    <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
-                        <Feather name="x" size={24} color="black" />
-                    </TouchableOpacity>
-
-                    <Text style={styles.airText}>Amount: </Text>
-                    <View style={styles.airView}>
-                        <TextInput
-                            style={style}
-                            placeholder="100"
-                            onChangeText={(val) => airAmountHandler(val)}
-                            keyboardType="numeric"
-                            returnKeyType="done"
-                        />
-                    </View>
-
-                    <Text style={styles.airText}>Phone: </Text>
-                    <View style={styles.airView}>
-                        <TextInput
-                            style={styles.nums}
-                            placeholder="200"
-                            onChangeText={(val) => airphoneHandler(val)}
-                            keyboardType="numeric"
-                            returnKeyType="done"
-                        />
-                    </View>
-
-                    {verified ?
-                        <View>
-                            <TouchableOpacity
-                                style={styles.paymentButton}
-                                onPress={() => { }}
-                            >
-                                <Text style={styles.paymentButtonText}>Buy</Text>
-                            </TouchableOpacity>
-                        </View>
-                        :
-                        null
-                    }
-                </View>
+            <View style={{ opacity: 0.5, flex: 1, display: 'flex', flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <ActivityIndicator size="large" color="#febf12" />
             </View>
-
         )
     }
+
 
     if (page === "Fund") {
         return (
@@ -336,7 +280,10 @@ function Fiat({ navigation }) {
                                 <Text style={{
                                     marginTop: 35, fontWeight: "600"
                                 }} >Account Number:</Text>
-                                <View style={styles.input}>
+                                <TouchableOpacity onPress={() => {
+                                    Clipboard.setString(user.account_number);
+                                    Alert.alert("Copied", `You've copied your account number, time to receive money...`)
+                                }} style={styles.input}>
                                     <Ionicons
                                         name="card-outline"
                                         size={44}
@@ -346,7 +293,7 @@ function Fiat({ navigation }) {
                                     >
                                         {user.account_number}
                                     </Text>
-                                </View>
+                                </TouchableOpacity>
 
                                 <Text style={{
                                     marginTop: 35, fontWeight: "600"
@@ -375,18 +322,9 @@ function Fiat({ navigation }) {
 
     const amountHandler = (val) => {
         setWAmount(val)
-        if (user.balance >= 100) {
-            if ((user.balance / user.rate) >= parseInt(val) && (val * user.rate2) >= 100) {
-
-                setCAmount(true)
-            }
-            else {
-                // More than available balance
-            }
-        }
-        else {
-            // insufficient Balance
-        }
+        // if (user.balance >= val) {
+        //    setCAmount(true)
+        // }
     }
 
     const acc_numHandler = (val) => {
@@ -398,10 +336,7 @@ function Fiat({ navigation }) {
                 "account_bank": bank.Code
             })
                 .then(data => {
-                    // this.setState({
-                    //   acc_name: data.data.acc_name.slice(0,data.data.acc_name.indexOf('"')),
-                    //   c_name: true
-                    // }) .slice(0, data.data.acc_name.indexOf('"'))
+
                     setAcc_Name(data.data.acc_name)
 
                     if (data.data.message) {
@@ -426,10 +361,7 @@ function Fiat({ navigation }) {
                 "account_bank": val.Code
             })
                 .then(data => {
-                    // this.setState({
-                    //   acc_name: data.data.acc_name.slice(0,data.data.acc_name.indexOf('"')),
-                    //   c_name: true
-                    // })
+
                     setAcc_Name(data.data.acc_name)
 
                     if (data.data.message) {
@@ -460,6 +392,21 @@ function Fiat({ navigation }) {
             userID: id,
 
         }
+        if (payload.amount > user.balance) {
+            Alert.alert("Insufficient Balance", `${(user.country === "Nigeria") ? `Comrade, you don't have sufficient balance fotr this transaction!, but you be boss...` : `You don't have sufficient balance fotr this transaction!`}`, [
+                (user.country === "Nigeria") ? {
+                    text: 'Oppor', onPress: () => {
+                        setPage("Fiat")
+                    }
+                } : {
+                    text: 'Ok', onPress: () => {
+                        setPage("Fiat")
+                    }
+                }
+            ])
+            return false
+        }
+        setLoading(true)
         axios.post('/withdraw', payload)
             .then(data => {
                 if (data.data.id) {
@@ -467,6 +414,7 @@ function Fiat({ navigation }) {
                     axios.post('/user', { userID: id })
                         .then((data) => {
                             setUser(data.data.response)
+                            setLoading(false)
                             Alert.alert("Withdrawal Successful", `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, your withdrawal of ${payload.amount} was successful...` : `Your withdrawal of ${payload.amount} was successful`}`, [
                                 (user.country === "Nigeria") ? {
                                     text: 'Oppor', onPress: () => {
@@ -484,6 +432,7 @@ function Fiat({ navigation }) {
                         })
                         .catch(err => {
                             console.log({ Error: "Withdrawal error: " + err })
+                            setLoading(false)
                             Alert.alert("Withdrawal failed", `${(user.country === "Nigeria") ? `Comrade, your withdrawal of ${payload.amount} didn't go through, but no fear...` : `Your withdrawal of ${payload.amount} didn't go through`}`, [
                                 (user.country === "Nigeria") ? {
                                     text: 'ok', onPress: () => {
@@ -500,20 +449,21 @@ function Fiat({ navigation }) {
                 }
 
             })
-            // .then(res => {
-            //     axios.post('/user', { userID: id })
-            //         .then((data) => {
-            //             setUser(data.data.response)
-            //             setPage("Fiat")
-            //             console.log({ data: data.data.response })
-            //             return data.data.response
-            //         })
-            //         .catch(err => {
 
-            //         })
-            // })
             .catch(err => {
                 console.log("Failure to withdraw from your fiat wallet: " + err)
+                setLoading(false)
+                Alert.alert("Withdrawal failed", `${(user.country === "Nigeria") ? `Comrade, your withdrawal of ${payload.amount} didn't go through, but no fear...` : `Your withdrawal of ${payload.amount} didn't go through`}`, [
+                    (user.country === "Nigeria") ? {
+                        text: 'ok', onPress: () => {
+                            setPage("Fiat")
+                        }
+                    } : {
+                        text: 'Ok', onPress: () => {
+                            setPage("Fiat")
+                        }
+                    }
+                ])
             })
     }
 
@@ -595,7 +545,7 @@ function Fiat({ navigation }) {
                         <Text style={styles.nums}>{acc_name}</Text>
                     </View>
 
-                    {acc_name !== "" && (user.balance / user.rate) >= wamount && (wamount * user.rate2) >= 100 &&
+                    {acc_name !== "" &&
                         <View>
                             <TouchableOpacity
                                 style={styles.paymentButton}
@@ -690,9 +640,9 @@ function Fiat({ navigation }) {
                             <View style={styles.header}>
                                 <Text style={styles.text_wallet}>Fiat Wallet</Text>
                                 <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" />
-                                <Text style={styles.text_header}> &#x20A6; {(user.balance/1).toString().slice(0,6)}</Text
+                                <Text style={styles.text_header}> &#x20A6; {(user.balance / 1).toString().slice(0, 6)}</Text
                                 >
-                                <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance/1).toString().slice(0,6)}</Text>
+                                <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toString().slice(0, 6)}</Text>
                                 <View style={styles.buttons}>
 
                                     <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Fund")}>
@@ -915,7 +865,8 @@ const styles = StyleSheet.create({
     },
     txText: {
         marginLeft: 5,
-        fontWeight: "700"
+        fontWeight: "700",
+        marginVertical: 5
     },
     txTextSub: {
         marginLeft: 5
