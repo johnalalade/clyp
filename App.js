@@ -318,7 +318,11 @@ export default function App() {
     // navigation or simply by controlling state
     setisNew(false)
   }
-
+  if(!isLoaded){
+    return(
+      <View></View>
+    )
+  }
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>

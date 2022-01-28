@@ -309,7 +309,17 @@ const styles = StyleSheet.create({
         paddingTop: 20,
     },
     airView: {
-        marginBottom: 20,
+        marginBottom: 10,
+    },
+    balance: {
+        fontWeight: "500",
+        fontSize: 15
+    },
+    airText: {
+        marginTop: 10,
+        marginBottom: 10,
+        fontSize: 15,
+        fontWeight: "600"
     },
     nums: {
         paddingHorizontal: 10,

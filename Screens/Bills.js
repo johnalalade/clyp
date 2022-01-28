@@ -1039,6 +1039,15 @@ const styles = StyleSheet.create({
     },
     avt: {
         marginBottom: 10
+    },
+    billText: {
+        marginTop: 10,
+        marginBottom: 10,
+        fontSize: 15,
+        fontWeight: "600"
+    },
+    billView: {
+        marginBottom: 10
     }
 })
 

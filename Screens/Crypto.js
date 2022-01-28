@@ -22,9 +22,9 @@ function Crypto() {
   const [scanned, setScanned] = useState(false)
   const [text, setText] = useState("")
   const [page, setPage] = React.useState("Fiat")
-  const [verifiedSell, setVerifiedSell] = React.useState(false)
-  const [verifiedBuy, setVerifiedBuy] = React.useState(false)
-  const [verifiedSend, setVerifiedSend] = React.useState(false)
+  const [verifiedSell, setVerifiedSell] = React.useState(true)
+  const [verifiedBuy, setVerifiedBuy] = React.useState(true)
+  const [verifiedSend, setVerifiedSend] = React.useState(true)
   const [style, setStyle] = React.useState(styles.address)
   const [loading, setLoading] = React.useState(false)
 
@@ -46,6 +46,7 @@ function Crypto() {
   const [eth, setETH] = React.useState()
   const [usdt, setUSDT] = React.useState()
   const [user, setUser] = React.useState()
+  const [balance, setBalance] = React.useState()
 
 
 
@@ -55,27 +56,6 @@ function Crypto() {
     address: "xxxxxxxxxxxxxxxxxxxxxxxx",
     image: ""
   })
-  // const [cryptos, setCryptos] = useState([
-  //   {
-  //     name: "BTC",
-  //     privateKey: "1xr4sx6tvs6rey86rrfsj767t7kh",
-  //     address: "1xr4sx6tvs6rey86rrfsj767t7kh",
-  //     image: "",
-  //     amount: btc / 1957
-  //   },
-  //   {
-  //     name: "BNB",
-  //     privateKey: "1BNBxr4sx6tvs6rey86rrfsj767t7kh",
-  //     address: "1BNBxr4sx6tvs6rey86rrfsj767t7kh",
-  //     image: ""
-  //   },
-  //   {
-  //     name: "ETH",
-  //     privateKey: "1ETHxr4sx6tvs6rey86rrfsj767t7kh",
-  //     address: "1ETHxr4sx6tvs6rey86rrfsj767t7kh",
-  //     image: ""
-  //   }
-  // ])
 
   const [amount, setAmount] = useState("")
 
@@ -93,6 +73,7 @@ function Crypto() {
         axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address })
           .then((data) => {
             setBTC(data.data.balance)
+            setBalance(data.data.balance)
             console.log(data.data.balance)
           })
           .catch((err) => {
@@ -148,71 +129,13 @@ function Crypto() {
   // Amounts
 
   const amountHandler = (val) => {
-    setAmount(parseInt(val) - ((2 / 100) * val))
-    let value = parseInt(val) - ((2 / 100) * val)
+    setAmount(Number(val))
 
-    if (address.name === "BTC") {
-      let balance = btc / 1957
-
-      if (val > balance) {
-        setStyle(styles.error)
-        setVerifiedSell(false)
-      }
-    }
-    else if (address.name === "BNB") {
-      let balance = bnb / 242205133645110.0000
-
-
-      if (val > balance) {
-        setStyle(styles.error)
-        setVerifiedSell(false)
-      }
-    }
-    else if (address.name === "ETH") {
-      let balance = eth / 242205133645110.0000
-
-      if (val > balance) {
-        setStyle(styles.error)
-        setVerifiedSell(false)
-      }
-    }
-    else {
-      setVerifiedSell(true)
-    }
   }
 
   const amountHandlerBuy = (val) => {
-    setAmount(parseInt(val) - ((2 / 100) * val))
-    let value = parseInt(val) - ((2 / 100) * val)
+    setAmount(Number(val))
 
-    if (address.name === "BTC") {
-      let balance = btc / 1957
-
-      if (val > user.balance / user.rate) {
-        setStyle(styles.error)
-        setVerifiedBuy(false)
-      }
-    }
-    else if (address.name === "BNB") {
-      let balance = bnb / 242205133645110.0000
-
-
-      if (val > user.balance / user.rate) {
-        setStyle(styles.error)
-        setVerifiedBuy(false)
-      }
-    }
-    else if (address.name === "ETH") {
-      let balance = eth / 242205133645110.0000
-
-      if (val > user.balance / user.rate) {
-        setStyle(styles.error)
-        setVerifiedBuy(false)
-      }
-    }
-    else {
-      setVerifiedBuy(true)
-    }
   }
 
   const toHexadecimal = (number) => {
@@ -253,47 +176,7 @@ function Crypto() {
 
   const sendamount = (val) => {
     console.log(Number(val))
-
     setRAmount(Number(val))
-
-    if (address.name === "BTC") {
-      let balance = btc
-
-      if (val > balance) {
-        setStyle(styles.error)
-        setVerifiedSend(false)
-      }
-      else {
-        // setRAmount(Number(val))
-        setVerifiedSend(true)
-      }
-    }
-    else if (address.name === "BNB") {
-      let balance = bnb
-
-
-      if (val > balance) {
-        setStyle(styles.error)
-        setVerifiedSend(false)
-      }
-      else {
-        setVerifiedSend(true)
-      }
-    }
-    else if (address.name === "ETH") {
-      let balance = eth
-
-      if (val > balance) {
-        setStyle(styles.error)
-        setVerifiedSend(false)
-      }
-      else {
-        setVerifiedSend(true)
-      }
-    }
-    else {
-      setVerifiedSend(true)
-    }
   }
 
   const askForCameraPermission = () => {
@@ -315,25 +198,63 @@ function Crypto() {
     }
     setLoading(true)
 
-    axios.post('/sendcrypto', payload)
-      .then(data => {
-        if (data.data.id) {
-          console.log({ Mymessage: `Sent NGN` + + payload.amount + " " + payload.asset })
-          console.log({ message: data.data.message })
-          setLoading(false)
-          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully sent NGN ${payload.amount} ${payload.asset}...` : `You've successfully sent NGN ${payload.amount} ${payload.asset}...`}`, [
-            (user.country === "Nigeria") ? {
-              text: 'Oppor', onPress: () => {
-                setPage("Crypto")
-              }
-            } : {
-              text: 'Ok', onPress: () => {
-                setPage("Crypto")
-              }
-            }
-          ])
+    if (balance < payload.amount) {
+      setLoading(false)
+      Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
+        (user.country === "Nigeria") ? {
+          text: 'Fund', onPress: () => {
+            setPage("Crypto")
+          }
+        } : {
+          text: 'Fund', onPress: () => {
+            setPage("Crypto")
+          }
+        },
+        {
+          text: 'Ok'
         }
-        else {
+      ])
+      return false
+    }
+
+    else {
+      axios.post('/sendcrypto', payload)
+        .then(data => {
+          if (data.data.id) {
+            console.log({ Mymessage: `Sent NGN` + + payload.amount + " " + payload.asset })
+            console.log({ message: data.data.message })
+            setLoading(false)
+            Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully sent NGN ${payload.amount} ${payload.asset}...` : `You've successfully sent NGN ${payload.amount} ${payload.asset}...`}`, [
+              (user.country === "Nigeria") ? {
+                text: 'Oppor', onPress: () => {
+                  setPage("Crypto")
+                }
+              } : {
+                text: 'Ok', onPress: () => {
+                  setPage("Crypto")
+                }
+              }
+            ])
+          }
+          else {
+            setLoading(false)
+            Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+              (user.country === "Nigeria") ? {
+                text: 'Alright', onPress: () => {
+                  setPage("Crypto")
+                }
+              } : {
+                text: 'Ok', onPress: () => {
+                  setPage("Crypto")
+                }
+              }
+            ])
+            console.log({ othermessage: data.data.message })
+          }
+
+
+        })
+        .catch(err => {
           setLoading(false)
           Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
             (user.country === "Nigeria") ? {
@@ -346,26 +267,9 @@ function Crypto() {
               }
             }
           ])
-          console.log({ othermessage: data.data.message })
-        }
-
-
-      })
-      .catch(err => {
-        setLoading(false)
-        Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
-          (user.country === "Nigeria") ? {
-            text: 'Alright', onPress: () => {
-              setPage("Crypto")
-            }
-          } : {
-            text: 'Ok', onPress: () => {
-              setPage("Crypto")
-            }
-          }
-        ])
-        console.log({ message: "Error " + err })
-      })
+          console.log({ message: "Error " + err })
+        })
+    }
   }
 
   const sell = () => {
@@ -378,25 +282,71 @@ function Crypto() {
     }
     setLoading(true)
 
-    axios.post('/sellcrypto', payload)
-      .then(data => {
-        if (data.data.id) {
-          console.log({ Mymessage: "Sold $" + payload.amount + " " + payload.asset })
-          console.log({ message: data.data.message })
-          setLoading(false)
-          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted NGN ${payload.amount} ${payload.asset} to fiat...` : `You've successfully converted NGN ${payload.amount} ${payload.asset} to fiat...`}`, [
-            (user.country === "Nigeria") ? {
-              text: 'Oppor', onPress: () => {
-                setPage("Crypto")
-              }
-            } : {
-              text: 'Ok', onPress: () => {
-                setPage("Crypto")
-              }
-            }
-          ])
+    if (payload.amount < 500) {
+      setLoading(false)
+      Alert.alert("Amount too Low", `${(user.country === "Nigeria") ? `Comrade, the amount you entered is not up to NGN500...` : `The amount you entered is not up to NGN500...`}`, [
+        {
+          text: 'Ok'
         }
-        else {
+      ])
+      return false
+    }
+
+    if (balance < payload.amount) {
+      setLoading(false)
+      Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
+        (user.country === "Nigeria") ? {
+          text: 'Fund', onPress: () => {
+            setPage("Crypto")
+          }
+        } : {
+          text: 'Fund', onPress: () => {
+            setPage("Crypto")
+          }
+        },
+        {
+          text: 'Ok'
+        }
+      ])
+      return false
+    }
+    else {
+      axios.post('/sellcrypto', payload)
+        .then(data => {
+          if (data.data.id) {
+            console.log({ Mymessage: "Sold $" + payload.amount + " " + payload.asset })
+            console.log({ message: data.data.message })
+            setLoading(false)
+            Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted NGN ${payload.amount} ${payload.asset} to fiat...` : `You've successfully converted NGN ${payload.amount} ${payload.asset} to fiat...`}`, [
+              (user.country === "Nigeria") ? {
+                text: 'Oppor', onPress: () => {
+                  setPage("Crypto")
+                }
+              } : {
+                text: 'Ok', onPress: () => {
+                  setPage("Crypto")
+                }
+              }
+            ])
+          }
+          else {
+            setLoading(false)
+            Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+              (user.country === "Nigeria") ? {
+                text: 'Alright', onPress: () => {
+                  setPage("Crypto")
+                }
+              } : {
+                text: 'Ok', onPress: () => {
+                  setPage("Crypto")
+                }
+              }
+            ])
+            console.log({ othermessage: data.data.message })
+          }
+
+        })
+        .catch(err => {
           setLoading(false)
           Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
             (user.country === "Nigeria") ? {
@@ -409,25 +359,9 @@ function Crypto() {
               }
             }
           ])
-          console.log({ othermessage: data.data.message })
-        }
-
-      })
-      .catch(err => {
-        setLoading(false)
-        Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
-          (user.country === "Nigeria") ? {
-            text: 'Alright', onPress: () => {
-              setPage("Crypto")
-            }
-          } : {
-            text: 'Ok', onPress: () => {
-              setPage("Crypto")
-            }
-          }
-        ])
-        console.log({ message: "Error " + err })
-      })
+          console.log({ message: "Error " + err })
+        })
+    }
   }
 
   const buy = () => {
@@ -440,25 +374,72 @@ function Crypto() {
     }
     setLoading(true)
 
-    axios.post('/buycrypto', payload)
-      .then(data => {
-        if (data.data.id) {
-          console.log({ Mymessage: "Bought NGN" + payload.amount + " " + payload.asset })
-          console.log({ message: data.data.message })
-          setLoading(false)
-          Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted your fiat balance to NGN ${payload.amount} ${payload.asset}...` : `You've successfully converted your fiat balance to NGN${payload.amount} ${payload.asset} to fiat...`}`, [
-            (user.country === "Nigeria") ? {
-              text: 'Oppor', onPress: () => {
-                setPage("Crypto")
-              }
-            } : {
-              text: 'Ok', onPress: () => {
-                setPage("Crypto")
-              }
-            }
-          ])
+    if (payload.amount < 500) {
+      setLoading(false)
+      Alert.alert("Amount too Low", `${(user.country === "Nigeria") ? `Comrade, the aomunt you entered is not up to NGN500...` : `The amount you entered is not up to NGN500...`}`, [
+        {
+          text: 'Ok'
         }
-        else {
+      ])
+      return false
+    }
+
+
+    if (balance < payload.amount) {
+      setLoading(false)
+      Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
+        (user.country === "Nigeria") ? {
+          text: 'Fund', onPress: () => {
+            setPage("Crypto")
+          }
+        } : {
+          text: 'Fund', onPress: () => {
+            setPage("Crypto")
+          }
+        },
+        {
+          text: 'Ok'
+        }
+      ])
+      return false
+    }
+    else {
+      axios.post('/buycrypto', payload)
+        .then(data => {
+          if (data.data.id) {
+            console.log({ Mymessage: "Bought NGN" + payload.amount + " " + payload.asset })
+            console.log({ message: data.data.message })
+            setLoading(false)
+            Alert.alert(`${payload.asset} sent successfully`, `${(user.country === "Nigeria") ? `Comrade, you get money ooo!, you've successfully converted your fiat balance to NGN ${payload.amount} ${payload.asset}...` : `You've successfully converted your fiat balance to NGN${payload.amount} ${payload.asset} to fiat...`}`, [
+              (user.country === "Nigeria") ? {
+                text: 'Oppor', onPress: () => {
+                  setPage("Crypto")
+                }
+              } : {
+                text: 'Ok', onPress: () => {
+                  setPage("Crypto")
+                }
+              }
+            ])
+          }
+          else {
+            setLoading(false)
+            Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+              (user.country === "Nigeria") ? {
+                text: 'Alright', onPress: () => {
+                  setPage("Crypto")
+                }
+              } : {
+                text: 'Ok', onPress: () => {
+                  setPage("Crypto")
+                }
+              }
+            ])
+            console.log({ othermessage: data.data.message })
+          }
+
+        })
+        .catch(err => {
           setLoading(false)
           Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
             (user.country === "Nigeria") ? {
@@ -471,25 +452,9 @@ function Crypto() {
               }
             }
           ])
-          console.log({ othermessage: data.data.message })
-        }
-
-      })
-      .catch(err => {
-        setLoading(false)
-        Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
-          (user.country === "Nigeria") ? {
-            text: 'Alright', onPress: () => {
-              setPage("Crypto")
-            }
-          } : {
-            text: 'Ok', onPress: () => {
-              setPage("Crypto")
-            }
-          }
-        ])
-        console.log({ message: "Error " + err })
-      })
+          console.log({ message: "Error " + err })
+        })
+    }
   }
 
 
@@ -559,9 +524,10 @@ function Crypto() {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.addressText}>Amount</Text>
+          <Text style={styles.addressText}>Amount:</Text>
           <View style={styles.addressInput}>
-            <Foundation name="dollar" size={30} color="black" />
+          <Text style={{fontSize: 30}}>&#x20A6;</Text>
+            {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
               placeholder={address.address}
@@ -639,9 +605,10 @@ function Crypto() {
           <Text style={styles.convertTop}>Convert Fiat to {address.name}</Text>
 
           <Text style={styles.convertPrice}>Amount of Fiat in NGN you want to convert to {address.name}</Text>
-          <Text style={styles.minimum}>Minimum amount &#x20A6; 500</Text>
+          <Text style={styles.minimum}>(Minimum amount &#x20A6; 500):</Text>
           <View style={styles.addressInput}>
-            <Foundation name="dollar" size={30} color="black" />
+          <Text style={{fontSize: 30}}>&#x20A6;</Text>
+            {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
               placeholder="200"
@@ -651,13 +618,14 @@ function Crypto() {
             />
           </View>
 
-          <Text style={styles.processing}>Processing fee ~ 2%</Text>
+          <Text style={styles.processing}>Processing fee ~ 5%</Text>
 
           <Text style={styles.addressText}>Your {address.name} wallet will be credited with: </Text>
           <View style={styles.addressInput}>
-            <Foundation name="dollar" size={30} color="black" />
+          <Text style={{fontSize: 30}}>&#x20A6;</Text>
+            {/* <Foundation name="dollar" size={30} color="black" /> */}
 
-            <Text style={styles.address}>{amount}</Text>
+            <Text style={styles.address}>{amount - (amount * 0.05)}</Text>
           </View>
 
         </View>
@@ -685,9 +653,10 @@ function Crypto() {
           <Text style={styles.convertTop}>Convert {address.name} to Fiat</Text>
 
           <Text style={styles.convertPrice}>Amount of {address.name} in NGN you want to convert to Fiat</Text>
-          <Text style={styles.minimum}>Minimum amount NGN 500</Text>
+          <Text style={styles.minimum}>(Minimum amount &#x20A6; 500):</Text>
           <View style={styles.addressInput}>
-            <Foundation name="dollar" size={30} color="black" />
+          <Text style={{fontSize: 30}}>&#x20A6;</Text>
+            {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
               placeholder="200"
@@ -697,12 +666,13 @@ function Crypto() {
             />
           </View>
 
-          <Text style={styles.processing}>Processing fee ~ 2%</Text>
+          <Text style={styles.processing}>Processing fee ~ 5%</Text>
 
           <Text style={styles.addressText}>Your fiat wallet will be credited with: </Text>
           <View style={styles.addressInput}>
-            <Foundation name="dollar" size={30} color="black" />
-            <Text style={styles.address}>{amount}</Text>
+          <Text style={{fontSize: 30}}>&#x20A6;</Text>
+            {/* <Foundation name="dollar" size={30} color="black" /> */}
+            <Text style={styles.address}>{amount - (amount * 0.05)}</Text>
 
           </View>
 
@@ -818,7 +788,21 @@ function Crypto() {
             <View style={styles.cryptoList}>
               {
                 user && user.wallets.map((item, ix) => (
-                  <TouchableOpacity horizontal={true} style={styles.crypCont} key={item.address+item.name} onPress={() => { setAddress0(item); setIx(ix) }}>
+                  <TouchableOpacity horizontal={true} style={styles.crypCont} key={item.address + item.name} onPress={() => {
+                    setAddress0(item); setIx(ix);
+                    if (item.name === "BTC") {
+                      setBalance(btc)
+                    }
+                    if (item.name === "BNB") {
+                      setBalance(bnb)
+                    }
+                    if (item.name === "ETH") {
+                      setBalance(eth)
+                    }
+                    if (item.name === "USDT") {
+                      setBalance(usdt)
+                    }
+                  }}>
                     <Avatar.Image
                       source={
                         images[ix]
@@ -834,7 +818,6 @@ function Crypto() {
           </ScrollView>
 
         </View>
-        {/* </View>  #febf1226*/}
 
 
       </View>
@@ -845,7 +828,8 @@ function Crypto() {
 const styles = StyleSheet.create({
   cancel: {
     top: 0,
-    marginBottom: 20
+    marginBottom: 20,
+    marginTop: 10
   },
   container: {
     flex: 1,
@@ -855,23 +839,23 @@ const styles = StyleSheet.create({
 
   containerSend: {
     flex: 1,
-    backgroundColor: '#febf1226',
+    // backgroundColor: '#febf1226',
     paddingHorizontal: 10
   },
   addressText: {
-    marginBottom: 5,
+    marginBottom: 10,
   },
   addressInput: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
-    marginBottom: 30
+    marginBottom: 40
   },
   address: {
     paddingHorizontal: 10,
     paddingVertical: 20,
-    backgroundColor: "whitesmoke",
+    backgroundColor: "white",
     borderRadius: 10,
     width: "90%"
   },
@@ -1060,11 +1044,13 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   convertPrice: {
-    fontWeight: "500"
+    fontWeight: "600",
+    marginBottom: 5
   },
   minimum: {
     fontWeight: "500",
-    color: "red"
+    color: "#febf12",
+    marginBottom: 10
   },
   processing: {
     fontWeight: "500",
@@ -1108,14 +1094,3 @@ const styles = StyleSheet.create({
 
 
 export default Crypto
-
-{/* <NavigationContainer independent={true}> */ }
-{/* <CryptoStack.Navigator> */ }
-{/* <CryptoStack.Screen name="Fiat" component={CryptoPage} options={{ headerShown: false }} /> */ }
-
-{/* <CryptoStack.Screen name="Fund Fiat" component={FundFiat} options={{ headerShown: true }} /> */ }
-
-{/* <CryptoStack.Screen name="sign-3" component={SignUp3} options={{ headerShown: false }} /> */ }
-
-{/* </CryptoStack.Navigator> */ }
-{/* </NavigationContainer> */ }
