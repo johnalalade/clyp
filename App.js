@@ -110,16 +110,16 @@ const AuthStackScreen = () => (
 
 const renderItem = ({ item }) => {
   return (
-    <ImageBackground source={require('./assets/6209522.jpg')} resizeMode="cover" style={styles.image} imageStyle= 
-    {{opacity:0.2}}>
+    <ImageBackground source={require('./assets/6209522.jpg')} resizeMode="cover" style={styles.image} imageStyle=
+      {{ opacity: 0.2 }}>
       {/* <View style={styles.introView}> */}
 
-        <Text style={styles.introHead}>{item.title}</Text>
-        {/* <Image source={item.image} style={styles.introImage} /> */}
-        <SvgXml
-          xml={item.image} width="300px" height="300px"
-        />
-        <Text style={styles.introSub}>{item.text}</Text>
+      <Text style={styles.introHead}>{item.title}</Text>
+      {/* <Image source={item.image} style={styles.introImage} /> */}
+      <SvgXml
+        xml={item.image} width="300px" height="300px"
+      />
+      <Text style={styles.introSub}>{item.text}</Text>
 
       {/* </View> */}
     </ImageBackground>
@@ -152,6 +152,7 @@ export default function App() {
   const [rate2, setRate2] = React.useState(500)
   const [code, setCode] = React.useState("NG")
   const [bvn, setBVN] = React.useState("")
+  const [uname, setUname] = React.useState("")
   const [loading, setLoading] = React.useState(false)
 
 
@@ -308,8 +309,13 @@ export default function App() {
 
   useEffect(async () => {
     let id = await AsyncStorage.getItem('id').then(value => value)
+    let u_name = await AsyncStorage.getItem('username').then(value => value)
     if (id) {
       setisNew(false)
+      // setUname(u_name)
+    }
+    if(u_name){
+      setUname(u_name)
     }
   }, [])
 
@@ -318,8 +324,8 @@ export default function App() {
     // navigation or simply by controlling state
     setisNew(false)
   }
-  if(!isLoaded){
-    return(
+  if (!isLoaded) {
+    return (
       <View></View>
     )
   }
@@ -329,13 +335,17 @@ export default function App() {
         {loggedIn ?
 
           <Drawer.Navigator screenOptions={{
+            drawerActiveBackgroundColor: "#febf12",
+            drawerActiveTintColor: "black",
+            drawerInactiveBackgroundColor: "#febf1226",
             drawerItemStyle: {
-              backgroundColor: "#febf1226"
+              marginBottom: 15,
+              paddingVertical: 10
             },
             drawerStyle: {
-              backgroundColor: "#ffdd7e",
-              // width: 240,
-            },
+              paddingTop: 30,
+              backgroundColor: "whitesmoke",
+              },
             drawerType: 'front',
             drawerActiveTintColor: "white",
           }} >
@@ -364,6 +374,7 @@ export default function App() {
             }} /> */}
 
             <Drawer.Screen name="Home" component={HomeStackScreen} options={{ title: "Home" }} options={{
+              
               drawerIcon: ({ focused, size }) => (
                 <AntDesign
                   name="home"
@@ -406,6 +417,18 @@ export default function App() {
                   color={focused ? 'lightblue' : '#ccc'} />
               )
             }} />
+
+            {uname && uname !== "" && <Drawer.Screen name={uname} component={Settings} options={{ title: "Settings" }} options={{
+              drawerIcon: ({ focused, size }) => (
+                <FontAwesome5 name="user-circle" size={size} color={focused ? 'lightblue' : '#ccc'} />
+                // <AntDesign
+                //   name="user"
+                //   size={size}
+                //   color={focused ? 'lightblue' : '#ccc'} />
+              )
+            }} /> || null}
+
+
 
           </Drawer.Navigator>
           :

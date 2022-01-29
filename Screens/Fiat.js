@@ -265,12 +265,9 @@ function Fiat({ navigation }) {
                                 <Text style={{
                                     marginTop: 35, fontWeight: "600"
                                 }} >Account Name:</Text>
-                                <View style={styles.input}>
-                                    <Ionicons
-                                        name="card-outline"
-                                        size={44}
-                                        color="grey" />
-                                    <Text style={styles.textInput}
+                                <View style={styles.inputF}>
+                                    <MaterialIcons name="account-circle" size={33} color="grey" />
+                                    <Text style={styles.textInputF}
                                         onPress={(val) => { }}
                                     >
                                         {user.name}
@@ -283,12 +280,9 @@ function Fiat({ navigation }) {
                                 <TouchableOpacity onPress={() => {
                                     Clipboard.setString(user.account_number);
                                     Alert.alert("Copied", `You've copied your account number, time to receive money...`)
-                                }} style={styles.input}>
-                                    <Ionicons
-                                        name="card-outline"
-                                        size={44}
-                                        color="grey" />
-                                    <Text style={styles.textInput}
+                                }} style={styles.inputF}>
+                                    <FontAwesome5 name="piggy-bank" size={30} color="grey" />
+                                    <Text style={styles.textInputF}
                                         onPress={(val) => { }}
                                     >
                                         {user.account_number}
@@ -298,12 +292,9 @@ function Fiat({ navigation }) {
                                 <Text style={{
                                     marginTop: 35, fontWeight: "600"
                                 }} >Bank:</Text>
-                                <View style={styles.input}>
-                                    <Ionicons
-                                        name="card-outline"
-                                        size={44}
-                                        color="grey" />
-                                    <Text style={styles.textInput}
+                                <View style={styles.inputF}>
+                                    <FontAwesome name="bank" size={30} color="grey" />
+                                    <Text style={styles.textInputF}
                                         onPress={(val) => { }}
                                     >
                                         {user.bank_name}
@@ -392,7 +383,7 @@ function Fiat({ navigation }) {
             userID: id,
 
         }
-        if(payload.amount == 0){
+        if (payload.amount == 0) {
             return false
         }
         if (payload.amount > user.balance) {
@@ -580,7 +571,32 @@ function Fiat({ navigation }) {
                 data={user.transactions}
                 renderItem={({ item }) => (
                     <TouchableOpacity style={styles.txTouch} onPress={() => txHandler(item.name)}>
-                        <FontAwesome5 name="money-bill-wave-alt" size={30} color="#febf12" />
+
+                        {item.name === "Added Funds" && <MaterialIcons name="call-received" size={24} color="#febf12" />}
+
+                        {item.name === "Added Funds With Card" && <Ionicons
+                            name="card-outline"
+                            size={24}
+                            color="#febf12" />}
+
+                        {item.name === "Withdrawal Successful" && <Feather name="send" size={24} color="#febf12" />}
+
+                        {item.name === "Withdrawal Failed" && <MaterialIcons name="cancel" size={24} color="#fd343480" />}
+
+                        {item.name.indexOf("Airtime") != -1 && <Feather name="phone" size={24} color="#febf12" />}
+
+                        {item.name.indexOf("Got") != -1 && <FontAwesome5 name="coins" size={24} color="#febf12" />}
+
+                        {item.name.indexOf("Sent") != -1 && <FontAwesome5 name="coins" size={24} color="#febf12" />}
+
+                        {item.name.indexOf("Exchanged") != -1 && <Entypo name="cycle" size={24} color="#febf12" />}
+
+                        {item.name.indexOf("Bill") != -1 && <FontAwesome5 name="file-alt" size={24} color="#febf12" />}
+
+                        {item.name.indexOf("Pending") != -1 && <MaterialIcons name="pending" size={24} color="#febf12" />}
+
+                        {/* <FontAwesome5 name="money-bill-wave-alt" size={30} color="#febf12" /> */}
+
                         {/* <Avatar.Image
                             source={{
                                 uri: 'https://api.adorable.io/avatars/50/abott@adorable.png'
@@ -869,7 +885,8 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 12
+        marginBottom: 12,
+        paddingVertical: 7,
     },
     txText: {
         marginLeft: 5,
@@ -901,10 +918,25 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
     },
+    inputF: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "whitesmoke",
+        padding: 10,
+        borderRadius: 10,
+    },
     textInput: {
         width: "80%",
         marginLeft: 10,
         fontWeight: "bold"
+    },
+    textInputF: {
+        width: "80%",
+        marginLeft: 10,
+        fontWeight: "bold",
+        paddingVertical: 20
     },
     paymentButton: {
         display: "flex",

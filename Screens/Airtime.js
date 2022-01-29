@@ -150,7 +150,7 @@ function Airtime({ navigation }) {
                     setLoading(false)
                     Alert.alert("Airtime Purcahse failed", `${(user.country === "Nigeria") ? `Comrade, your airtime purchase of ${payload.amount} didn't go through, but no fear...` : `Your airtime purchase of ${payload.amount} didn't go through`}`, [
                         (user.country === "Nigeria") ? {
-                            text: 'Oppor', onPress: () => {
+                            text: 'Ok', onPress: () => {
                                 navigation.navigate("Home")
                             }
                         } : {
@@ -167,7 +167,7 @@ function Airtime({ navigation }) {
                 console.log({ Error: "Airtime error: " + err })
                 Alert.alert("Airtime Purcahse failed", `${(user.country === "Nigeria") ? `Comrade, your airtime purchase of ${payload.amount} didn't go through, but no fear...` : `Your airtime purchase of ${payload.amount} didn't go through`}`, [
                     (user.country === "Nigeria") ? {
-                        text: 'Oppor', onPress: () => {
+                        text: 'Ok', onPress: () => {
                             navigation.navigate("Home")
                         }
                     } : {

@@ -1,9 +1,10 @@
 import axios from "./axios";
 import React, { Component, useEffect } from "react";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import { StyleSheet, Text, View, TextInput, Alert } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function Contact () {
+function Contact ({ navigation }) {
     const [verified, setVerified] = React.useState(false)
     const [title, setTitle] = React.useState("")
     const [details, setDetails] = React.useState("")
@@ -38,13 +39,28 @@ function Contact () {
             support: details,
             title: title,
             id: user._id,
-            name: user.name
+            name: user.name,
+            clyp: user.clypID
         }
         axios.post('/support', request)
         .then(data => {
-            console.log({messsage: data.data.response})
+            Alert.alert("Message Sent", `${(user.country === "Nigeria") ? `Comrade, your message has been sent to the clyp team, you'd be contacted soon...` : `Your message has been sent to the clyp team, you'd be contacted soon...`}`, [
+                
+                {
+                    text: 'Ok', onPress: () => {
+                        navigation.navigate("Home")
+                    }
+                }
+            ])
+            console.log({messsage: data.data.message})
         })
         .catch(err => {
+            Alert.alert("Message not Sent", `${(user.country === "Nigeria") ? `Comrade, your message has was unable to reach the clyp team, please try again...` : `Your message has was unable to reach the clyp team, please try again...`}`, [
+                
+                {
+                    text: 'Ok'
+                }
+            ])
             console.log({messsage: "Unable to send request for support: "+err})
         })
     }
