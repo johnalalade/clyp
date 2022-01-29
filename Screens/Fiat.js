@@ -561,6 +561,10 @@ function Fiat({ navigation }) {
     }
 
 
+    const txHandler = (name) => {
+
+    }
+
 
 
     const renderInner = () => (
@@ -570,7 +574,7 @@ function Fiat({ navigation }) {
                 keyExtractor={(item) => item.reference + item.name + item.amount}
                 data={user.transactions}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.txTouch} onPress={() => txHandler(item.name)}>
+                    <TouchableOpacity style={styles.txTouch} onPress={() =>{ sendPushNotification()}}>
 
                         {item.name === "Added Funds" && <MaterialIcons name="call-received" size={24} color="#febf12" />}
 
@@ -955,6 +959,27 @@ const styles = StyleSheet.create({
 });
 
 export default Fiat
+
+async function sendPushNotification(expoPushToken) {
+  const message = {
+    to: "ExponentPushToken[AFnsBoFCMJVvOP0kJb7SLD]",
+    sound: 'default',
+    title: 'Original Title',
+    body: 'And here is the body!',
+    data: { someData: 'goes here' },
+  };
+
+  let alla = await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+
+}
 
 // <NavigationContainer independent={true}>
         //     <FiatStack.Navigator>
