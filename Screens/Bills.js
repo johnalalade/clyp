@@ -19,7 +19,7 @@ function Bills({ navigation }) {
     const [prev, setPrev] = useState("")
     const [user, setUser] = React.useState()
     const [amount, setAmount] = useState(null)
-    const [customer, setCustomer] = useState(null)
+    const [customer, setCustomer] = useState("")
     const [biller, setBiller] = useState(null)
     const [fee, setFee] = useState(null)
     const [bill, setBill] = useState(null)
@@ -37,6 +37,7 @@ function Bills({ navigation }) {
     const [cleanup, setCleanUp] = React.useState(0)
     const [refreshing, setRefreshing] = React.useState(false)
     const [loading, setLoading] = React.useState(false)
+    const [nmloading, setNmload] = React.useState("")
 
 
 
@@ -101,23 +102,26 @@ function Bills({ navigation }) {
         setBill(val)
         setPage(prev)
 
-        axios.post('/validatebills', {
-            item_code: val.item_code,
-            biller_code: val.biller_code,
-            customer
-        })
-            .then(data => {
-                setAcc_Name(data.data.name)
-                setVerified(true)
+        // if (customer.length === 10) {
+        //     axios.post('/validatebills', {
+        //         item_code: val.item_code,
+        //         biller_code: val.biller_code,
+        //         customer
+        //     })
+        //         .then(data => {
+        //             setAcc_Name(data.data.name)
+        //             setVerified(true)
 
-                if (data.data.message) {
-                    Alert.alert("Incorrect details", "Account name could not be fetched")
-                }
-            })
-            .catch(err => {
-                console.log(err)
+        //             if (data.data.message) {
+        //                 Alert.alert("Incorrect details", "Account name could not be fetched")
+        //             }
+        //         })
+        //         .catch(err => {
+        //             console.log(err)
 
-            })
+        //         })
+
+        // }
     }
 
     const billSubmit = async (val) => {
@@ -286,17 +290,20 @@ function Bills({ navigation }) {
 
     const acc_numHandler = (val) => {
         setCustomer(val)
-        if (val.length === 10 && bank.Code) {
+        if (val.length === 10 && bill !== null) {
             // toast.info("Please wait while we fetch account name")
+            setNmload(true)
             axios.post('/validatebills', {
                 item_code: bill.item_code,
                 biller_code: bill.biller_code,
-                customer
+                customer: val
             })
                 .then(data => {
+                    console.log(data.data)
+                    console.log(val)
                     setAcc_Name(data.data.name)
                     setVerified(true)
-
+                    setNmload(false)
                     if (data.data.message) {
                         Alert.alert("Incorrect details", "Account name could not be fetched")
                     }
@@ -321,7 +328,7 @@ function Bills({ navigation }) {
             <ScrollView>
                 <View style={styles.wcont}>
 
-                    <TouchableOpacity onPress={() => { setPage(null); setBill(null) }} style={styles.cancel}>
+                    <TouchableOpacity onPress={() => { setPage(null); setBill(null); setAcc_Name("") }} style={styles.cancel}>
                         <Feather name="x" size={24} color="black" />
                     </TouchableOpacity>
 
@@ -350,7 +357,7 @@ function Bills({ navigation }) {
                         />
                     </View>
 
-                    <Text style={styles.withdrawText}>Customer Name(Auto-fill): </Text>
+                    <Text style={styles.withdrawText}>Customer Name(Auto-fill) {nmloading ? <ActivityIndicator size="small" color="#febf12" /> : null} : </Text>
                     <View style={styles.withdrawView}>
 
                         <Text style={styles.nums}>{acc_name}</Text>
@@ -462,7 +469,7 @@ function Bills({ navigation }) {
             <ScrollView>
                 <View style={styles.wcont}>
 
-                    <TouchableOpacity onPress={() => { setPage(null); setBill(null) }} style={styles.cancel}>
+                    <TouchableOpacity onPress={() => { setPage(null); setBill(null); setAcc_Name("") }} style={styles.cancel}>
                         <Feather name="x" size={24} color="black" />
                     </TouchableOpacity>
 
@@ -605,7 +612,7 @@ function Bills({ navigation }) {
             <ScrollView>
                 <View style={styles.wcont}>
 
-                    <TouchableOpacity onPress={() => { setPage(null); setBill(null) }} style={styles.cancel}>
+                    <TouchableOpacity onPress={() => { setPage(null); setBill(null); setAcc_Name("") }} style={styles.cancel}>
                         <Feather name="x" size={24} color="black" />
                     </TouchableOpacity>
 
@@ -633,7 +640,7 @@ function Bills({ navigation }) {
                         />
                     </View>
 
-                    <Text style={styles.withdrawText}>Customer: (Auto-fill): </Text>
+                    <Text style={styles.withdrawText}>Customer(Auto-fill) {nmloading ? <ActivityIndicator size="small" color="#febf12" /> : null} : </Text>
                     <View style={styles.withdrawView}>
 
                         <Text style={styles.nums}>{acc_name}</Text>
@@ -746,7 +753,7 @@ function Bills({ navigation }) {
             <ScrollView>
                 <View style={styles.wcont}>
 
-                    <TouchableOpacity onPress={() => { setPage(null); setBill(null) }} style={styles.cancel}>
+                    <TouchableOpacity onPress={() => { setPage(null); setBill(null); setAcc_Name("") }} style={styles.cancel}>
                         <Feather name="x" size={24} color="black" />
                     </TouchableOpacity>
 
@@ -774,7 +781,7 @@ function Bills({ navigation }) {
                         />
                     </View>
 
-                    <Text style={styles.withdrawText}>Customer Name(Auto-fill): </Text>
+                    <Text style={styles.withdrawText}>Customer Name(Auto-fill) {nmloading ? <ActivityIndicator size="small" color="#febf12" /> : null} : </Text>
                     <View style={styles.withdrawView}>
 
                         <Text style={styles.nums}>{acc_name}</Text>
@@ -981,11 +988,13 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 12
+        marginBottom: 12,
+        paddingVertical: 7,
     },
     txText: {
         marginLeft: 5,
-        fontWeight: "700"
+        fontWeight: "700",
+        marginVertical: 5
     },
     txTextSub: {
         marginLeft: 5

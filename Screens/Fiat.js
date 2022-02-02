@@ -53,6 +53,7 @@ function Fiat({ navigation }) {
     const [camount, setCAmount] = React.useState(false)
     const [bank, setBank] = React.useState("")
     const [bank_code, setBank_Code] = React.useState("")
+    const [nmloading, setNmload] = React.useState("")
 
     // Airtime
     const [airAmount, setAirAmount] = React.useState()
@@ -322,6 +323,7 @@ function Fiat({ navigation }) {
         setAcc_Num(val)
         if (val.length === 10 && bank.Code) {
             // toast.info("Please wait while we fetch account name")
+            setNmload(true) 
             axios.post('/appi', {
                 "account_number": val,
                 "account_bank": bank.Code
@@ -329,6 +331,7 @@ function Fiat({ navigation }) {
                 .then(data => {
 
                     setAcc_Name(data.data.acc_name)
+                    setNmload(false)
 
                     if (data.data.message) {
                         Alert.alert("Incorrect details", "Account name could not be fetched")
@@ -538,7 +541,7 @@ function Fiat({ navigation }) {
                         />
                     </View>
 
-                    <Text style={styles.withdrawText}>Account Name: </Text>
+                    <Text style={styles.withdrawText}>Account Name {nmloading ? <ActivityIndicator size="small" color="#febf12" /> : null}: </Text>
                     <View style={styles.withdrawView}>
 
                         <Text style={styles.nums}>{acc_name}</Text>

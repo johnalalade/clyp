@@ -110,7 +110,7 @@ const AuthStackScreen = () => (
 
 const renderItem = ({ item }) => {
   return (
-    <ImageBackground source={require('./assets/6209522.jpg')} resizeMode="cover" style={styles.image} imageStyle=
+    <ImageBackground source={require('./assets/mash-up.png')} resizeMode="cover" style={styles.image} imageStyle=
       {{ opacity: 0.2 }}>
       {/* <View style={styles.introView}> */}
 

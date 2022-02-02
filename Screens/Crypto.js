@@ -29,7 +29,7 @@ function Crypto() {
   const [loading, setLoading] = React.useState(false)
 
   const [images, setImage] = React.useState([
-    require('../assets/bitcoin.png'), require('../assets/binance.png'), require('../assets/ethereum.png'), require('../assets/tether.png')
+    require('../assets/bitcoin.png'), require('../assets/litecoin.png'), require('../assets/binance.png'), require('../assets/ethereum.png'), require('../assets/coin.png'), require('../assets/tether.png'), require('../assets/tether(1).png'), require('../assets/tether(2).png')
   ])
   const [ix, setIx] = React.useState(0)
 
@@ -45,7 +45,10 @@ function Crypto() {
   const [bnb, setBNB] = React.useState()
   const [eth, setETH] = React.useState()
   const [usdt, setUSDT] = React.useState()
-  const [user, setUser] = React.useState()
+  const [usdt_bep20, setUSDTBEP20] = React.useState()
+  const [usdt_trc20, setUSDTTRC20] = React.useState()
+  const [ltc, setLTC] = React.useState()
+  const [trx, setTRX] = React.useState()
   const [balance, setBalance] = React.useState()
 
 
@@ -80,7 +83,16 @@ function Crypto() {
             console.log({ Err: "Unable to get BTC balance " + err })
           })
 
-        axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[1].address })
+        axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address })
+          .then((data) => {
+            setLTC(data.data.balance)
+            console.log(data.data.balance)
+          })
+          .catch((err) => {
+            console.log({ Err: "Unable to get LTC balance " + err })
+          })
+
+        axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address })
           .then((data) => {
             setBNB(data.data.balance)
             console.log(data.data.balance)
@@ -89,7 +101,7 @@ function Crypto() {
             console.log({ Err: "Unable to get BNB balance " + err })
           })
 
-        axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[2].address })
+        axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address })
           .then((data) => {
             setETH(data.data.balance)
             // setRefreshing(false)
@@ -99,14 +111,41 @@ function Crypto() {
             console.log({ Err: "Unable to get ETH balance " + err })
           })
 
-        axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[3].address })
+        axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address })
+          .then((data) => {
+            setTRX(data.data.balance)
+            console.log(data.data.balance)
+          })
+          .catch((err) => {
+            console.log({ Err: "Unable to get TRX balance " + err })
+          })
+
+        axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address })
           .then((data) => {
             setUSDT(data.data.balance)
-            setRefreshing(false)
             console.log(data.data.balance)
           })
           .catch((err) => {
             console.log({ Err: "Unable to get USDT balance " + err })
+          })
+
+          axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address })
+          .then((data) => {
+            setUSDTBEP20(data.data.balance)
+            console.log(data.data.balance)
+          })
+          .catch((err) => {
+            console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
+          })
+
+          axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address })
+          .then((data) => {
+            setUSDTTRC20(data.data.balance)
+            setRefreshing(false)
+            console.log(data.data.balance)
+          })
+          .catch((err) => {
+            console.log({ Err: "Unable to get USDT-TRC20 balance " + err })
           })
       })
       .catch(err => {
@@ -385,9 +424,9 @@ function Crypto() {
     }
 
 
-    if (balance < payload.amount) {
+    if (user.balance < payload.amount) {
       setLoading(false)
-      Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
+      Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your Fiat balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
         (user.country === "Nigeria") ? {
           text: 'Fund', onPress: () => {
             setPage("Crypto")
@@ -424,7 +463,7 @@ function Crypto() {
           }
           else {
             setLoading(false)
-            Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+            Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please try again...`}`, [
               (user.country === "Nigeria") ? {
                 text: 'Alright', onPress: () => {
                   setPage("Crypto")
@@ -441,7 +480,7 @@ function Crypto() {
         })
         .catch(err => {
           setLoading(false)
-          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please make sure you have enough ${payload.asset} to cover network fees, and try again...`}`, [
+          Alert.alert(`${payload.asset} transaction failed`, `${(user.country === "Nigeria") ? `Comrade, your transaction of NGN ${payload.amount} ${payload.asset} failed try again...` : `Your transaction of NGN ${payload.amount} ${payload.asset} failed please try again...`}`, [
             (user.country === "Nigeria") ? {
               text: 'Alright', onPress: () => {
                 setPage("Crypto")
@@ -526,7 +565,7 @@ function Crypto() {
 
           <Text style={styles.addressText}>Amount:</Text>
           <View style={styles.addressInput}>
-          <Text style={{fontSize: 30}}>&#x20A6;</Text>
+            <Text style={{ fontSize: 30 }}>&#x20A6;</Text>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
@@ -607,7 +646,7 @@ function Crypto() {
           <Text style={styles.convertPrice}>Amount of Fiat in NGN you want to convert to {address.name}</Text>
           <Text style={styles.minimum}>(Minimum amount &#x20A6; 500):</Text>
           <View style={styles.addressInput}>
-          <Text style={{fontSize: 30}}>&#x20A6;</Text>
+            <Text style={{ fontSize: 30 }}>&#x20A6;</Text>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
@@ -622,7 +661,7 @@ function Crypto() {
 
           <Text style={styles.addressText}>Your {address.name} wallet will be credited with: </Text>
           <View style={styles.addressInput}>
-          <Text style={{fontSize: 30}}>&#x20A6;</Text>
+            <Text style={{ fontSize: 30 }}>&#x20A6;</Text>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
 
             <Text style={styles.address}>{amount - (amount * 0.05)}</Text>
@@ -655,7 +694,7 @@ function Crypto() {
           <Text style={styles.convertPrice}>Amount of {address.name} in NGN you want to convert to Fiat</Text>
           <Text style={styles.minimum}>(Minimum amount &#x20A6; 500):</Text>
           <View style={styles.addressInput}>
-          <Text style={{fontSize: 30}}>&#x20A6;</Text>
+            <Text style={{ fontSize: 30 }}>&#x20A6;</Text>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
@@ -670,7 +709,7 @@ function Crypto() {
 
           <Text style={styles.addressText}>Your fiat wallet will be credited with: </Text>
           <View style={styles.addressInput}>
-          <Text style={{fontSize: 30}}>&#x20A6;</Text>
+            <Text style={{ fontSize: 30 }}>&#x20A6;</Text>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <Text style={styles.address}>{amount - (amount * 0.05)}</Text>
 
@@ -716,11 +755,19 @@ function Crypto() {
 
             {address.name === "BTC" ? <Text style={styles.text_header}>&#x20A6; {btc}</Text> : null}
 
+            {address.name === "LTC" ? <Text style={styles.text_header}>&#x20A6; {ltc}</Text> : null}
+
             {address.name === "BNB" ? <Text style={styles.text_header}>&#x20A6; {bnb}</Text> : null}
 
             {address.name === "ETH" ? <Text style={styles.text_header}>&#x20A6; {eth}</Text> : null}
 
+            {address.name === "TRX" ? <Text style={styles.text_header}>&#x20A6; {trx}</Text> : null}
+
             {address.name === "USDT" ? <Text style={styles.text_header}>&#x20A6; {usdt}</Text> : null}
+
+            {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>&#x20A6; {usdt_bep20}</Text> : null}
+            
+            {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>&#x20A6; {usdt_trc20}</Text> : null}
 
             <View style={styles.buttons}>
 
@@ -793,14 +840,26 @@ function Crypto() {
                     if (item.name === "BTC") {
                       setBalance(btc)
                     }
+                    if (item.name === "LTC") {
+                      setBalance(ltc)
+                    }
                     if (item.name === "BNB") {
                       setBalance(bnb)
                     }
                     if (item.name === "ETH") {
                       setBalance(eth)
                     }
+                    if (item.name === "TRx") {
+                      setBalance(trx)
+                    }
                     if (item.name === "USDT") {
                       setBalance(usdt)
+                    }
+                    if (item.name === "USDT-BEP20") {
+                      setBalance(usdt_bep20)
+                    }
+                    if (item.name === "USDT-TRC20") {
+                      setBalance(usdt_trc20)
                     }
                   }}>
                     <Avatar.Image
