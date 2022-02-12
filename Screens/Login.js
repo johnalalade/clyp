@@ -109,7 +109,7 @@ function SignIn({ navigation }) {
                             </Text>
                             {/* <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Terms of service</Text>
                             <Text style={styles.color_textPrivate}>{" "}and</Text> */}
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]} onPress={() => navigation.push("SignUp")}>{" "}Sign up</Text>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold', color: "#febf12" }]} onPress={() => navigation.push("SignUp")}>{" "}Sign up</Text>
                         </View>
                         <View style={styles.button}>
 

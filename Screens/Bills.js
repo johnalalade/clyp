@@ -32,6 +32,10 @@ function Bills({ navigation }) {
     const [bnb, setBNB] = React.useState()
     const [eth, setETH] = React.useState()
     const [usdt, setUSDT] = React.useState()
+    const [usdt_bep20, setUSDTBEP20] = React.useState()
+    const [usdt_trc20, setUSDTTRC20] = React.useState()
+    const [ltc, setLTC] = React.useState()
+    const [trx, setTRX] = React.useState()
     const [balance, setBalance] = React.useState()
     const [acc_name, setAcc_Name] = React.useState("")
     const [cleanup, setCleanUp] = React.useState(0)
@@ -54,13 +58,23 @@ function Bills({ navigation }) {
                 axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address })
                     .then((data) => {
                         setBTC(data.data.balance)
+                        // setBalance(data.data.balance)
                         console.log(data.data.balance)
                     })
                     .catch((err) => {
                         console.log({ Err: "Unable to get BTC balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[1].address })
+                axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address })
+                    .then((data) => {
+                        setLTC(data.data.balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get LTC balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address })
                     .then((data) => {
                         setBNB(data.data.balance)
                         console.log(data.data.balance)
@@ -69,7 +83,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get BNB balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[2].address })
+                axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address })
                     .then((data) => {
                         setETH(data.data.balance)
                         // setRefreshing(false)
@@ -79,14 +93,41 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get ETH balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[3].address })
+                axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey})
+                    .then((data) => {
+                        setTRX(data.data.balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get TRX balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address })
                     .then((data) => {
                         setUSDT(data.data.balance)
-                        setRefreshing(false)
                         console.log(data.data.balance)
                     })
                     .catch((err) => {
                         console.log({ Err: "Unable to get USDT balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address })
+                    .then((data) => {
+                        setUSDTBEP20(data.data.balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey })
+                    .then((data) => {
+                        setUSDTTRC20(data.data.balance)
+                        setRefreshing(false)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get USDT-TRC20 balance " + err })
                     })
             })
             .catch(err => {
@@ -365,56 +406,172 @@ function Bills({ navigation }) {
 
                     <Text style={styles.fee}>Fee: &#x20A6; {bill ? bill.fee : null}</Text>
 
-                    <View style={styles.assets}>
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("FIAT")
-                            setBalance(user.balance)
-                        }}>
-                            {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>Fiat</Text>
-                        </TouchableOpacity>
+                    <Text style={styles.payW}>Buy with: </Text>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("BTC")
-                            setAddress(user.wallets[0].address)
-                            setPkey(user.wallets[0].privateKey)
-                            setBalance(btc)
-                        }}>
-                            {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>BTC</Text>
-                        </TouchableOpacity>
+                    <ScrollView horizontal={true}>
+                        <View style={styles.assets}>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("FIAT")
+                                setBalance(user.balance)
+                            }}>
+                                {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <Text>Fiat</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("BNB")
-                            setAddress(user.wallets[1].address)
-                            setPkey(user.wallets[1].privateKey)
-                            setBalance(bnb)
-                        }}>
-                            {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>BNB</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("BTC")
+                                setAddress(user.wallets[0].address)
+                                setPkey(user.wallets[0].privateKey)
+                                setBalance(btc)
+                            }}>
+                                {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/bitcoin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>BTC</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("ETH")
-                            setAddress(user.wallets[2].address)
-                            setPkey(user.wallets[2].privateKey)
-                            setBalance(eth)
-                        }}>
-                            {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>ETH</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("LTC")
+                                setAddress(user.wallets[1].address)
+                                setPkey(user.wallets[1].privateKey)
+                                setBalance(ltc)
+                            }}>
+                                {asset === "LTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/litecoin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>LTC</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("USDT")
-                            setAddress(user.wallets[3].address)
-                            setPkey(user.wallets[3].privateKey)
-                            setBalance(usdt)
-                        }}>
-                            {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>USDT</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("BNB")
+                                setAddress(user.wallets[2].address)
+                                setPkey(user.wallets[2].privateKey)
+                                setBalance(bnb)
+                            }}>
+                                {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/binance.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>BNB</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                    </View>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("ETH")
+                                setAddress(user.wallets[3].address)
+                                setPkey(user.wallets[3].privateKey)
+                                setBalance(eth)
+                            }}>
+                                {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/ethereum.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>ETH</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("TRX")
+                                setAddress(user.wallets[4].address)
+                                setPkey(user.wallets[4].privateKey)
+                                setBalance(trx)
+                            }}>
+                                {asset === "TRX" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/coin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>TRX</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT")
+                                setAddress(user.wallets[5].address)
+                                setPkey(user.wallets[5].privateKey)
+                                setBalance(usdt)
+                            }}>
+                                {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT-BEP20")
+                                setAddress(user.wallets[6].address)
+                                setPkey(user.wallets[6].privateKey)
+                                setBalance(usdt_bep20)
+                            }}>
+                                {asset === "USDT-BEP20" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether(1).png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT-BEP20</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT-TRC20")
+                                setAddress(user.wallets[7].address)
+                                setPkey(user.wallets[7].privateKey)
+                                setBalance(usdt_trc20)
+                            }}>
+                                {asset === "USDT-TRC20" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether(2).png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT-TRC20</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                        </View>
+                    </ScrollView>
 
                     {verified ?
                         <View>
@@ -508,56 +665,172 @@ function Bills({ navigation }) {
 
                     {/* {verified ? */}
 
-                    <View style={styles.assets}>
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("FIAT")
-                            setBalance(user.balance)
-                        }}>
-                            {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>Fiat</Text>
-                        </TouchableOpacity>
+                    <Text style={styles.payW}>Buy with: </Text>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("BTC")
-                            setAddress(user.wallets[0].address)
-                            setPkey(user.wallets[0].privateKey)
-                            setBalance(btc)
-                        }}>
-                            {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>BTC</Text>
-                        </TouchableOpacity>
+                    <ScrollView horizontal={true}>
+                        <View style={styles.assets}>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("FIAT")
+                                setBalance(user.balance)
+                            }}>
+                                {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <Text>Fiat</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("BNB")
-                            setAddress(user.wallets[1].address)
-                            setPkey(user.wallets[1].privateKey)
-                            setBalance(bnb)
-                        }}>
-                            {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>BNB</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("BTC")
+                                setAddress(user.wallets[0].address)
+                                setPkey(user.wallets[0].privateKey)
+                                setBalance(btc)
+                            }}>
+                                {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/bitcoin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>BTC</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("ETH")
-                            setAddress(user.wallets[2].address)
-                            setPkey(user.wallets[2].privateKey)
-                            setBalance(eth)
-                        }}>
-                            {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>ETH</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("LTC")
+                                setAddress(user.wallets[1].address)
+                                setPkey(user.wallets[1].privateKey)
+                                setBalance(ltc)
+                            }}>
+                                {asset === "LTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/litecoin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>LTC</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("USDT")
-                            setAddress(user.wallets[3].address)
-                            setPkey(user.wallets[3].privateKey)
-                            setBalance(usdt)
-                        }}>
-                            {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>USDT</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("BNB")
+                                setAddress(user.wallets[2].address)
+                                setPkey(user.wallets[2].privateKey)
+                                setBalance(bnb)
+                            }}>
+                                {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/binance.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>BNB</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                    </View>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("ETH")
+                                setAddress(user.wallets[3].address)
+                                setPkey(user.wallets[3].privateKey)
+                                setBalance(eth)
+                            }}>
+                                {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/ethereum.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>ETH</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("TRX")
+                                setAddress(user.wallets[4].address)
+                                setPkey(user.wallets[4].privateKey)
+                                setBalance(trx)
+                            }}>
+                                {asset === "TRX" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/coin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>TRX</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT")
+                                setAddress(user.wallets[5].address)
+                                setPkey(user.wallets[5].privateKey)
+                                setBalance(usdt)
+                            }}>
+                                {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT-BEP20")
+                                setAddress(user.wallets[6].address)
+                                setPkey(user.wallets[6].privateKey)
+                                setBalance(usdt_bep20)
+                            }}>
+                                {asset === "USDT-BEP20" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether(1).png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT-BEP20</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT-TRC20")
+                                setAddress(user.wallets[7].address)
+                                setPkey(user.wallets[7].privateKey)
+                                setBalance(usdt_trc20)
+                            }}>
+                                {asset === "USDT-TRC20" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether(2).png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT-TRC20</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                        </View>
+                    </ScrollView>
 
                     <View>
                         <TouchableOpacity
@@ -648,56 +921,172 @@ function Bills({ navigation }) {
 
                     <Text style={styles.fee}>Fee: &#x20A6; {bill ? bill.fee : null}</Text>
 
-                    <View style={styles.assets}>
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("FIAT")
-                            setBalance(user.balance)
-                        }}>
-                            {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>Fiat</Text>
-                        </TouchableOpacity>
+                    <Text style={styles.payW}>Buy with: </Text>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("BTC")
-                            setAddress(user.wallets[0].address)
-                            setPkey(user.wallets[0].privateKey)
-                            setBalance(btc)
-                        }}>
-                            {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>BTC</Text>
-                        </TouchableOpacity>
+                    <ScrollView horizontal={true}>
+                        <View style={styles.assets}>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("FIAT")
+                                setBalance(user.balance)
+                            }}>
+                                {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <Text>Fiat</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("BNB")
-                            setAddress(user.wallets[1].address)
-                            setPkey(user.wallets[1].privateKey)
-                            setBalance(bnb)
-                        }}>
-                            {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>BNB</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("BTC")
+                                setAddress(user.wallets[0].address)
+                                setPkey(user.wallets[0].privateKey)
+                                setBalance(btc)
+                            }}>
+                                {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/bitcoin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>BTC</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("ETH")
-                            setAddress(user.wallets[2].address)
-                            setPkey(user.wallets[2].privateKey)
-                            setBalance(eth)
-                        }}>
-                            {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>ETH</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("LTC")
+                                setAddress(user.wallets[1].address)
+                                setPkey(user.wallets[1].privateKey)
+                                setBalance(ltc)
+                            }}>
+                                {asset === "LTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/litecoin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>LTC</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("USDT")
-                            setAddress(user.wallets[3].address)
-                            setPkey(user.wallets[3].privateKey)
-                            setBalance(usdt)
-                        }}>
-                            {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>USDT</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("BNB")
+                                setAddress(user.wallets[2].address)
+                                setPkey(user.wallets[2].privateKey)
+                                setBalance(bnb)
+                            }}>
+                                {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/binance.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>BNB</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                    </View>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("ETH")
+                                setAddress(user.wallets[3].address)
+                                setPkey(user.wallets[3].privateKey)
+                                setBalance(eth)
+                            }}>
+                                {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/ethereum.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>ETH</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("TRX")
+                                setAddress(user.wallets[4].address)
+                                setPkey(user.wallets[4].privateKey)
+                                setBalance(trx)
+                            }}>
+                                {asset === "TRX" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/coin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>TRX</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT")
+                                setAddress(user.wallets[5].address)
+                                setPkey(user.wallets[5].privateKey)
+                                setBalance(usdt)
+                            }}>
+                                {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT-BEP20")
+                                setAddress(user.wallets[6].address)
+                                setPkey(user.wallets[6].privateKey)
+                                setBalance(usdt_bep20)
+                            }}>
+                                {asset === "USDT-BEP20" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether(1).png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT-BEP20</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT-TRC20")
+                                setAddress(user.wallets[7].address)
+                                setPkey(user.wallets[7].privateKey)
+                                setBalance(usdt_trc20)
+                            }}>
+                                {asset === "USDT-TRC20" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether(2).png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT-TRC20</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                        </View>
+                    </ScrollView>
 
                     {verified ?
                         <View>
@@ -789,56 +1178,172 @@ function Bills({ navigation }) {
 
                     <Text style={styles.fee}>Fee: &#x20A6; {bill ? bill.fee : null}</Text>
 
-                    <View style={styles.assets}>
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("FIAT")
-                            setBalance(user.balance)
-                        }}>
-                            {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>Fiat</Text>
-                        </TouchableOpacity>
+                    <Text style={styles.payW}>Buy with: </Text>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("BTC")
-                            setAddress(user.wallets[0].address)
-                            setPkey(user.wallets[0].privateKey)
-                            setBalance(btc)
-                        }}>
-                            {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>BTC</Text>
-                        </TouchableOpacity>
+                    <ScrollView horizontal={true}>
+                        <View style={styles.assets}>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("FIAT")
+                                setBalance(user.balance)
+                            }}>
+                                {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <Text>Fiat</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("BNB")
-                            setAddress(user.wallets[1].address)
-                            setPkey(user.wallets[1].privateKey)
-                            setBalance(bnb)
-                        }}>
-                            {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>BNB</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("BTC")
+                                setAddress(user.wallets[0].address)
+                                setPkey(user.wallets[0].privateKey)
+                                setBalance(btc)
+                            }}>
+                                {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/bitcoin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>BTC</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("ETH")
-                            setAddress(user.wallets[2].address)
-                            setPkey(user.wallets[2].privateKey)
-                            setBalance(eth)
-                        }}>
-                            {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>ETH</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("LTC")
+                                setAddress(user.wallets[1].address)
+                                setPkey(user.wallets[1].privateKey)
+                                setBalance(ltc)
+                            }}>
+                                {asset === "LTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/litecoin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>LTC</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.asset} onPress={() => {
-                            setAsset("USDT")
-                            setAddress(user.wallets[3].address)
-                            setPkey(user.wallets[3].privateKey)
-                            setBalance(usdt)
-                        }}>
-                            {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
-                            <Text>USDT</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("BNB")
+                                setAddress(user.wallets[2].address)
+                                setPkey(user.wallets[2].privateKey)
+                                setBalance(bnb)
+                            }}>
+                                {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/binance.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>BNB</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                    </View>
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("ETH")
+                                setAddress(user.wallets[3].address)
+                                setPkey(user.wallets[3].privateKey)
+                                setBalance(eth)
+                            }}>
+                                {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/ethereum.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>ETH</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("TRX")
+                                setAddress(user.wallets[4].address)
+                                setPkey(user.wallets[4].privateKey)
+                                setBalance(trx)
+                            }}>
+                                {asset === "TRX" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/coin.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>TRX</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT")
+                                setAddress(user.wallets[5].address)
+                                setPkey(user.wallets[5].privateKey)
+                                setBalance(usdt)
+                            }}>
+                                {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether.png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT-BEP20")
+                                setAddress(user.wallets[6].address)
+                                setPkey(user.wallets[6].privateKey)
+                                setBalance(usdt_bep20)
+                            }}>
+                                {asset === "USDT-BEP20" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether(1).png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT-BEP20</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.asset} onPress={() => {
+                                setAsset("USDT-TRC20")
+                                setAddress(user.wallets[7].address)
+                                setPkey(user.wallets[7].privateKey)
+                                setBalance(usdt_trc20)
+                            }}>
+                                {asset === "USDT-TRC20" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                <View style={styles.coin}>
+                                    <Avatar.Image
+                                        source={
+                                            require('../assets/tether(2).png')
+                                        }
+                                        style={{ backgroundColor: "white" }}
+                                        size={40}
+                                    />
+                                    <Text>USDT-TRC20</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                        </View>
+                    </ScrollView>
 
                     {verified ?
                         <View>
@@ -970,7 +1475,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         padding: 0,
-        paddingLeft: 15,
+        paddingHorizontal: 15,
+        paddingBottom: 30,
     },
     balance: {
         fontWeight: '600',
@@ -983,6 +1489,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: "90%",
         marginBottom: 10,
+        borderWidth: 3,
+        borderColor: "#febf1226",
     },
     txTouch: {
         display: "flex",
@@ -1013,18 +1521,31 @@ const styles = StyleSheet.create({
     paymentButtonText: {
         fontWeight: "800"
     },
+    payW: {
+        paddingVertical: 20,
+        fontWeight: "900"
+    },
     assets: {
         display: "flex",
+        flex: 1,
         flexDirection: "row",
-        justifyContent: "space-evenly",
+        justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 30,
+        minWidth: 100,
     },
     asset: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-evenly",
-        alignItems: "center"
+        alignItems: "center",
+        marginHorizontal: 20,
+    },
+    coin: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "space-between"
     },
     container: {
         flex: 1,

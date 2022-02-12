@@ -145,9 +145,9 @@ function SignUp3({ navigation }) {
                             <Text style={styles.color_textPrivate}>
                                 By signing up you agree to our
                             </Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>Terms of service</Text>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold', paddingLeft: 4 }]}>Terms of service</Text>
                             <Text style={styles.color_textPrivate}>and</Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>Privacy policy</Text>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold', paddingLeft: 3 }]}>Privacy policy</Text>
                         </View>
                         <View style={styles.button}>
 
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
         flex: 0.32,
         justifyContent: 'flex-end',
         paddingHorizontal: 20,
-        paddingBottom: 50
+        paddingBottom: 30
     },
     footer: {
         flex: Platform.OS === 'ios' ? 3 : 5,

@@ -323,7 +323,7 @@ function Fiat({ navigation }) {
         setAcc_Num(val)
         if (val.length === 10 && bank.Code) {
             // toast.info("Please wait while we fetch account name")
-            setNmload(true) 
+            setNmload(true)
             axios.post('/appi', {
                 "account_number": val,
                 "account_bank": bank.Code
@@ -577,7 +577,7 @@ function Fiat({ navigation }) {
                 keyExtractor={(item) => item.reference + item.name + item.amount}
                 data={user.transactions}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.txTouch} onPress={() =>{ sendPushNotification()}}>
+                    <TouchableOpacity style={styles.txTouch} onPress={() => { sendPushNotification() }}>
 
                         {item.name === "Added Funds" && <MaterialIcons name="call-received" size={24} color="#febf12" />}
 
@@ -671,8 +671,7 @@ function Fiat({ navigation }) {
                             <View style={styles.header}>
                                 <Text style={styles.text_wallet}>Fiat Wallet</Text>
                                 <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" />
-                                <Text style={styles.text_header}> &#x20A6; {(user.balance / 1).toString().slice(0, 6)}</Text
-                                >
+                                <Text style={styles.text_header}> &#x20A6; {(user.balance / 1).toString().slice(0, 6)}</Text>
                                 <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toString().slice(0, 6)}</Text>
                                 <View style={styles.buttons}>
 
@@ -734,8 +733,10 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         backgroundColor: "whitesmoke",
         borderRadius: 10,
-        width: "90%",
+        width: "100%",
         marginBottom: 15,
+        borderWidth: 3,
+        borderColor: "#febf1226",
     },
     getText: {
         marginBottom: 10
@@ -783,7 +784,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         padding: 0,
-        paddingLeft: 15
+        paddingHorizontal: 15
         // alignItems: 'center',
         // justifyContent: 'center',
     },
@@ -964,23 +965,23 @@ const styles = StyleSheet.create({
 export default Fiat
 
 async function sendPushNotification(expoPushToken) {
-  const message = {
-    to: "ExponentPushToken[AFnsBoFCMJVvOP0kJb7SLD]",
-    sound: 'default',
-    title: 'Original Title',
-    body: 'And here is the body!',
-    data: { someData: 'goes here' },
-  };
+    const message = {
+        to: "ExponentPushToken[AFnsBoFCMJVvOP0kJb7SLD]",
+        sound: 'default',
+        title: 'Original Title',
+        body: 'And here is the body!',
+        data: { someData: 'goes here' },
+    };
 
-  let alla = await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
-  });
+    let alla = await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(message),
+    });
 
 }
 

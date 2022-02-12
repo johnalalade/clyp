@@ -51,7 +51,7 @@ function Crypto() {
   const [trx, setTRX] = React.useState()
   const [balance, setBalance] = React.useState()
 
-
+  const [user, setUser] = React.useState(null)
 
   const [address, setAddress0] = React.useState({
     name: "Bitcoin",
@@ -111,7 +111,7 @@ function Crypto() {
             console.log({ Err: "Unable to get ETH balance " + err })
           })
 
-        axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address })
+        axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey })
           .then((data) => {
             setTRX(data.data.balance)
             console.log(data.data.balance)
@@ -138,7 +138,7 @@ function Crypto() {
             console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
           })
 
-          axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address })
+          axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey })
           .then((data) => {
             setUSDTTRC20(data.data.balance)
             setRefreshing(false)
@@ -826,7 +826,7 @@ function Crypto() {
           }}>
 
             <Text style={styles.cryptoAddress}>
-              {address.address}
+              {address.address.toString().slice(0,26)}...
             </Text>
             <AntDesign name="qrcode" size={24} color="black" />
           </TouchableOpacity>
@@ -1085,17 +1085,19 @@ const styles = StyleSheet.create({
   cryptoList: {
     display: "flex",
     flexDirection: "row",
-    width: 400,
+    minWidth: 400,
     alignItems: "center",
-    justifyContent: "space-evenly",
+    justifyContent: "space-around",
     marginTop: 50,
     marginBottom: 30
   },
   crypCont: {
+    flex: 1,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-around",
+    minWidth: 100
   },
   convertTop: {
     fontWeight: '900',
