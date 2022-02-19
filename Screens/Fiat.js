@@ -143,6 +143,7 @@ function Fiat({ navigation }) {
                             .catch(err => {
 
                             })
+                        setCleanUp(cleanup + 1)
                         return data
                     }
 
@@ -207,7 +208,7 @@ function Fiat({ navigation }) {
                                 size={44}
                                 color="whitesmoke" />
                             <Text style={styles.optionText}>
-                                Convert your crypto balance to Fiat
+                                Withdraw from your Crypto balance
                             </Text>
                         </TouchableOpacity>
 
@@ -250,7 +251,7 @@ function Fiat({ navigation }) {
                                                 onPress={props.onPress}
                                                 isBusy={props.isInitializing}
                                                 disabled={props.disabled}>
-                                                <Text style={styles.paymentButtonText}>Fund {currency} {amount}</Text>
+                                                <Text style={styles.paymentButtonText}>Fund {user.currency} {amount}</Text>
                                             </TouchableOpacity>
                                         )}
                                     />
@@ -447,6 +448,7 @@ function Fiat({ navigation }) {
                                 }
                             ])
                         })
+                    setCleanUp(cleanup + 1)
                     // return data
                 }
 
@@ -466,6 +468,7 @@ function Fiat({ navigation }) {
                         }
                     }
                 ])
+                setCleanUp(cleanup + 1)
             })
     }
 
@@ -671,8 +674,17 @@ function Fiat({ navigation }) {
                             <View style={styles.header}>
                                 <Text style={styles.text_wallet}>Fiat Wallet</Text>
                                 <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" />
-                                <Text style={styles.text_header}> &#x20A6; {(user.balance / 1).toString().slice(0, 6)}</Text>
-                                <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toString().slice(0, 6)}</Text>
+
+                                {user.country === "Nigeria" ?
+                                    <Text style={styles.text_header}>  &#x20A6; {(user.balance / 1).toString().slice(0, 6)}</Text>
+                                    :
+                                    <Text style={styles.text_header}> {user.currency} {(user.balance / 1).toString().slice(0, 6)}</Text>}
+
+                                {user.country === "Nigeria" ?
+                                    <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toString().slice(0, 6)}</Text>
+                                    :
+                                    <Text style={styles.text_sub_header}> user.currency {(user.ledger_balance / 1).toString().slice(0, 6)}</Text>}
+
                                 <View style={styles.buttons}>
 
                                     <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Fund")}>

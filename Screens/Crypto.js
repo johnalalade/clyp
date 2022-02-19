@@ -69,11 +69,12 @@ function Crypto() {
       .then((data) => {
         setUser(data.data.response)
         setAddress0(data.data.response.wallets[0])
+        setIx(0)
         console.log({ data: data.data.response })
         return data.data.response
       })
       .then(user => {
-        axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address })
+        axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
           .then((data) => {
             setBTC(data.data.balance)
             setBalance(data.data.balance)
@@ -83,7 +84,7 @@ function Crypto() {
             console.log({ Err: "Unable to get BTC balance " + err })
           })
 
-        axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address })
+        axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
           .then((data) => {
             setLTC(data.data.balance)
             console.log(data.data.balance)
@@ -92,7 +93,7 @@ function Crypto() {
             console.log({ Err: "Unable to get LTC balance " + err })
           })
 
-        axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address })
+        axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
           .then((data) => {
             setBNB(data.data.balance)
             console.log(data.data.balance)
@@ -101,7 +102,7 @@ function Crypto() {
             console.log({ Err: "Unable to get BNB balance " + err })
           })
 
-        axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address })
+        axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
           .then((data) => {
             setETH(data.data.balance)
             // setRefreshing(false)
@@ -111,7 +112,7 @@ function Crypto() {
             console.log({ Err: "Unable to get ETH balance " + err })
           })
 
-        axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey })
+        axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
           .then((data) => {
             setTRX(data.data.balance)
             console.log(data.data.balance)
@@ -120,7 +121,7 @@ function Crypto() {
             console.log({ Err: "Unable to get TRX balance " + err })
           })
 
-        axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address })
+        axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
           .then((data) => {
             setUSDT(data.data.balance)
             console.log(data.data.balance)
@@ -129,7 +130,7 @@ function Crypto() {
             console.log({ Err: "Unable to get USDT balance " + err })
           })
 
-          axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address })
+        axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
           .then((data) => {
             setUSDTBEP20(data.data.balance)
             console.log(data.data.balance)
@@ -138,7 +139,7 @@ function Crypto() {
             console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
           })
 
-          axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey })
+        axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
           .then((data) => {
             setUSDTTRC20(data.data.balance)
             setRefreshing(false)
@@ -225,6 +226,11 @@ function Crypto() {
     })()
   }
 
+  // "adaptiveIcon": {
+  //   "foregroundImage": "./assets/ic.png",
+  //   "backgroundColor": "#FFFFFF"
+  // }
+
   // submits
   const send = () => {
     let payload = {
@@ -233,7 +239,8 @@ function Crypto() {
       receiver: rAddress,
       asset: address.name,
       amount: rAmount,
-      userID: user._id
+      userID: user._id,
+      currency: user.currency
     }
     setLoading(true)
 
@@ -274,6 +281,7 @@ function Crypto() {
                 }
               }
             ])
+            setCleanUp(cleanup + 1)
           }
           else {
             setLoading(false)
@@ -288,6 +296,7 @@ function Crypto() {
                 }
               }
             ])
+            setCleanUp(cleanup + 1)
             console.log({ othermessage: data.data.message })
           }
 
@@ -306,6 +315,7 @@ function Crypto() {
               }
             }
           ])
+          setCleanUp(cleanup + 1)
           console.log({ message: "Error " + err })
         })
     }
@@ -317,7 +327,8 @@ function Crypto() {
       private_key: address.privateKey,
       asset: address.name,
       amount: amount,
-      userID: user._id
+      userID: user._id,
+      currency: user.currency
     }
     setLoading(true)
 
@@ -367,6 +378,7 @@ function Crypto() {
                 }
               }
             ])
+            setCleanUp(cleanup + 1)
           }
           else {
             setLoading(false)
@@ -381,6 +393,7 @@ function Crypto() {
                 }
               }
             ])
+            setCleanUp(cleanup + 1)
             console.log({ othermessage: data.data.message })
           }
 
@@ -398,6 +411,7 @@ function Crypto() {
               }
             }
           ])
+          setCleanUp(cleanup + 1)
           console.log({ message: "Error " + err })
         })
     }
@@ -409,7 +423,8 @@ function Crypto() {
       private_key: address.privateKey,
       asset: address.name,
       amount: amount,
-      userID: user._id
+      userID: user._id,
+      currency: user.currency
     }
     setLoading(true)
 
@@ -460,6 +475,7 @@ function Crypto() {
                 }
               }
             ])
+            setCleanUp(cleanup + 1)
           }
           else {
             setLoading(false)
@@ -474,6 +490,7 @@ function Crypto() {
                 }
               }
             ])
+            setCleanUp(cleanup + 1)
             console.log({ othermessage: data.data.message })
           }
 
@@ -491,6 +508,7 @@ function Crypto() {
               }
             }
           ])
+          setCleanUp(cleanup + 1)
           console.log({ message: "Error " + err })
         })
     }
@@ -752,32 +770,57 @@ function Crypto() {
               style={{ backgroundColor: "white" }}
               size={40}
             />
+            {
+              user.currency === "NGN" ? (
+                <View>
+                  {address.name === "BTC" ? <Text style={styles.text_header}>&#x20A6; {btc}</Text> : null}
 
-            {address.name === "BTC" ? <Text style={styles.text_header}>&#x20A6; {btc}</Text> : null}
+                  {address.name === "LTC" ? <Text style={styles.text_header}>&#x20A6; {ltc}</Text> : null}
 
-            {address.name === "LTC" ? <Text style={styles.text_header}>&#x20A6; {ltc}</Text> : null}
+                  {address.name === "BNB" ? <Text style={styles.text_header}>&#x20A6; {bnb}</Text> : null}
 
-            {address.name === "BNB" ? <Text style={styles.text_header}>&#x20A6; {bnb}</Text> : null}
+                  {address.name === "ETH" ? <Text style={styles.text_header}>&#x20A6; {eth}</Text> : null}
 
-            {address.name === "ETH" ? <Text style={styles.text_header}>&#x20A6; {eth}</Text> : null}
+                  {address.name === "TRX" ? <Text style={styles.text_header}>&#x20A6; {trx}</Text> : null}
 
-            {address.name === "TRX" ? <Text style={styles.text_header}>&#x20A6; {trx}</Text> : null}
+                  {address.name === "USDT" ? <Text style={styles.text_header}>&#x20A6; {usdt}</Text> : null}
 
-            {address.name === "USDT" ? <Text style={styles.text_header}>&#x20A6; {usdt}</Text> : null}
+                  {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>&#x20A6; {usdt_bep20}</Text> : null}
 
-            {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>&#x20A6; {usdt_bep20}</Text> : null}
-            
-            {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>&#x20A6; {usdt_trc20}</Text> : null}
+                  {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>&#x20A6; {usdt_trc20}</Text> : null}
+                </View>
+              )
+                :
+                <View>
+                  {address.name === "BTC" ? <Text style={styles.text_header}>{user.currency} {btc}</Text> : null}
+
+                  {address.name === "LTC" ? <Text style={styles.text_header}>{user.currency} {ltc}</Text> : null}
+
+                  {address.name === "BNB" ? <Text style={styles.text_header}>{user.currency} {bnb}</Text> : null}
+
+                  {address.name === "ETH" ? <Text style={styles.text_header}>{user.currency} {eth}</Text> : null}
+
+                  {address.name === "TRX" ? <Text style={styles.text_header}>{user.currency} {trx}</Text> : null}
+
+                  {address.name === "USDT" ? <Text style={styles.text_header}>{user.currency} {usdt}</Text> : null}
+
+                  {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>{user.currency} {usdt_bep20}</Text> : null}
+
+                  {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>{user.currency} {usdt_trc20}</Text> : null}
+                </View>
+            }
+
 
             <View style={styles.buttons}>
 
-              <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
+              <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Sell")}>
                 <View style={styles.button}>
-                  <Entypo name="cycle" size={24} color="whitesmoke" />
+                  {/* <Entypo name="cycle" size={24} color="whitesmoke" /> */}
+                  <Feather name="arrow-up-left" size={24} color="whitesmoke" />
                   {/* <Feather name="send" size={20} color="whitesmoke" /> */}
                 </View>
                 <Text style={styles.buttonText}>
-                  Fiat to {address.name}
+                  Withdraw
                 </Text>
 
               </TouchableOpacity>
@@ -793,13 +836,14 @@ function Crypto() {
 
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Sell")}>
+              <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
                 <View style={styles.button}>
-                  <Entypo name="cycle" size={24} color="whitesmoke" />
+                  {/* <Entypo name="cycle" size={24} color="whitesmoke" /> */}
+                  <Feather name="arrow-down-left" size={24} color="whitesmoke" />
                   {/* <Feather name="send" size={20} color="whitesmoke" /> */}
                 </View>
                 <Text style={styles.buttonText}>
-                  {address.name} to Fiat
+                  Deposit
                 </Text>
 
               </TouchableOpacity>
@@ -826,7 +870,7 @@ function Crypto() {
           }}>
 
             <Text style={styles.cryptoAddress}>
-              {address.address.toString().slice(0,26)}...
+              {address.address.toString().slice(0, 26)}...
             </Text>
             <AntDesign name="qrcode" size={24} color="black" />
           </TouchableOpacity>

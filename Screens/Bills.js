@@ -51,11 +51,12 @@ function Bills({ navigation }) {
             .then((data) => {
                 setUser(data.data.response)
                 setBalance(data.data.response.balance)
+                setAsset("FIAT")
                 console.log({ data: data.data.response })
                 return data.data.response
             })
             .then(user => {
-                axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address })
+                axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
                     .then((data) => {
                         setBTC(data.data.balance)
                         // setBalance(data.data.balance)
@@ -65,7 +66,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get BTC balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address })
+                axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
                     .then((data) => {
                         setLTC(data.data.balance)
                         console.log(data.data.balance)
@@ -74,7 +75,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get LTC balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address })
+                axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
                     .then((data) => {
                         setBNB(data.data.balance)
                         console.log(data.data.balance)
@@ -83,7 +84,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get BNB balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address })
+                axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
                     .then((data) => {
                         setETH(data.data.balance)
                         // setRefreshing(false)
@@ -93,7 +94,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get ETH balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey})
+                axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
                     .then((data) => {
                         setTRX(data.data.balance)
                         console.log(data.data.balance)
@@ -102,7 +103,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get TRX balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address })
+                axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
                     .then((data) => {
                         setUSDT(data.data.balance)
                         console.log(data.data.balance)
@@ -111,7 +112,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get USDT balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address })
+                axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
                     .then((data) => {
                         setUSDTBEP20(data.data.balance)
                         console.log(data.data.balance)
@@ -120,7 +121,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey })
+                axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
                     .then((data) => {
                         setUSDTTRC20(data.data.balance)
                         setRefreshing(false)
@@ -175,7 +176,8 @@ function Bills({ navigation }) {
             userID: id,
             asset: asset,
             address: address,
-            private_key: pKey
+            private_key: pKey,
+            currency: user.currency
         }
         setLoading(true)
 
@@ -295,6 +297,7 @@ function Bills({ navigation }) {
                             }
                         }
                     ])
+                    setCleanUp(cleanup + 1)
                 }
                 else {
                     setLoading(false)
@@ -309,6 +312,7 @@ function Bills({ navigation }) {
                             }
                         }
                     ])
+                    setCleanUp(cleanup + 1)
                     console.log({ message: data.data.message })
                 }
             })
@@ -326,6 +330,7 @@ function Bills({ navigation }) {
                         }
                     }
                 ])
+                setCleanUp(cleanup + 1)
             })
     }
 
@@ -375,7 +380,11 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Cables & Entertainment</Text>
 
-                    <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                    {user.currency === "NGN" ?
+                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                        :
+                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toString().slice(0, 6)} </Text>
+                    }
 
                     <Text style={styles.billText}>Option: </Text>
                     <TouchableOpacity onPress={() => {
@@ -611,7 +620,11 @@ function Bills({ navigation }) {
                         <TouchableOpacity style={styles.txTouch} onPress={() => billSelectHandler(item)}>
 
                             <View>
-                                <Text style={styles.txText}>{item.name} (&#x20A6; {item.amount})</Text>
+                                {user.country === "Nigeria" ?
+                                    <Text style={styles.txText}>{item.name} (&#x20A6; {item.amount})</Text>
+                                    :
+                                    <Text style={styles.txText}>{item.name} ({user.currency} {item.amount})</Text>
+                                }
                             </View>
 
                         </TouchableOpacity>
@@ -632,7 +645,11 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Data Bundles</Text>
 
-                    <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                    {user.currency === "NGN" ?
+                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                        :
+                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toString().slice(0, 6)} </Text>
+                    }
 
                     <Text style={styles.billText}>Option: </Text>
                     <TouchableOpacity onPress={() => {
@@ -870,7 +887,11 @@ function Bills({ navigation }) {
                         <TouchableOpacity style={styles.txTouch} onPress={() => billSelectHandler(item)}>
 
                             <View>
-                                <Text style={styles.txText}>{item.name} (&#x20A6; {item.amount})</Text>
+                                {user.country === "Nigeria" ?
+                                    <Text style={styles.txText}>{item.name} (&#x20A6; {item.amount})</Text>
+                                    :
+                                    <Text style={styles.txText}>{item.name} ({user.currency} {item.amount})</Text>
+                                }
                             </View>
 
                         </TouchableOpacity>
@@ -891,7 +912,11 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Power & Utilities</Text>
 
-                    <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                    {user.currency === "NGN" ?
+                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                        :
+                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toString().slice(0, 6)} </Text>
+                    }
 
                     <Text style={styles.billText}>Option: </Text>
                     <TouchableOpacity onPress={() => {
@@ -1127,7 +1152,11 @@ function Bills({ navigation }) {
                         <TouchableOpacity style={styles.txTouch} onPress={() => billSelectHandler(item)}>
 
                             <View>
-                                <Text style={styles.txText}>{item.name} (&#x20A6; {item.amount})</Text>
+                                {user.country === "Nigeria" ?
+                                    <Text style={styles.txText}>{item.name} (&#x20A6; {item.amount})</Text>
+                                    :
+                                    <Text style={styles.txText}>{item.name} ({user.currency} {item.amount})</Text>
+                                }
                             </View>
 
                         </TouchableOpacity>
@@ -1148,7 +1177,11 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Internet Subscription</Text>
 
-                    <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                    {user.currency === "NGN" ?
+                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                        :
+                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toString().slice(0, 6)} </Text>
+                    }
 
                     <Text style={styles.billText}>Option: </Text>
                     <TouchableOpacity onPress={() => {
@@ -1384,7 +1417,11 @@ function Bills({ navigation }) {
                         <TouchableOpacity style={styles.txTouch} onPress={() => billSelectHandler(item)}>
 
                             <View>
-                                <Text style={styles.txText}>{item.name} (&#x20A6; {item.amount})</Text>
+                                {user.country === "Nigeria" ?
+                                    <Text style={styles.txText}>{item.name} (&#x20A6; {item.amount})</Text>
+                                    :
+                                    <Text style={styles.txText}>{item.name} ({user.currency} {item.amount})</Text>
+                                }
                             </View>
 
                         </TouchableOpacity>
