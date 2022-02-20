@@ -244,10 +244,10 @@ function Airtime({ navigation }) {
         }>
             <View style={styles.airContainer}>
 
-                {user.currency === "NGN" ?
+                { user && user.currency === "NGN" ?
                     <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
                     :
-                    <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toString().slice(0, 6)} </Text>
+                    <Text style={styles.balance}>Balance: {user && user.currency} {(balance / 1).toString().slice(0, 6)} </Text>
                 }
                 <Text style={styles.airText}>Amount: </Text>
                 <View style={styles.airView}>

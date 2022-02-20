@@ -771,7 +771,7 @@ function Crypto() {
               size={40}
             />
             {
-              user.currency === "NGN" ? (
+              user && user.currency === "NGN" ? (
                 <View>
                   {address.name === "BTC" ? <Text style={styles.text_header}>&#x20A6; {btc}</Text> : null}
 

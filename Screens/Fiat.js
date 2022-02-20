@@ -20,6 +20,7 @@ import axios from './axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from "react-native-paper";
 import * as Clipboard from 'expo-clipboard';
+import Modal from "react-native-modal";
 
 const FiatStack = createStackNavigator()
 
@@ -62,6 +63,7 @@ function Fiat({ navigation }) {
     const [style, setStyle] = React.useState(styles.nums)
     const [verified, setVerified] = React.useState(false)
     const [loading, setLoading] = React.useState(false)
+    const [item, setItem] = React.useState({})
 
 
     const [txs, setTxs] = React.useState([
@@ -86,6 +88,7 @@ function Fiat({ navigation }) {
             reference: 104
         }
     ])
+    const [isModalVisible, setModalVisible] = React.useState(false);
 
     let bs = React.createRef();
     let fall = new Animated.Value(1);
@@ -129,25 +132,24 @@ function Fiat({ navigation }) {
             reference: data.tx_ref
         }
         if (data.status === "successful") {
-            axios.post('/fundaccount', payload)
-                .then(data => {
-                    if (data.data.id) {
+            // axios.post('/fundaccount', payload)
+            //     .then(data => {
+            //         if (data.data.id) {
                         console.log("Successfully funded your fiat wallet")
                         axios.post('/user', { userID: id })
                             .then((data) => {
                                 setUser(data.data.response)
                                 setPage("Fiat")
                                 console.log({ data: data.data.response })
+                                setCleanUp(cleanup + 1)
                                 return data.data.response
                             })
                             .catch(err => {
 
                             })
-                        setCleanUp(cleanup + 1)
-                        return data
-                    }
+                //     }
 
-                })
+                // })
                 // .then(res => {
                 //     axios.post('/user', { userID: id })
                 //         .then((data) => {
@@ -164,6 +166,10 @@ function Fiat({ navigation }) {
                     console.log("Failure to funded your fiat wallet: " + err)
                 })
         }
+    };
+
+    const toggleModal = () => {
+        setModalVisible(!isModalVisible);
     };
 
     if (loading) {
@@ -580,7 +586,11 @@ function Fiat({ navigation }) {
                 keyExtractor={(item) => item.reference + item.name + item.amount}
                 data={user.transactions}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.txTouch} onPress={() => { sendPushNotification() }}>
+                    <TouchableOpacity style={styles.txTouch} onPress={() => {
+                        setItem(item)
+                        toggleModal()
+                    }
+                    }>
 
                         {item.name === "Added Funds" && <MaterialIcons name="call-received" size={24} color="#febf12" />}
 
@@ -605,20 +615,13 @@ function Fiat({ navigation }) {
 
                         {item.name.indexOf("Pending") != -1 && <MaterialIcons name="pending" size={24} color="#febf12" />}
 
-                        {/* <FontAwesome5 name="money-bill-wave-alt" size={30} color="#febf12" /> */}
-
-                        {/* <Avatar.Image
-                            source={{
-                                uri: 'https://api.adorable.io/avatars/50/abott@adorable.png'
-                            }}
-                            size={50}
-                        /> */}
                         <View>
                             <Text style={styles.txText}>{item.name}</Text>
                             <Text style={styles.txTextSub}>{item.amount}</Text>
                         </View>
 
                     </TouchableOpacity>
+
                 )}
             />
             {/* <TouchableOpacity
@@ -683,7 +686,7 @@ function Fiat({ navigation }) {
                                 {user.country === "Nigeria" ?
                                     <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toString().slice(0, 6)}</Text>
                                     :
-                                    <Text style={styles.text_sub_header}> user.currency {(user.ledger_balance / 1).toString().slice(0, 6)}</Text>}
+                                    <Text style={styles.text_sub_header}> {user.currency} {(user.ledger_balance / 1).toString().slice(0, 6)}</Text>}
 
                                 <View style={styles.buttons}>
 
@@ -727,6 +730,29 @@ function Fiat({ navigation }) {
                         </View>
                     </View>
                 </ScrollView>
+
+                <Modal isVisible={isModalVisible} onBackdropPress={()=> setModalVisible(false)} animationInTiming={0} animationOutTiming={0}>
+                    <View style={styles.modal}>
+                        <Text style={styles.modalHead}>{item.name}</Text>
+
+                        <Text style={styles.modalNote}>Amount:</Text>
+                        <Text style={styles.modalDetails}>{item.amount}</Text>
+
+                        <Text style={styles.modalNote}>Reference:</Text>
+                        <Text style={styles.modalDetails}>{item.reference}</Text>
+
+                        <Text style={styles.modalNote}>Details:</Text>
+                        <Text style={styles.modalDetails}>{item.details}</Text>
+
+                        <Text style={styles.modalNote}>Time:</Text>
+                        <Text style={styles.modalDetails}>{item.time}</Text>
+
+                        <TouchableOpacity style={styles.modalButton} onPress={toggleModal} >
+                            <Text style={styles.modalButtonText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
+
             </View>
 
         )
@@ -972,6 +998,42 @@ const styles = StyleSheet.create({
     paymentButtonText: {
         fontWeight: "800"
     },
+    modal: {
+        backgroundColor: "whitesmoke",
+        padding: 20,
+        borderRadius: 10
+    },
+    modalHead: {
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: 20,
+        color: "#febf12",
+        paddingBottom: 10
+    },
+    modalNote: {
+        fontWeight: "bold",
+        fontSize: 15,
+        color: "#febf12",
+        paddingVertical: 5
+    },
+    modalDetails: {
+        fontSize: 12,
+        paddingVertical: 5,
+        fontWeight: "500"
+    },
+    modalButton: {
+        backgroundColor: "#febf12",
+        borderRadius: 10,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        alignSelf: "center",
+        marginTop: 10
+    },
+    modalButtonText:{
+        color: "whitesmoke",
+        fontWeight: "400",
+
+    }
 });
 
 export default Fiat
