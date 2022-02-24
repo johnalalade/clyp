@@ -1,5 +1,5 @@
 import React, { useEffect, Component } from "react";
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ScrollView, RefreshControl, Alert } from "react-native";
+import { StyleSheet, Text, View, TextInput, Platform, TouchableOpacity, ScrollView, RefreshControl, Alert } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
@@ -588,7 +588,7 @@ function Fiat({ navigation }) {
                 renderItem={({ item }) => (
                     <TouchableOpacity style={styles.txTouch} onPress={() => {
                         setItem(item)
-                        toggleModal()
+                        setModalVisible(true)
                     }
                     }>
 

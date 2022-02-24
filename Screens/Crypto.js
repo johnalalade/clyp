@@ -875,7 +875,7 @@ function Crypto() {
             <AntDesign name="qrcode" size={24} color="black" />
           </TouchableOpacity>
 
-          <ScrollView horizontal={true} style={{}}>
+          <ScrollView horizontal={true}>
             <View style={styles.cryptoList}>
               {
                 user && user.wallets.map((item, ix) => (
@@ -963,7 +963,8 @@ const styles = StyleSheet.create({
     width: "90%"
   },
   containerInner: {
-
+    marginTop: 40,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'space-evenly',
   },
@@ -1114,6 +1115,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   cryptoAddressTouch: {
+    marginTop: 40,
     paddingVertical: 20,
     paddingHorizontal: 10,
     display: "flex",
@@ -1128,6 +1130,7 @@ const styles = StyleSheet.create({
   },
   cryptoList: {
     display: "flex",
+    flex: 1,
     flexDirection: "row",
     minWidth: 400,
     alignItems: "center",
