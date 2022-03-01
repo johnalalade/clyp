@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, ImageBackground } from 'react-native';
+import { StyleSheet, View, ImageBackground, Alert } from 'react-native';
 import {
   useTheme,
   Avatar,
@@ -49,6 +49,7 @@ import { useFonts } from "expo-font";
 
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
+import Password from './Screens/F-Password';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -162,7 +163,7 @@ export default function App() {
   const responseListener = useRef();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => {setExpoPushToken(token)});
+    registerForPushNotificationsAsync().then(token => { setExpoPushToken(token) });
 
     // This listener is fired whenever a notification is received while the app is foregrounded
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
@@ -207,8 +208,12 @@ export default function App() {
 
             setLoggedIn(true)
           }
-
+          else{
+            Alert.alert('Error', `${data.data.message}`)
+          }
           console.log({ data: data.data })
+          
+
         })
         .catch((err) => {
           setLoading(false)
@@ -235,17 +240,23 @@ export default function App() {
       console.log(data)
       axios.post('/register', data)
         .then(async (data) => {
-          await AsyncStorage.setItem('token', data.data.token)
-          await AsyncStorage.setItem('id', data.data.id)
-          await AsyncStorage.setItem('name', data.data.response.name)
-          await AsyncStorage.setItem('username', data.data.response.username)
-          await AsyncStorage.setItem('email', data.data.response.email)
-          await AsyncStorage.setItem('phone', data.data.response.phone)
-          await AsyncStorage.setItem('country', data.data.response.country)
-          await AsyncStorage.setItem('currency', data.data.response.currency)
-          await AsyncStorage.setItem('rate', data.data.response.rate)
+          if (data.data.id) {
+            await AsyncStorage.setItem('token', data.data.token)
+            await AsyncStorage.setItem('id', data.data.id)
+            await AsyncStorage.setItem('name', data.data.response.name)
+            await AsyncStorage.setItem('username', data.data.response.username)
+            await AsyncStorage.setItem('email', data.data.response.email)
+            await AsyncStorage.setItem('phone', data.data.response.phone)
+            await AsyncStorage.setItem('country', data.data.response.country)
+            await AsyncStorage.setItem('currency', data.data.response.currency)
+            await AsyncStorage.setItem('rate', data.data.response.rate)
 
-          setLoggedIn(true)
+            setLoggedIn(true)
+          }
+          else {
+            Alert.alert('Error', `${data.data.message}`)
+          }
+
         })
         .catch((err) => {
           setLoading(false)
@@ -316,7 +327,7 @@ export default function App() {
       setisNew(false)
       // setUname(u_name)
     }
-    if(u_name){
+    if (u_name) {
       setUname(u_name)
     }
   }, [])
@@ -347,7 +358,7 @@ export default function App() {
             drawerStyle: {
               paddingTop: 30,
               backgroundColor: "whitesmoke",
-              },
+            },
             drawerType: 'front',
             drawerActiveTintColor: "white",
           }} >
@@ -376,7 +387,7 @@ export default function App() {
             }} /> */}
 
             <Drawer.Screen name="Home" component={HomeStackScreen} options={{ title: "Home" }} options={{
-              
+
               drawerIcon: ({ focused, size }) => (
                 <AntDesign
                   name="home"
@@ -439,6 +450,7 @@ export default function App() {
               <AuthStack.Navigator >
                 <AuthStack.Screen name="SignIn" component={SignIn} options={{ title: "Clyp" }} />
                 <AuthStack.Screen name="SignUp" component={SignUp} options={{ title: "Clyp" }} />
+                <AuthStack.Screen name="Password" component={Password} options={{ title: "Clyp" }} />
               </AuthStack.Navigator>
               :
               <AppIntroSlider renderItem={renderItem} data={slides} onDone={onDone} />

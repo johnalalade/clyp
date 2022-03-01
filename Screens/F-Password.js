@@ -1,33 +1,38 @@
 import React, { useEffect, Component } from "react";
-import { StyleSheet, Text, View, TextInput, Button, StatusBar, TouchableOpacity, ScrollView } from "react-native";
-import { AuthContext } from "../context/AuthContext";
-import * as Animatable from 'react-native-animatable';
+import { StyleSheet, Text, View, TextInput, Button, StatusBar, TouchableOpacity, ScrollView, Alert } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { ActivityIndicator, useTheme } from 'react-native-paper';
-import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "./axios";
+import * as Animatable from 'react-native-animatable';
 
-function SignIn({ navigation }) {
-    const { email, password, signIn, load } = React.useContext(AuthContext)
-
-    const [secE, setSecE] = React.useState(true)
+function Password({ navigation }) {
     const [mail, setMail] = React.useState()
     const [loading, setLoading] = React.useState(false)
 
-    useEffect(async () => {
-        let mail = await AsyncStorage.getItem('email').then(value => value)
-        if (mail) {
-            setMail(mail)
-            email(mail)
-        }
+    const submit = () => {
+        axios.post('/retrive', {email: mail})
+        .then(data => {
+            setLoading(false)
+            Alert.alert("Message", `${data.data.message}`, [
+                (data.data.message !== "User Doesn't Exist.") ? {
+                    text: 'Sign in', onPress: () => {
+                        navigation.push("SignIn")
+                    }
+                } : {
+                    text: 'Sign up', onPress: () => {
+                        navigation.push("SignUp")
+                    }
+                }
+            ])
+        })
+    }
 
-    }, [])
-
-    const sec = () => setSecE(!secE)
+    const email = (val) => {
+        setMail(val)
+    }
 
     const { colors } = useTheme();
-
     if (loading) {
         return (
             <View style={{ opacity: 0.5, flex: 1, display: 'flex', flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
@@ -36,13 +41,14 @@ function SignIn({ navigation }) {
         )
     }
 
+
     return (
         <View style={styles.container}>
 
             <View style={styles.container}>
                 <StatusBar backgroundColor='#FF6347' barStyle="light-content" />
                 <View style={styles.header}>
-                    <Text style={styles.text_header}>Welcome, Sign in!</Text>
+                    <Text style={styles.text_header}>Let's get you back!</Text>
                 </View>
                 <Animatable.View
                     animation="fadeInUpBig"
@@ -69,52 +75,19 @@ function SignIn({ navigation }) {
 
                         </View>
 
-                        <Text style={[styles.text_footer, {
-                            marginTop: 35
-                        }]}>Password</Text>
-                        <View style={styles.action}>
-                            <Feather
-                                name="lock"
-                                color="#05375a"
-                                size={20}
-                            />
-                            <TextInput
-                                placeholder="Confirm Your Password"
-                                secureTextEntry={secE}
-                                style={styles.textInput}
-                                autoCapitalize="none"
-                                onChangeText={(val) => password(val)}
-                            />
-                            <TouchableOpacity
-                                onPress={sec}
-                            >
-                                {secE ?
-                                    <Feather
-                                        name="eye-off"
-                                        color="grey"
-                                        size={20}
-                                    />
-                                    :
-                                    <Feather
-                                        name="eye"
-                                        color="grey"
-                                        size={20}
-                                    />
-                                }
-                            </TouchableOpacity>
-                        </View>
+
                         <View style={styles.textPrivate}>
                             <Text style={styles.color_textPrivate}>
                                 You don't have an account ?
                             </Text>
-                            {/* <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Terms of service</Text>
-                            <Text style={styles.color_textPrivate}>{" "}and</Text> */}
+            
                             <Text style={[styles.color_textPrivate, { fontWeight: 'bold', color: "#febf12" }]} onPress={() => navigation.push("SignUp")}>{" "}Sign up</Text>
+                            
                         </View>
                         <View style={styles.button}>
 
                             <TouchableOpacity
-                                onPress={() => { signIn(); setLoading(true); setTimeout(() => { setLoading(false) }, 3000) }}
+                                onPress={() => { submit(); setLoading(true)}}
                                 style={[styles.signIn, {
                                     backgroundColor: "#febf12",
                                     borderColor: 'whitesmoke',
@@ -124,20 +97,16 @@ function SignIn({ navigation }) {
                             >
                                 <Text style={[styles.textSign, {
                                     color: 'white'
-                                }]}>Login</Text>
+                                }]}>Retrive</Text>
                             </TouchableOpacity>
-                        </View>
 
-                        <Text style={[styles.color_textPrivate, { fontWeight: 'bold', color: "#febf12", marginTop: 15,  }]} onPress={() => navigation.push("Password")}>{" "}Forgot password?</Text>
+                        </View>
                     </ScrollView>
                 </Animatable.View>
             </View>
 
-            {/* <Button title="Sign Up" onPress={() => navigation.push("SignUp")} />
-            <Button title="Log In" onPress={() => signIn()} /> */}
         </View>
     )
-
 }
 
 const styles = StyleSheet.create({
@@ -214,4 +183,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default SignIn
+export default Password

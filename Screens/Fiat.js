@@ -679,14 +679,14 @@ function Fiat({ navigation }) {
                                 <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" />
 
                                 {user.country === "Nigeria" ?
-                                    <Text style={styles.text_header}>  &#x20A6; {(user.balance / 1).toString().slice(0, 6)}</Text>
+                                    <Text style={styles.text_header}>  &#x20A6; {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
                                     :
-                                    <Text style={styles.text_header}> {user.currency} {(user.balance / 1).toString().slice(0, 6)}</Text>}
+                                    <Text style={styles.text_header}> {user.currency} {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>}
 
                                 {user.country === "Nigeria" ?
-                                    <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toString().slice(0, 6)}</Text>
+                                    <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
                                     :
-                                    <Text style={styles.text_sub_header}> {user.currency} {(user.ledger_balance / 1).toString().slice(0, 6)}</Text>}
+                                    <Text style={styles.text_sub_header}> {user.currency} {(user.ledger_balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>}
 
                                 <View style={styles.buttons}>
 

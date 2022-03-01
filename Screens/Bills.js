@@ -381,9 +381,9 @@ function Bills({ navigation }) {
                     <Text style={styles.convertTop}>Pay for Cables & Entertainment</Text>
 
                     {user.currency === "NGN" ?
-                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                         :
-                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toString().slice(0, 6)} </Text>
+                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                     }
 
                     <Text style={styles.billText}>Option: </Text>
@@ -646,9 +646,9 @@ function Bills({ navigation }) {
                     <Text style={styles.convertTop}>Pay for Data Bundles</Text>
 
                     {user.currency === "NGN" ?
-                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                         :
-                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toString().slice(0, 6)} </Text>
+                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                     }
 
                     <Text style={styles.billText}>Option: </Text>
@@ -913,9 +913,9 @@ function Bills({ navigation }) {
                     <Text style={styles.convertTop}>Pay for Power & Utilities</Text>
 
                     {user.currency === "NGN" ?
-                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                         :
-                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toString().slice(0, 6)} </Text>
+                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                     }
 
                     <Text style={styles.billText}>Option: </Text>
@@ -1178,9 +1178,9 @@ function Bills({ navigation }) {
                     <Text style={styles.convertTop}>Pay for Internet Subscription</Text>
 
                     {user.currency === "NGN" ?
-                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toString().slice(0, 6)} </Text>
+                        <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                         :
-                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toString().slice(0, 6)} </Text>
+                        <Text style={styles.balance}>Balance: {user.currency} {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                     }
 
                     <Text style={styles.billText}>Option: </Text>

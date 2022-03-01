@@ -4,10 +4,10 @@
     "slug": "clyp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/ic.png",
+    "icon": "./assets/ico.png",
     "splash": {
       "image": "./assets/spl.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "updates": {

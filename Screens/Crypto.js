@@ -587,7 +587,7 @@ function Crypto() {
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
-              placeholder={address.address}
+              placeholder="500"
               onChangeText={(val) => sendamount(val)}
               keyboardType="numeric"
               returnKeyType="done"
@@ -661,14 +661,14 @@ function Crypto() {
         <View>
           <Text style={styles.convertTop}>Convert Fiat to {address.name}</Text>
 
-          <Text style={styles.convertPrice}>Amount of Fiat in NGN you want to convert to {address.name}</Text>
+          <Text style={styles.convertPrice}>Amount of Fiat in {user.currency} you want to convert to {address.name}</Text>
           <Text style={styles.minimum}>(Minimum amount &#x20A6; 500):</Text>
           <View style={styles.addressInput}>
             <Text style={{ fontSize: 30 }}>&#x20A6;</Text>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
-              placeholder="200"
+              placeholder="500"
               onChangeText={(val) => amountHandlerBuy(val)}
               keyboardType="numeric"
               returnKeyType="done"
@@ -709,14 +709,14 @@ function Crypto() {
         <View>
           <Text style={styles.convertTop}>Convert {address.name} to Fiat</Text>
 
-          <Text style={styles.convertPrice}>Amount of {address.name} in NGN you want to convert to Fiat</Text>
+          <Text style={styles.convertPrice}>Amount of {address.name} in {user.currency} you want to convert to Fiat</Text>
           <Text style={styles.minimum}>(Minimum amount &#x20A6; 500):</Text>
           <View style={styles.addressInput}>
             <Text style={{ fontSize: 30 }}>&#x20A6;</Text>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
-              placeholder="200"
+              placeholder="500"
               onChangeText={(val) => amountHandler(val)}
               keyboardType="numeric"
               returnKeyType="done"
@@ -773,40 +773,40 @@ function Crypto() {
             {
               user && user.currency === "NGN" ? (
                 <View>
-                  {address.name === "BTC" ? <Text style={styles.text_header}>&#x20A6; {btc}</Text> : null}
+                  {address.name === "BTC" ? <Text style={styles.text_header}>&#x20A6; {(btc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "LTC" ? <Text style={styles.text_header}>&#x20A6; {ltc}</Text> : null}
+                  {address.name === "LTC" ? <Text style={styles.text_header}>&#x20A6; {(ltc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "BNB" ? <Text style={styles.text_header}>&#x20A6; {bnb}</Text> : null}
+                  {address.name === "BNB" ? <Text style={styles.text_header}>&#x20A6; {(bnb / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "ETH" ? <Text style={styles.text_header}>&#x20A6; {eth}</Text> : null}
+                  {address.name === "ETH" ? <Text style={styles.text_header}>&#x20A6; {(eth / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "TRX" ? <Text style={styles.text_header}>&#x20A6; {trx}</Text> : null}
+                  {address.name === "TRX" ? <Text style={styles.text_header}>&#x20A6; {(trx / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "USDT" ? <Text style={styles.text_header}>&#x20A6; {usdt}</Text> : null}
+                  {address.name === "USDT" ? <Text style={styles.text_header}>&#x20A6; {(usdt / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>&#x20A6; {usdt_bep20}</Text> : null}
+                  {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>&#x20A6; {(usdt_bep20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>&#x20A6; {usdt_trc20}</Text> : null}
+                  {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>&#x20A6; {(usdt_trc20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
                 </View>
               )
                 :
                 <View>
-                  {address.name === "BTC" ? <Text style={styles.text_header}>{user.currency} {btc}</Text> : null}
+                  {address.name === "BTC" ? <Text style={styles.text_header}>{user.currency} {(btc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "LTC" ? <Text style={styles.text_header}>{user.currency} {ltc}</Text> : null}
+                  {address.name === "LTC" ? <Text style={styles.text_header}>{user.currency} {(ltc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "BNB" ? <Text style={styles.text_header}>{user.currency} {bnb}</Text> : null}
+                  {address.name === "BNB" ? <Text style={styles.text_header}>{user.currency} {(bnb / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "ETH" ? <Text style={styles.text_header}>{user.currency} {eth}</Text> : null}
+                  {address.name === "ETH" ? <Text style={styles.text_header}>{user.currency} {(eth / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "TRX" ? <Text style={styles.text_header}>{user.currency} {trx}</Text> : null}
+                  {address.name === "TRX" ? <Text style={styles.text_header}>{user.currency} {(trx / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "USDT" ? <Text style={styles.text_header}>{user.currency} {usdt}</Text> : null}
+                  {address.name === "USDT" ? <Text style={styles.text_header}>{user.currency} {(usdt / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>{user.currency} {usdt_bep20}</Text> : null}
+                  {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>{user.currency} {(usdt_bep20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>{user.currency} {usdt_trc20}</Text> : null}
+                  {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>{user.currency} {(usdt_trc20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
                 </View>
             }
 
@@ -843,7 +843,7 @@ function Crypto() {
                   {/* <Feather name="send" size={20} color="whitesmoke" /> */}
                 </View>
                 <Text style={styles.buttonText}>
-                  Deposit
+                  Buy
                 </Text>
 
               </TouchableOpacity>
@@ -958,9 +958,12 @@ const styles = StyleSheet.create({
   address: {
     paddingHorizontal: 10,
     paddingVertical: 20,
+    width: "90%",
     backgroundColor: "white",
     borderRadius: 10,
-    width: "90%"
+    marginBottom: 10,
+    borderWidth: 3,
+    borderColor: "#febf12",
   },
   containerInner: {
     marginTop: 40,
