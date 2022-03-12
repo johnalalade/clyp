@@ -28,7 +28,7 @@ function SignIn({ navigation }) {
 
     const { colors } = useTheme();
 
-    if (loading) {
+    if (load) {
         return (
             <View style={{ opacity: 0.5, flex: 1, display: 'flex', flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                 <ActivityIndicator size="large" color="#febf12" />
@@ -114,7 +114,9 @@ function SignIn({ navigation }) {
                         <View style={styles.button}>
 
                             <TouchableOpacity
-                                onPress={() => { signIn(); setLoading(true); setTimeout(() => { setLoading(false) }, 3000) }}
+                                onPress={() => { signIn(); setLoading(true); 
+                                    // setTimeout(() => { setLoading(false) }, 3000)
+                                 }}
                                 style={[styles.signIn, {
                                     backgroundColor: "#febf12",
                                     borderColor: 'whitesmoke',

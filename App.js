@@ -50,6 +50,9 @@ import { useFonts } from "expo-font";
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import Password from './Screens/F-Password';
+import P2P from './Screens/p2p';
+import myListing from './Screens/myList';
+import { MaterialIcons } from '@expo/vector-icons';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -95,6 +98,12 @@ const HomeStackScreen = () => (
     <Tabs.Screen name="Crypto" component={Crypto} options={{
       tabBarIcon: ({ focused, size }) => (
         <FontAwesome5 name="bitcoin" size={size} color={focused ? '#febf12' : '#ccc'} />
+      ), headerShown: false, tabBarLabelStyle: { color: "#febf12" }
+    }} />
+
+    <Tabs.Screen name="P2P" component={P2P} options={{
+      tabBarIcon: ({ focused, size }) => (
+        <FontAwesome5 name="exchange-alt" size={size} color={focused ? '#febf12' : '#ccc'} />
       ), headerShown: false, tabBarLabelStyle: { color: "#febf12" }
     }} />
 
@@ -208,11 +217,12 @@ export default function App() {
 
             setLoggedIn(true)
           }
-          else{
+          else {
+            setLoading(false)
             Alert.alert('Error', `${data.data.message}`)
           }
           console.log({ data: data.data })
-          
+
 
         })
         .catch((err) => {
@@ -254,6 +264,7 @@ export default function App() {
             setLoggedIn(true)
           }
           else {
+            setLoggedIn(true)
             Alert.alert('Error', `${data.data.message}`)
           }
 
@@ -391,6 +402,16 @@ export default function App() {
               drawerIcon: ({ focused, size }) => (
                 <AntDesign
                   name="home"
+                  size={size}
+                  color={focused ? 'lightblue' : '#ccc'} />
+              )
+            }} />
+
+            <Drawer.Screen name="My Listing" component={myListing} options={{ title: "My Listing" }} options={{
+
+              drawerIcon: ({ focused, size }) => (
+                <MaterialIcons
+                  name="list-alt"
                   size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )

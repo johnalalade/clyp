@@ -32,6 +32,7 @@ function Crypto() {
     require('../assets/bitcoin.png'), require('../assets/litecoin.png'), require('../assets/binance.png'), require('../assets/ethereum.png'), require('../assets/coin.png'), require('../assets/tether.png'), require('../assets/tether(1).png'), require('../assets/tether(2).png')
   ])
   const [ix, setIx] = React.useState(0)
+  const [index, setIndex] = React.useState(0)
 
   const [cleanup, setCleanUp] = React.useState(0)
   const [refreshing, setRefreshing] = React.useState(false)
@@ -49,6 +50,19 @@ function Crypto() {
   const [usdt_trc20, setUSDTTRC20] = React.useState()
   const [ltc, setLTC] = React.useState()
   const [trx, setTRX] = React.useState()
+
+  // Value
+  const [btcValue, setBTCValue] = React.useState()
+  const [bnbValue, setBNBValue] = React.useState()
+  const [ethValue, setETHValue] = React.useState()
+  const [usdtValue, setUSDTValue] = React.useState()
+  const [usdt_bep20Value, setUSDTBEP20Value] = React.useState()
+  const [usdt_trc20Value, setUSDTTRC20Value] = React.useState()
+  const [ltcValue, setLTCValue] = React.useState()
+  const [trxValue, setTRXValue] = React.useState()
+
+  const [value, setValue] = React.useState(0)
+
   const [balance, setBalance] = React.useState()
 
   const [user, setUser] = React.useState(null)
@@ -77,7 +91,9 @@ function Crypto() {
         axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
           .then((data) => {
             setBTC(data.data.balance)
+            setBTCValue(data.data.value_balance)
             setBalance(data.data.balance)
+            setValue(data.data.value_balance)
             console.log(data.data.balance)
           })
           .catch((err) => {
@@ -87,6 +103,7 @@ function Crypto() {
         axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
           .then((data) => {
             setLTC(data.data.balance)
+            setLTCValue(data.data.value_balance)
             console.log(data.data.balance)
           })
           .catch((err) => {
@@ -96,6 +113,7 @@ function Crypto() {
         axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
           .then((data) => {
             setBNB(data.data.balance)
+            setBNBValue(data.data.value_balance)
             console.log(data.data.balance)
           })
           .catch((err) => {
@@ -105,7 +123,7 @@ function Crypto() {
         axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
           .then((data) => {
             setETH(data.data.balance)
-            // setRefreshing(false)
+            setETHValue(data.data.value_balance)
             console.log(data.data.balance)
           })
           .catch((err) => {
@@ -115,6 +133,7 @@ function Crypto() {
         axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
           .then((data) => {
             setTRX(data.data.balance)
+            setTRXValue(data.data.value_balance)
             console.log(data.data.balance)
           })
           .catch((err) => {
@@ -124,6 +143,7 @@ function Crypto() {
         axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
           .then((data) => {
             setUSDT(data.data.balance)
+            setUSDTValue(data.data.value_balance)
             console.log(data.data.balance)
           })
           .catch((err) => {
@@ -133,6 +153,7 @@ function Crypto() {
         axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
           .then((data) => {
             setUSDTBEP20(data.data.balance)
+            setUSDTBEP20Value(data.data.value_balance)
             console.log(data.data.balance)
           })
           .catch((err) => {
@@ -142,6 +163,7 @@ function Crypto() {
         axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
           .then((data) => {
             setUSDTTRC20(data.data.balance)
+            setUSDTTRC20Value(data.data.value_balance)
             setRefreshing(false)
             console.log(data.data.balance)
           })
@@ -810,6 +832,8 @@ function Crypto() {
                 </View>
             }
 
+            <Text style={styles.value}>{value}</Text>
+
 
             <View style={styles.buttons}>
 
@@ -879,31 +903,39 @@ function Crypto() {
             <View style={styles.cryptoList}>
               {
                 user && user.wallets.map((item, ix) => (
-                  <TouchableOpacity horizontal={true} style={styles.crypCont} key={item.address + item.name} onPress={() => {
-                    setAddress0(item); setIx(ix);
+                  <TouchableOpacity horizontal={true} style={ix !== index ? styles.crypCont : styles.crypContSelected} key={item.address + item.name} onPress={() => {
+                    setAddress0(item); setIx(ix); setIndex(ix)
                     if (item.name === "BTC") {
                       setBalance(btc)
+                      setValue(btcValue)
                     }
                     if (item.name === "LTC") {
                       setBalance(ltc)
+                      setValue(ltcValue)
                     }
                     if (item.name === "BNB") {
                       setBalance(bnb)
+                      setValue(bnbValue)
                     }
                     if (item.name === "ETH") {
                       setBalance(eth)
+                      setValue(ethValue)
                     }
                     if (item.name === "TRx") {
                       setBalance(trx)
+                      setValue(trxValue)
                     }
                     if (item.name === "USDT") {
                       setBalance(usdt)
+                      setValue(usdtValue)
                     }
                     if (item.name === "USDT-BEP20") {
                       setBalance(usdt_bep20)
+                      setValue(usdt_bep20Value)
                     }
                     if (item.name === "USDT-TRC20") {
                       setBalance(usdt_trc20)
+                      setValue(usdt_trc20Value)
                     }
                   }}>
                     <Avatar.Image
@@ -939,7 +971,11 @@ const styles = StyleSheet.create({
     // backgroundColor: 'white',
     alignItems: 'center',
   },
-
+  value: {
+    color: "black",
+    fontSize: 15,
+    marginBottom: 10,
+  },
   containerSend: {
     flex: 1,
     // backgroundColor: '#febf1226',
@@ -1148,6 +1184,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     minWidth: 100
+  },
+  crypContSelected: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-around",
+    minWidth: 100,
+    borderRadius: 30,
+    borderWidth: 5,
+    borderColor: "#febf12",
+    padding: 10
   },
   convertTop: {
     fontWeight: '900',
