@@ -12,11 +12,19 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from './axios';
 import Hyperlink from 'react-native-hyperlink';
+import { useFonts } from "expo-font";
+
+const customFonts = {
+    Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
+    Optien: require("../assets/fonts/Optien.ttf"),
+    Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
+  };
 
 function Settings({ navigation }) {
 
   const { signOut } = React.useContext(AuthContext)
 
+  const [isLoaded] = useFonts(customFonts);
   const [page, setPage] = React.useState("Settings")
   const [name, setName] = React.useState()
   const [username, setUsername] = React.useState()

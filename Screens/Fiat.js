@@ -21,12 +21,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from "react-native-paper";
 import * as Clipboard from 'expo-clipboard';
 import Modal from "react-native-modal";
+import { useFonts } from "expo-font";
 
 const FiatStack = createStackNavigator()
 
+const customFonts = {
+    Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
+    Optien: require("../assets/fonts/Optien.ttf"),
+    Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
+};
+
 function Fiat({ navigation }) {
 
-
+    const [isLoaded] = useFonts(customFonts);
     const [option, setOption] = React.useState("None")
 
     const [amount, setAmount] = React.useState(0)
@@ -135,18 +142,18 @@ function Fiat({ navigation }) {
             // axios.post('/fundaccount', payload)
             //     .then(data => {
             //         if (data.data.id) {
-                        console.log("Successfully funded your fiat wallet")
-                        axios.post('/user', { userID: id })
-                            .then((data) => {
-                                setUser(data.data.response)
-                                setPage("Fiat")
-                                console.log({ data: data.data.response })
-                                setCleanUp(cleanup + 1)
-                                return data.data.response
-                            })
-                            .catch(err => {
+            console.log("Successfully funded your fiat wallet")
+            axios.post('/user', { userID: id })
+                .then((data) => {
+                    setUser(data.data.response)
+                    setPage("Fiat")
+                    console.log({ data: data.data.response })
+                    setCleanUp(cleanup + 1)
+                    return data.data.response
+                })
+                .catch(err => {
 
-                            })
+                })
                 //     }
 
                 // })
@@ -189,6 +196,8 @@ function Fiat({ navigation }) {
                         <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
                             <Feather name="x" size={24} color="black" />
                         </TouchableOpacity>
+
+                        <Text style={styles.fundOption}>Select Your Funding Option</Text>
 
                         <TouchableOpacity style={styles.option} onPress={() => setOption("Bank")}>
                             <FontAwesome name="bank" size={35} color="whitesmoke" />
@@ -572,6 +581,11 @@ function Fiat({ navigation }) {
         )
     }
 
+    if (!isLoaded) {
+        return (
+            <View></View>
+        )
+    }
 
     const txHandler = (name) => {
 
@@ -592,32 +606,37 @@ function Fiat({ navigation }) {
                     }
                     }>
 
-                        {item.name === "Added Funds" && <MaterialIcons name="call-received" size={24} color="#febf12" />}
+                        <View style={styles.trancView}>
 
-                        {item.name === "Added Funds With Card" && <Ionicons
-                            name="card-outline"
-                            size={24}
-                            color="#febf12" />}
+                            {item.name === "Added Funds" && <MaterialIcons name="call-received" size={24} color="#febf12" />}
 
-                        {item.name === "Withdrawal Successful" && <Feather name="send" size={24} color="#febf12" />}
+                            {item.name === "Added Funds With Card" && <Ionicons
+                                name="card-outline"
+                                size={24}
+                                color="#febf12" />}
 
-                        {item.name === "Withdrawal Failed" && <MaterialIcons name="cancel" size={24} color="#fd343480" />}
+                            {item.name === "Withdrawal Successful" && <Feather name="send" size={24} color="#febf12" />}
 
-                        {item.name.indexOf("Airtime") != -1 && <Feather name="phone" size={24} color="#febf12" />}
+                            {item.name === "Withdrawal Failed" && <MaterialIcons name="cancel" size={24} color="#fd343480" />}
 
-                        {item.name.indexOf("Got") != -1 && <FontAwesome5 name="coins" size={24} color="#febf12" />}
+                            {item.name.indexOf("Airtime") != -1 && <Feather name="phone" size={24} color="#febf12" />}
 
-                        {item.name.indexOf("Sent") != -1 && <FontAwesome5 name="coins" size={24} color="#febf12" />}
+                            {item.name.indexOf("Got") != -1 && <FontAwesome5 name="coins" size={24} color="#febf12" />}
 
-                        {item.name.indexOf("Exchanged") != -1 && <Entypo name="cycle" size={24} color="#febf12" />}
+                            {item.name.indexOf("Sent") != -1 && <FontAwesome5 name="coins" size={24} color="#febf12" />}
 
-                        {item.name.indexOf("Bill") != -1 && <FontAwesome5 name="file-alt" size={24} color="#febf12" />}
+                            {item.name.indexOf("Exchanged") != -1 && <Entypo name="cycle" size={24} color="#febf12" />}
 
-                        {item.name.indexOf("Pending") != -1 && <MaterialIcons name="pending" size={24} color="#febf12" />}
+                            {item.name.indexOf("Bill") != -1 && <FontAwesome5 name="file-alt" size={24} color="#febf12" />}
 
-                        <View>
-                            <Text style={styles.txText}>{item.name}</Text>
-                            <Text style={styles.txTextSub}>{item.amount}</Text>
+                            {item.name.indexOf("Pending") != -1 && <MaterialIcons name="pending" size={24} color="#febf12" />}
+
+                            <View>
+                                <Text style={styles.txText}>{item.name}</Text>
+                                <Text style={styles.txTextSub}>{item.time}</Text>
+                            </View>
+
+                            <Text style={styles.txTextAmount}>{item.amount}</Text>
                         </View>
 
                     </TouchableOpacity>
@@ -670,13 +689,17 @@ function Fiat({ navigation }) {
 
                         <View style={styles.container2}>
 
-                            <TouchableOpacity onPress={() => navigation.navigate("Settings")} style={styles.cancel}>
-                                <Text style={styles.name}> Yo, {user.username}</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate("Settings")} style={styles.name_co}>
+
+                                <Text style={styles.name}>{user.username}</Text>
+
+                                <Text style={styles.text_wallet}>Clyp ID: {user.clypID}</Text>
+
                             </TouchableOpacity>
 
                             <View style={styles.header}>
-                                <Text style={styles.text_wallet}>Fiat Wallet</Text>
-                                <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" />
+
+                                {/* <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" /> */}
 
                                 {user.country === "Nigeria" ?
                                     <Text style={styles.text_header}>  &#x20A6; {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
@@ -731,7 +754,7 @@ function Fiat({ navigation }) {
                     </View>
                 </ScrollView>
 
-                <Modal isVisible={isModalVisible} onBackdropPress={()=> setModalVisible(false)} animationInTiming={0} animationOutTiming={0}>
+                <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)} animationInTiming={0} animationOutTiming={0}>
                     <View style={styles.modal}>
                         <Text style={styles.modalHead}>{item.name}</Text>
 
@@ -766,6 +789,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginTop: 10
     },
+    name_co: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 10,
+    },
     nums: {
         paddingHorizontal: 10,
         paddingVertical: 20,
@@ -789,19 +819,21 @@ const styles = StyleSheet.create({
     },
     name: {
         fontWeight: "bold",
-        fontSize: 10
+        fontSize: 15,
+        fontFamily: "Optien"
     },
     container: {
         flex: 1,
+        marginTop: 25,
         // backgroundColor: '#febf1226',
         alignItems: 'center',
         paddingBottom: 100
         // justifyContent: 'center',
     },
     container2: {
-        flex: 0.7,
+        flex: 1,
         // backgroundColor: '#febf1226',
-        alignItems: 'center',
+        // alignItems: 'center',
         // justifyContent: 'center',
     },
     containerInner: {
@@ -832,15 +864,21 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         alignItems: "center",
         paddingHorizontal: 20,
-        paddingBottom: 20
+        paddingBottom: 20,
+        backgroundColor: "#febf12",
+        borderRadius: 10,
+        borderColor: "#bebbbb",
+        borderWidth: 1,
+        width: 350,
     },
     text_wallet: {
         fontWeight: '300',
-        fontSize: 20,
+        fontSize: 15,
         paddingBottom: 10,
+        fontFamily: "Optien",
     },
     text_header: {
-        color: 'grey',
+        color: 'white',
         fontWeight: 'bold',
         fontSize: 30,
         paddingBottom: 10,
@@ -871,7 +909,9 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontWeight: "bold",
-        color: "grey"
+        color: "white",
+        fontFamily: "Optien",
+        paddingTop: 5
     },
     panel: {
         padding: 20,
@@ -913,7 +953,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: 'gray',
         height: 30,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        fontFamily: "Prompt"
     },
     panelButton: {
         padding: 13,
@@ -927,6 +968,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
     },
+    trancView: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
     txTouch: {
         display: "flex",
         flexDirection: "row",
@@ -936,11 +983,16 @@ const styles = StyleSheet.create({
     },
     txText: {
         marginLeft: 5,
-        fontWeight: "700",
-        marginVertical: 5
+        fontWeight: "800",
+        marginVertical: 5,
+        fontFamily: "Optien",
+        fontSize: 17,
     },
     txTextSub: {
         marginLeft: 5
+    },
+    txTextAmount: {
+        marginLeft: 30
     },
 
     // Fund
@@ -953,9 +1005,20 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 15
     },
+    fundOption: {
+        alignSelf: "center",
+        fontFamily: "Optien",
+        fontWeight: "600",
+        paddingBottom: 20,
+        fontSize: 20
+    },
+    optionTextHeader: {
+        fontFamily: "Prompt"
+    },
     optionText: {
         marginLeft: 5,
-        fontWeight: "800"
+        fontWeight: "800",
+        fontFamily: "Optien"
     },
     input: {
         display: "flex",
@@ -1029,7 +1092,7 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         marginTop: 10
     },
-    modalButtonText:{
+    modalButtonText: {
         color: "whitesmoke",
         fontWeight: "400",
 

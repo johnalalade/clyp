@@ -3,8 +3,16 @@ import React, { Component, useEffect } from "react";
 import { StyleSheet, Text, View, TextInput, Alert } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFonts } from "expo-font";
+
+const customFonts = {
+    Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
+    Optien: require("../assets/fonts/Optien.ttf"),
+    Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
+  };
 
 function Contact ({ navigation }) {
+    const [isLoaded] = useFonts(customFonts);
     const [verified, setVerified] = React.useState(false)
     const [title, setTitle] = React.useState("")
     const [details, setDetails] = React.useState("")
@@ -65,6 +73,11 @@ function Contact ({ navigation }) {
         })
     }
 
+    if (!isLoaded) {
+        return (
+          <View></View>
+        )
+      }
 
         return (
             <View style={styles.container}>
@@ -116,7 +129,8 @@ const styles = StyleSheet.create({
     },
     airText: {
         fontWeight: "400",
-        fontSize: 15
+        fontSize: 15,
+        fontFamily: "Prompt"
     },
     airView: {
         marginBottom: 20

@@ -11,10 +11,17 @@ import internet from "./internet";
 import power from "./power";
 import toll from "./toll";
 import { ActivityIndicator, Avatar } from "react-native-paper";
+import { useFonts } from "expo-font";
 
+const customFonts = {
+    Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
+    Optien: require("../assets/fonts/Optien.ttf"),
+    Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
+  };
 
 function Bills({ navigation }) {
 
+    const [isLoaded] = useFonts(customFonts);
     const [page, setPage] = useState("Blank")
     const [prev, setPrev] = useState("")
     const [user, setUser] = React.useState()
@@ -1431,6 +1438,11 @@ function Bills({ navigation }) {
         )
     }
 
+    if (!isLoaded) {
+        return (
+          <View></View>
+        )
+      }
 
     return (
         <ScrollView refreshControl={
@@ -1506,7 +1518,8 @@ const styles = StyleSheet.create({
     convertTop: {
         fontWeight: '900',
         alignSelf: "center",
-        marginBottom: 20
+        marginBottom: 20,
+        fontFamily: "Optien"
     },
     wcont: {
         flex: 1,
@@ -1598,10 +1611,12 @@ const styles = StyleSheet.create({
     },
     optionHead: {
         fontWeight: "900",
-        color: "#febf12"
+        color: "#febf12",
+        fontFamily: "Prompt",
     },
     optionText: {
-        paddingTop: 5
+        paddingTop: 5,
+        fontFamily: "Optien",
         // color: "#febf12"
     },
     avt: {

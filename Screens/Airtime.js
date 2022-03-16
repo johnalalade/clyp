@@ -5,8 +5,17 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from "./axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, Avatar } from "react-native-paper";
+import { useFonts } from "expo-font";
+
+const customFonts = {
+    Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
+    Optien: require("../assets/fonts/Optien.ttf"),
+    Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
+  };
+  
 
 function Airtime({ navigation }) {
+    const [isLoaded] = useFonts(customFonts);
     const [airAmount, setAirAmount] = React.useState("")
     const [phone, setPhone] = React.useState("")
     const [user, setUser] = React.useState()
@@ -233,6 +242,11 @@ function Airtime({ navigation }) {
         )
     }
 
+    if (!isLoaded) {
+        return (
+          <View></View>
+        )
+      }
     return (
         <ScrollView style={{ flex: 1 }} refreshControl={
             <RefreshControl refreshing={refreshing}
@@ -300,7 +314,7 @@ function Airtime({ navigation }) {
                                     style={{ backgroundColor: "white" }}
                                     size={40}
                                 />
-                                <Text>BTC</Text>
+                                <Text style={styles.assetName}>BTC</Text>
                             </View>
                         </TouchableOpacity>
 
@@ -320,7 +334,7 @@ function Airtime({ navigation }) {
                                     style={{ backgroundColor: "white" }}
                                     size={40}
                                 />
-                                <Text>LTC</Text>
+                                <Text style={styles.assetName}>LTC</Text>
                             </View>
                         </TouchableOpacity>
 
@@ -340,7 +354,7 @@ function Airtime({ navigation }) {
                                     style={{ backgroundColor: "white" }}
                                     size={40}
                                 />
-                                <Text>BNB</Text>
+                                <Text style={styles.assetName}>BNB</Text>
                             </View>
                         </TouchableOpacity>
 
@@ -360,7 +374,7 @@ function Airtime({ navigation }) {
                                     style={{ backgroundColor: "white" }}
                                     size={40}
                                 />
-                                <Text>ETH</Text>
+                                <Text style={styles.assetName}>ETH</Text>
                             </View>
                         </TouchableOpacity>
 
@@ -380,7 +394,7 @@ function Airtime({ navigation }) {
                                     style={{ backgroundColor: "white" }}
                                     size={40}
                                 />
-                                <Text>TRX</Text>
+                                <Text style={styles.assetName}>TRX</Text>
                             </View>
                         </TouchableOpacity>
 
@@ -400,7 +414,7 @@ function Airtime({ navigation }) {
                                     style={{ backgroundColor: "white" }}
                                     size={40}
                                 />
-                                <Text>USDT</Text>
+                                <Text style={styles.assetName}>USDT</Text>
                             </View>
                         </TouchableOpacity>
 
@@ -420,7 +434,7 @@ function Airtime({ navigation }) {
                                     style={{ backgroundColor: "white" }}
                                     size={40}
                                 />
-                                <Text>USDT-BEP20</Text>
+                                <Text style={styles.assetName}>USDT-BEP20</Text>
                             </View>
                         </TouchableOpacity>
 
@@ -440,7 +454,7 @@ function Airtime({ navigation }) {
                                     style={{ backgroundColor: "white" }}
                                     size={40}
                                 />
-                                <Text>USDT-TRC20</Text>
+                                <Text style={styles.assetName}>USDT-TRC20</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -490,7 +504,8 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 10,
         fontSize: 15,
-        fontWeight: "600"
+        fontWeight: "600",
+        fontFamily: "Optien"
     },
     nums: {
         paddingHorizontal: 10,
@@ -501,6 +516,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         borderWidth: 3,
         borderColor: "#febf12",
+        fontWeight: "400"
     },
     payW: {
         paddingVertical: 10,
@@ -521,12 +537,17 @@ const styles = StyleSheet.create({
         justifyContent: "space-evenly",
         alignItems: "center",
         marginHorizontal: 20,
+        fontFamily: "Optien"
     },
     coin: {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        fontFamily: "Optien"
+    },
+    assetName: {
+        fontFamily: "Optien"
     },
     paymentButton: {
         display: "flex",

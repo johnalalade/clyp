@@ -1,8 +1,16 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import { useFonts } from "expo-font";
+
+const customFonts = {
+    Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
+    Optien: require("../assets/fonts/Optien.ttf"),
+    Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
+  };
 
 function Profile () {
     
+    const [isLoaded] = useFonts(customFonts);
     const [name, setName] = React.useState()
     const [username, setUsername] = React.useState()
     const [phone, setPhone] = React.useState()

@@ -14,10 +14,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
 import QRCode from 'react-native-qrcode-svg';
 import { ActivityIndicator } from "react-native-paper";
+import { useFonts } from "expo-font";
 
+
+const customFonts = {
+  Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
+  Optien: require("../assets/fonts/Optien.ttf"),
+  Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
+};
 
 function Crypto() {
 
+  const [isLoaded] = useFonts(customFonts);
   const [hasPermission, setHasPermission] = useState(null)
   const [scanned, setScanned] = useState(false)
   const [text, setText] = useState("")
@@ -768,6 +776,12 @@ function Crypto() {
     )
   }
 
+  if (!isLoaded) {
+    return (
+      <View></View>
+    )
+  }
+
   return (
     <ScrollView style={{ flex: 1 }} refreshControl={
       <RefreshControl refreshing={refreshing}
@@ -832,22 +846,22 @@ function Crypto() {
                 </View>
             }
 
-            <Text style={styles.value}>{value}</Text>
+            <Text style={styles.value}>{value} {address.name}</Text>
 
 
             <View style={styles.buttons}>
 
-              <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Sell")}>
+              {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Sell")}>
                 <View style={styles.button}>
-                  {/* <Entypo name="cycle" size={24} color="whitesmoke" /> */}
+                  
                   <Feather name="arrow-up-left" size={24} color="whitesmoke" />
-                  {/* <Feather name="send" size={20} color="whitesmoke" /> */}
+                  
                 </View>
                 <Text style={styles.buttonText}>
                   Withdraw
                 </Text>
 
-              </TouchableOpacity>
+              </TouchableOpacity> */}
 
               <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
                 <View style={styles.button}>
@@ -860,17 +874,17 @@ function Crypto() {
 
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
+              {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
                 <View style={styles.button}>
-                  {/* <Entypo name="cycle" size={24} color="whitesmoke" /> */}
+                  
                   <Feather name="arrow-down-left" size={24} color="whitesmoke" />
-                  {/* <Feather name="send" size={20} color="whitesmoke" /> */}
+                  
                 </View>
                 <Text style={styles.buttonText}>
                   Buy
                 </Text>
 
-              </TouchableOpacity>
+              </TouchableOpacity> */}
 
               {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
               <View style={styles.button}>
@@ -1031,7 +1045,8 @@ const styles = StyleSheet.create({
   },
   text_wallet: {
     fontWeight: '300',
-    fontSize: 20
+    fontSize: 20,
+    fontFamily: "Optien"
   },
   text_header: {
     color: 'black',
@@ -1152,6 +1167,7 @@ const styles = StyleSheet.create({
   crypText: {
     fontWeight: "600",
     marginTop: 10,
+    fontFamily: "Optien"
   },
   cryptoAddressTouch: {
     marginTop: 40,
@@ -1200,7 +1216,8 @@ const styles = StyleSheet.create({
   convertTop: {
     fontWeight: '900',
     alignSelf: "center",
-    marginBottom: 20
+    marginBottom: 20,
+    fontFamily: "Optien"
   },
   convertPrice: {
     fontWeight: "600",

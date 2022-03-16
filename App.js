@@ -143,6 +143,8 @@ const Drawer = createDrawerNavigator()
 
 const customFonts = {
   Nunito: require("./assets/fonts/Nunito-VariableFont_wght.ttf"),
+  Optien: require("./assets/fonts/Optien.ttf"),
+  Prompt: require("./assets/fonts/Prompt-ExtraBold.ttf")
 };
 
 export default function App() {
@@ -214,7 +216,7 @@ export default function App() {
             // await AsyncStorage.setItem('currency', data.data.response.currency)
             // await AsyncStorage.setItem('rate', data.data.response.rate)
             setCountry(data.data.response.country)
-
+            setLoading(false)
             setLoggedIn(true)
           }
           else {
@@ -260,7 +262,7 @@ export default function App() {
             await AsyncStorage.setItem('country', data.data.response.country)
             await AsyncStorage.setItem('currency', data.data.response.currency)
             await AsyncStorage.setItem('rate', data.data.response.rate)
-
+            setLoading(false)
             setLoggedIn(true)
           }
           else {
@@ -277,6 +279,7 @@ export default function App() {
     signOut: () => {
       AsyncStorage.clear()
       setLoggedIn(false)
+      setLoading(false)
     },
 
     setName,
@@ -497,7 +500,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    fontFamily: "Nunito"
+    fontFamily: "Optien"
   },
   drawerContent: {
     flex: 1,
@@ -554,7 +557,7 @@ const styles = StyleSheet.create({
   introHead: {
     fontWeight: "600",
     fontSize: 25,
-    fontFamily: "Nunito"
+    fontFamily: "Prompt"
   },
   introImage: {
     height: 300,
@@ -565,7 +568,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: 15,
     textAlign: 'center',
-    fontFamily: "Nunito"
+    fontFamily: "Optien"
   },
   image: {
     display: "flex",

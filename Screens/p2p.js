@@ -7,9 +7,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, Avatar } from "react-native-paper";
 import { Feather } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
+import { useFonts } from "expo-font";
+
+const customFonts = {
+    Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
+    Optien: require("../assets/fonts/Optien.ttf"),
+    Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
+};
+
 
 function P2P({ navigation }) {
 
+    const [isLoaded] = useFonts(customFonts);
     const [images, setImage] = React.useState([
         require('../assets/bitcoin.png'), require('../assets/litecoin.png'), require('../assets/binance.png'), require('../assets/ethereum.png'), require('../assets/coin.png'), require('../assets/tether.png'), require('../assets/tether(1).png'), require('../assets/tether(2).png')
     ])
@@ -63,6 +72,7 @@ function P2P({ navigation }) {
     const [id, setId] = useState("")
     const [amStyle, setAmStyle] = useState(styles.noErr)
     const [loading, setLoading] = React.useState(false)
+    const [current, setCurrent] = React.useState({})
 
 
     useEffect(async () => {
@@ -83,6 +93,7 @@ function P2P({ navigation }) {
                         setVend(data.data.response)
                         console.log(data.data.response)
                     })
+
                 axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
                     .then((data) => {
                         setBTC(data.data.balance)
@@ -165,6 +176,17 @@ function P2P({ navigation }) {
                     .catch((err) => {
                         console.log({ Err: "Unable to get USDT-TRC20 balance " + err })
                     })
+                axios.post('/current', { currency: user.currency })
+                    .then(data => {
+                        setCurrent({
+                            bnb: data.data.bnb,
+                            eth: data.data.eth,
+                            usdt: data.data.usdt,
+                            btc: data.data.btc,
+                            ltc: data.data.ltc,
+                            trx: data.data.trx
+                        })
+                    })
             })
             .catch(err => {
                 console.log({ Err: err })
@@ -175,9 +197,23 @@ function P2P({ navigation }) {
 
 
     const amountHandler = (val) => {
+        let amoMin = list.asset === "BTC" && current.btc * parseInt(list.minRange)
+            || list.asset === "BNB" && current.bnb * parseInt(list.minRange)
+            || list.asset === "LTC" && current.ltc * parseInt(list.minRange)
+            || list.asset === "ETH" && current.eth * parseInt(list.minRange)
+            || list.asset === "TRX" && current.trx * parseInt(list.minRange)
+            || list.asset.indexOf("USDT") !== -1 && current.usdt * parseInt(list.minRange)
+
+        let amoMax = list.asset === "BTC" && current.btc * parseInt(list.maxRange)
+            || list.asset === "BNB" && current.bnb * parseInt(list.maxRange)
+            || list.asset === "LTC" && current.ltc * parseInt(list.maxRange)
+            || list.asset === "ETH" && current.eth * parseInt(list.maxRange)
+            || list.asset === "TRX" && current.trx * parseInt(list.maxRange)
+            || list.asset.indexOf("USDT") !== -1 && current.usdt * parseInt(list.maxRange)
+
         if (option === "Sell") {
 
-            if (val < parseInt(list.minRange) || val > parseInt(list.maxRange)) {
+            if (val < amoMin || val > amoMax || val > user.balance) {
                 setAmStyle(styles.err)
             }
             else {
@@ -186,7 +222,7 @@ function P2P({ navigation }) {
             }
         }
         else {
-            if (val < balance) {
+            if (val > balance) {
                 setAmStyle(styles.error)
             }
             else {
@@ -206,7 +242,8 @@ function P2P({ navigation }) {
                 receiver: filt[0].address,
                 buyer: user._id,
                 asset: list.asset,
-                currency: list.currency,
+                currency: user.currency,
+                sellerCurrency: list.currency,
                 private_key: list.private_key
             }
 
@@ -235,6 +272,7 @@ function P2P({ navigation }) {
                 receiver: list.address,
                 buyer: list.owner,
                 asset: list.asset,
+                sellerCurrency: user.currency,
                 currency: list.currency,
                 private_key: filt[0].privateKey
             }
@@ -271,16 +309,19 @@ function P2P({ navigation }) {
             address: user.wallets[index].address
         }
 
-        if(minRange > maxRange){
+        if (minRange > maxRange) {
             Alert.alert('Range Error', `Invalid range please make sure your Maximum amount is greater than Minimum amount`)
+            setLoading(false)
             return false
         }
-        if(value < maxRange){
+        if (value < maxRange) {
             Alert.alert('Invalid amount', `Your maximum range is more than your current ${asset} balance`)
+            setLoading(false)
             return false
         }
-        if(minRange == "" ||maxRange == ""){
+        if (minRange == "" || maxRange == "") {
             Alert.alert('Input Error', `Please indicate minium and maximum amount for each transaction`)
+            setLoading(false)
             return false
         }
         axios.post('/list', data)
@@ -333,7 +374,28 @@ function P2P({ navigation }) {
                             :
                             <Text style={styles.balance}>Balance: {user && user.currency} {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                         }
-                        <Text style={styles.airText}>Amount: </Text>
+
+                        <View>
+                            <Text>Range: </Text>
+                            <Text>{list.minRange}{item.asset} ({
+                                list.asset === "BTC" && current.btc * parseInt(list.minRange)
+                                || list.asset === "BNB" && current.bnb * parseInt(list.minRange)
+                                || list.asset === "LTC" && current.ltc * parseInt(list.minRange)
+                                || list.asset === "ETH" && current.eth * parseInt(list.minRange)
+                                || list.asset === "TRX" && current.trx * parseInt(list.minRange)
+                                || list.asset.indexOf("USDT") !== -1 && current.usdt * parseInt(list.minRange)
+                            } {user.currency}) - {list.maxRange}{item.asset} ({
+                                    list.asset === "BTC" && current.btc * parseInt(list.maxRange)
+                                    || list.asset === "BNB" && current.bnb * parseInt(list.maxRange)
+                                    || list.asset === "LTC" && current.ltc * parseInt(list.maxRange)
+                                    || list.asset === "ETH" && current.eth * parseInt(list.maxRange)
+                                    || list.asset === "TRX" && current.trx * parseInt(list.maxRange)
+                                    || list.asset.indexOf("USDT") !== -1 && current.usdt * parseInt(list.maxRange)
+                                } {user.currency})
+                            </Text>
+                        </View>
+
+                        <Text style={styles.airText}>Amount({user.currency}): </Text>
                         <View style={styles.airView}>
                             <TextInput
                                 style={styles.nums}
@@ -513,6 +575,12 @@ function P2P({ navigation }) {
         )
     }
 
+    if (!isLoaded) {
+        return (
+            <View></View>
+        )
+    }
+
     return (
         <View style={styles.container}>
             <ScrollView style={{ flex: 1 }} refreshControl={
@@ -557,14 +625,40 @@ function P2P({ navigation }) {
 
                                         <View style={styles.vCardPrice}>
                                             <Text>{item.name}</Text>
-                                            <Text>Amount</Text>
+
+                                            <Text>{
+                                                item.asset === "BTC" && current.btc || item.asset === "BNB" && current.bnb || item.asset === "LTC" && current.ltc || item.asset === "ETH" && current.eth || item.asset === "TRX" && current.trx || item.asset.indexOf("USDT") !== -1 && current.usdt
+                                            }</Text>
+
                                             <View style={styles.avaRange}>
                                                 <Text style={styles.det}>Range: </Text>
-                                                <Text>{item.minRange} - {item.maxRange}</Text>
+                                                <Text>{item.minRange}{item.asset} ({
+                                                    item.asset === "BTC" && current.btc * parseInt(item.minRange)
+                                                    || item.asset === "BNB" && current.bnb * parseInt(item.minRange)
+                                                    || item.asset === "LTC" && current.ltc * parseInt(item.minRange)
+                                                    || item.asset === "ETH" && current.eth * parseInt(item.minRange)
+                                                    || item.asset === "TRX" && current.trx * parseInt(item.minRange)
+                                                    || item.asset.indexOf("USDT") !== -1 && current.usdt * parseInt(item.minRange)
+                                                } {user.currency}) - {item.maxRange}{item.asset} ({
+                                                        item.asset === "BTC" && current.btc * parseInt(item.maxRange)
+                                                        || item.asset === "BNB" && current.bnb * parseInt(item.maxRange)
+                                                        || item.asset === "LTC" && current.ltc * parseInt(item.maxRange)
+                                                        || item.asset === "ETH" && current.eth * parseInt(item.maxRange)
+                                                        || item.asset === "TRX" && current.trx * parseInt(item.maxRange)
+                                                        || item.asset.indexOf("USDT") !== -1 && current.usdt * parseInt(item.maxRange)
+                                                    } {user.currency})
+                                                </Text>
                                             </View>
                                             <View style={styles.avaRange}>
                                                 <Text style={styles.det}>Available: </Text>
-                                                <Text>0 - 1</Text>
+                                                <Text>{item.available} ({
+                                                    item.asset === "BTC" && current.btc * parseInt(item.available)
+                                                    || item.asset === "BNB" && current.bnb * parseInt(item.available)
+                                                    || item.asset === "LTC" && current.ltc * parseInt(item.available)
+                                                    || item.asset === "ETH" && current.eth * parseInt(item.available)
+                                                    || item.asset === "TRX" && current.trx * parseInt(item.available)
+                                                    || item.asset.indexOf("USDT") !== -1 && current.usdt * parseInt(item.available)
+                                                })</Text>
                                             </View>
                                         </View>
 
@@ -664,6 +758,7 @@ const styles = StyleSheet.create({
     opTextActive: {
         fontWeight: "800",
         color: "white",
+        fontFamily: "Optien",
     },
     opInActive: {
         backgroundColor: "white",
@@ -673,11 +768,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: 20
+        borderRadius: 20,
+        fontFamily: "Optien"
     },
     opTextInActive: {
         fontWeight: "800",
         color: "grey",
+        fontFamily: "Optien"
     },
     options: {
         display: "flex",
@@ -711,6 +808,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "600",
         marginBottom: 5,
+        fontFamily: "Prompt"
     },
     cardDetBt: {
         display: "flex",
@@ -727,7 +825,8 @@ const styles = StyleSheet.create({
         paddingBottom: 5
     },
     det: {
-        color: "gray"
+        color: "gray",
+        fontFamily: "Optien"
     },
     cardButton: {
         backgroundColor: "#febf12",
@@ -826,8 +925,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#febf12",
-        width: 60,
-        height: 60,
+        width: 55,
+        height: 55,
         borderRadius: 30,
         position: 'absolute',
         bottom: 10,

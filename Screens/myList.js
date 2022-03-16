@@ -7,9 +7,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, Avatar } from "react-native-paper";
 import { Feather } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
+import { useFonts } from "expo-font";
+
+const customFonts = {
+    Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
+    Optien: require("../assets/fonts/Optien.ttf"),
+    Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
+};
+
 
 function myListing({ navigation }) {
 
+    const [isLoaded] = useFonts(customFonts);
     const [images, setImage] = React.useState([
         require('../assets/bitcoin.png'), require('../assets/litecoin.png'), require('../assets/binance.png'), require('../assets/ethereum.png'), require('../assets/coin.png'), require('../assets/tether.png'), require('../assets/tether(1).png'), require('../assets/tether(2).png')
     ])
@@ -251,6 +260,11 @@ function myListing({ navigation }) {
         )
     }
 
+    if (!isLoaded) {
+        return (
+          <View></View>
+        )
+      }
 
     if (page === "List") {
         return (
@@ -392,7 +406,7 @@ function myListing({ navigation }) {
                             setVendors(vend.filter(v => v.option === "Sell"))
                         }}>
                             {/* <Ionicons name="checkmark" size={24} color="#febf12" /> */}
-                            <Text style={option === "Sell" ? styles.opTextActive : styles.opTextInActive} >Sellers</Text>
+                            <Text style={option === "Sell" ? styles.opTextActive : styles.opTextInActive} >Sellings</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={option === "Buy" ? styles.opActive : styles.opInActive} onPress={() => {
@@ -400,7 +414,7 @@ function myListing({ navigation }) {
                             setVendors(vend.filter(v => v.option === "Buy"))
                         }}>
                             {/* <Ionicons name="checkmark" size={24} color="#febf12" /> */}
-                            <Text style={option === "Buy" ? styles.opTextActive : styles.opTextInActive}>Buyers</Text>
+                            <Text style={option === "Buy" ? styles.opTextActive : styles.opTextInActive}>Buyings</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -530,6 +544,7 @@ const styles = StyleSheet.create({
     opTextActive: {
         fontWeight: "800",
         color: "white",
+        fontFamily: "Optien"
     },
     opInActive: {
         backgroundColor: "white",
@@ -539,7 +554,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: 20
+        borderRadius: 20,
+        fontFamily: "Optien"
     },
     opTextInActive: {
         fontWeight: "800",
@@ -577,6 +593,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "600",
         marginBottom: 5,
+        fontFamily: "Prompt"
     },
     cardDetBt: {
         display: "flex",
@@ -593,7 +610,8 @@ const styles = StyleSheet.create({
         paddingBottom: 5
     },
     det: {
-        color: "gray"
+        color: "gray",
+        fontFamily: "Optien"
     },
     cardButton: {
         backgroundColor: "red",
