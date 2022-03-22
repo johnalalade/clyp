@@ -291,7 +291,7 @@ function myListing({ navigation }) {
         return (
             <ScrollView style={{ flex: 1 }}>
                 <TouchableOpacity onPress={() => setPage(null)} style={styles.cancel}>
-                    <Feather name="x" size={24} color="black" />
+                    <Ionicons name="arrow-back-sharp" size={24} color="black" />
                 </TouchableOpacity>
 
 
@@ -440,7 +440,7 @@ function myListing({ navigation }) {
                     </View>
 
                     <FlatList
-                        keyExtractor={(item) => item.reference + item.name + item.amount}
+                        keyExtractor={(item) => item.reference + item.name + item.amount + item.asset + item.minRange + item.maxRange + item.available + new Date}
                         data={vendors}
                         renderItem={({ item }) => (
                             <View style={styles.card}>
@@ -458,35 +458,14 @@ function myListing({ navigation }) {
 
                                             <View style={styles.avaRange}>
                                                 <Text style={styles.det}>Range: </Text>
-                                                <Text>{parseInt(item.minRange)} {item.asset} ({parseInt(
-                                                    item.asset === "BTC" && current.btc * item.minRange
-                                                    || item.asset === "BNB" && current.bnb * item.minRange
-                                                    || item.asset === "LTC" && current.ltc * item.minRange
-                                                    || item.asset === "ETH" && current.eth * item.minRange
-                                                    || item.asset === "TRX" && current.trx * item.minRange
-                                                    || item.asset.indexOf("USDT") !== -1 && current.usdt * item.minRange).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-                                                } {user.currency})
+                                                <Text>{item.minRange} {item.asset}
                                                     -
-                                                    {parseFloat(item.maxRange).toFixed(6).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}{item.asset} ({parseInt(
-                                                        item.asset === "BTC" && current.btc * item.maxRange
-                                                        || item.asset === "BNB" && current.bnb * item.maxRange
-                                                        || item.asset === "LTC" && current.ltc * item.maxRange
-                                                        || item.asset === "ETH" && current.eth * item.maxRange
-                                                        || item.asset === "TRX" && current.trx * item.maxRange
-                                                        || item.asset.indexOf("USDT") !== -1 && current.usdt * item.maxRange).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-                                                    } {user.currency})
+                                                    {item.maxRange} {item.asset} 
                                                 </Text>
                                             </View>
                                             <View style={styles.avaRange}>
                                                 <Text style={styles.det}>Available: </Text>
-                                                <Text>{parseFloat(item.available).toFixed(6).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} ({parseInt(
-                                                    item.asset === "BTC" && current.btc * item.available
-                                                    || item.asset === "BNB" && current.bnb * item.available
-                                                    || item.asset === "LTC" && current.ltc * item.available
-                                                    || item.asset === "ETH" && current.eth * item.available
-                                                    || item.asset === "TRX" && current.trx * item.available
-                                                    || item.asset.indexOf("USDT") !== -1 && current.usdt * item.available).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-                                                } {user.currency})</Text>
+                                                <Text>{item.available} {item.asset}</Text>
                                             </View>
                                         </View>
 

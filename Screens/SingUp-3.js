@@ -7,6 +7,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from "react-native-paper";
+import TipProvider from "react-native-tip";
+import { Tip } from "react-native-tip";
 
 function SignUp3({ navigation }) {
     const { signUp, password, cpassword, bvn, count, load } = React.useContext(AuthContext)
@@ -16,8 +18,8 @@ function SignUp3({ navigation }) {
 
     const sec = () => setSecE(!secE)
 
-    if(load){
-        return(
+    if (load) {
+        return (
             <View style={{ opacity: 0.5, flex: 1, display: 'flex', flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                 <ActivityIndicator size="large" color="#febf12" />
             </View>
@@ -41,7 +43,11 @@ function SignUp3({ navigation }) {
                         {(count === "Nigeria") ? <View>
                             <Text style={[styles.text_footer, {
                                 marginTop: 35
-                            }]}>BVN</Text>
+                            }]}>BVN
+                                <Tip title="Why BVN?" body="We use your BVN to create a virtual account number for you. We will never save your BVN on our Database." >
+                                    <FontAwesome style={{ marginLeft: 4 }} name="question-circle" size={20} color="grey" />
+                                </Tip>
+                            </Text>
                             <View style={styles.action}>
                                 <FontAwesome name="bank" size={20} color="#05375a" />
                                 <TextInput
@@ -51,7 +57,7 @@ function SignUp3({ navigation }) {
                                     autoCapitalize="none"
                                     onChangeText={(val) => bvn(val)}
                                 />
-                                <TouchableOpacity
+                                {/* <TouchableOpacity
                                     onPress={sec}
                                 >
                                     {secE ?
@@ -67,7 +73,7 @@ function SignUp3({ navigation }) {
                                             size={20}
                                         />
                                     }
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                             </View>
                         </View>
                             : null}
@@ -165,7 +171,7 @@ function SignUp3({ navigation }) {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => {signUp(); setLoading(true); setTimeout(() => {setLoading(false)}, 3000) }}
+                                onPress={() => { signUp(); setLoading(true); setTimeout(() => { setLoading(false) }, 3000) }}
                                 style={[styles.signIn, {
                                     borderColor: 'whitesmoke',
                                     backgroundColor: '#febf12',
@@ -181,7 +187,7 @@ function SignUp3({ navigation }) {
                     </ScrollView>
                 </Animatable.View>
             </View>
-
+            <TipProvider />
         </View>
     )
 

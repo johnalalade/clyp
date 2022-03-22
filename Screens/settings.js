@@ -1,5 +1,5 @@
 import React, { Component, useEffect } from "react";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import { StyleSheet, Text, View, TextInput, Button, Alert } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Avatar } from "react-native-paper";
 import { AuthContext } from "../context/AuthContext";
@@ -13,12 +13,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from './axios';
 import Hyperlink from 'react-native-hyperlink';
 import { useFonts } from "expo-font";
+import { FontAwesome5 } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 
 const customFonts = {
-    Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
-    Optien: require("../assets/fonts/Optien.ttf"),
-    Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
-  };
+  Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
+  Optien: require("../assets/fonts/Optien.ttf"),
+  Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
+};
 
 function Settings({ navigation }) {
 
@@ -74,7 +76,7 @@ function Settings({ navigation }) {
     return (
       <View style={styles.airContainer}>
         <TouchableOpacity onPress={() => setPage("Settings")} style={styles.cancel}>
-          <Feather name="x" size={24} color="black" />
+          <Ionicons name="arrow-back-sharp" size={24} color="black" />
         </TouchableOpacity>
 
         <View style={styles.avatar}>
@@ -130,6 +132,32 @@ function Settings({ navigation }) {
     )
   }
 
+  if (page === "Ref") {
+    return (
+      <View style={{ flex: 1 }}>
+        <TouchableOpacity onPress={() => setPage("Settings")} style={styles.cancel}>
+          <Ionicons name="arrow-back-sharp" size={24} color="black" />
+        </TouchableOpacity>
+
+        {user && <View style={styles.refView}>
+
+          <Text style={styles.refDet}>Let your referrals login with your Clyp ID below</Text>
+          <TouchableOpacity style={styles.refCont} onPress={() => {
+            Clipboard.setString(user.clypID);
+            Alert.alert("Copied", `${(user.country === "Nigeria") ? `Comrade, you've copied your Clyp ID, time to reffer...` : `Your Clyp ID has been copied Successfully`}`,)
+          }}>
+            <Text style={styles.id}>{user.clypID}</Text>
+          </TouchableOpacity>
+          <Text style={styles.refText}>You receive 1 Tron for every person that signs up with your Clyp ID 😜</Text>
+          <View>
+            <Text>Your Referrals: 0</Text>
+          </View>
+        </View>
+        }
+      </View>
+    )
+  }
+
   return (
     <View style={styles.cont}>
       <View style={styles.container}>
@@ -140,6 +168,18 @@ function Settings({ navigation }) {
 
               <EvilIcons name="user" size={30} color="black" />
               <Text style={styles.optionText}>Profile</Text>
+
+            </View>
+            <Ionicons name="chevron-forward-outline" size={24} color="black" />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.options} onPress={() => setPage("Ref")}>
+          <View style={styles.optionView}>
+            <View style={styles.optionDet}>
+
+              <FontAwesome5 name="people-arrows" size={30} color="black" />
+              <Text style={styles.optionText}>Referrals</Text>
 
             </View>
             <Ionicons name="chevron-forward-outline" size={24} color="black" />
@@ -202,7 +242,8 @@ const styles = StyleSheet.create({
   cancel: {
     top: 0,
     marginBottom: 20,
-    marginTop: 10
+    marginTop: 10,
+    marginLeft: 10,
   },
   avatar: {
     marginVertical: 20,
@@ -262,6 +303,32 @@ const styles = StyleSheet.create({
   optionText: {
     marginLeft: 5,
     fontWeight: "700"
+  },
+  refView: {
+    display: "flex",
+    flex: 1,
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  refDet: {
+    fontWeight: "600",
+    fontSize: 15
+  },
+  refCont: {
+    borderRadius: 10,
+    borderWidth: 3,
+    borderStyle: "dashed",
+    borderColor: "#febf12",
+    padding: 20
+  },
+  id: {
+    color: "#febf12",
+    fontWeight: "700",
+    fontSize: 20,
+  },
+  refText: {
+    fontWeight: "500",
+    textAlign: "center"
   },
 });
 

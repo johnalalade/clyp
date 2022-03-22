@@ -6,9 +6,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 function SignUp1({ navigation }) {
-    const { name, username } = React.useContext(AuthContext)
+    const { name, username, ref } = React.useContext(AuthContext)
 
     return (
         <View style={styles.container}>
@@ -75,19 +76,18 @@ function SignUp1({ navigation }) {
                                 : null} */}
                         </View>
 
-                        <View style={styles.textPrivate}>
-                            <Text style={styles.color_textPrivate}>
-                                {/* By signing up you agree to our */}
-                            </Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>
+                        <Text style={[styles.text_footer, {
+                            marginTop: 35
+                        }]}>Referral Clyp ID (optional)</Text>
+                        <View style={styles.action}>
+                            <FontAwesome5 name="people-arrows" size={20} color="#05375a" />
+                            <TextInput
+                                placeholder="Your Username"
+                                style={styles.textInput}
+                                autoCapitalize="none"
+                                onChangeText={(val) => ref(val)}
+                            />
 
-                            </Text>
-                            <Text style={styles.color_textPrivate}>
-                                {/* {" "}and */}
-                            </Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>
-                                {/* {" "}Privacy policy */}
-                            </Text>
                         </View>
 
                         <View style={styles.button}>
@@ -119,6 +119,22 @@ function SignUp1({ navigation }) {
                             </TouchableOpacity>
 
                         </View>
+
+                        <View style={styles.textPrivate}>
+                            <Text style={styles.color_textPrivate}>
+                                {/* By signing up you agree to our */}
+                            </Text>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>
+
+                            </Text>
+                            <Text style={styles.color_textPrivate}>
+                                {/* {" "}and */}
+                            </Text>
+                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>
+                                {/* {" "}Privacy policy */}
+                            </Text>
+                        </View>
+
                     </ScrollView>
                 </Animatable.View>
             </View>
@@ -135,13 +151,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: "column"
+        flexDirection: "column",
+        paddingBottom: 90,
     },
     header: {
         flex: 0.5,
         justifyContent: 'flex-end',
         paddingHorizontal: 20,
-        paddingBottom: 50
+        paddingBottom: 10
     },
     footer: {
         flex: Platform.OS === 'ios' ? 3 : 5,

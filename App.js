@@ -163,9 +163,10 @@ export default function App() {
   const [rate, setRate] = React.useState(480)
   const [rate2, setRate2] = React.useState(500)
   const [code, setCode] = React.useState("NG")
-  const [bvn, setBVN] = React.useState("")
+  const [bvn, setBVN] = React.useState(false)
   const [uname, setUname] = React.useState("")
   const [loading, setLoading] = React.useState(false)
+  const [referral, setReferral] = React.useState(false)
 
 
   const [expoPushToken, setExpoPushToken] = React.useState('');
@@ -246,7 +247,8 @@ export default function App() {
         rate2: rate2,
         code: code,
         bvn: bvn,
-        expoPushToken: expoPushToken
+        expoPushToken: expoPushToken,
+        referral: referral
       }
       setLoading(true)
       console.log(data)
@@ -308,6 +310,9 @@ export default function App() {
     },
     username: (val) => {
       setUsername(val)
+    },
+    ref: (val) => {
+      setReferral(val)
     },
     country: (val) => {
       setCountry(val)

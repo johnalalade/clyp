@@ -15,7 +15,7 @@ import * as Clipboard from 'expo-clipboard';
 import QRCode from 'react-native-qrcode-svg';
 import { ActivityIndicator } from "react-native-paper";
 import { useFonts } from "expo-font";
-
+import { Ionicons } from '@expo/vector-icons';
 
 const customFonts = {
   Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
@@ -72,6 +72,7 @@ function Crypto() {
   const [value, setValue] = React.useState(0)
 
   const [balance, setBalance] = React.useState()
+  const [currency, setCurrency] = React.useState()
 
   const [user, setUser] = React.useState(null)
 
@@ -81,8 +82,10 @@ function Crypto() {
     address: "xxxxxxxxxxxxxxxxxxxxxxxx",
     image: ""
   })
+  const [gas, setGas] = React.useState("Calculating...")
 
   const [amount, setAmount] = useState("")
+  const [current, setCurrent] = useState({})
 
   // Request camera permission
   useEffect(async () => {
@@ -90,12 +93,24 @@ function Crypto() {
     axios.post('/user', { userID: id })
       .then((data) => {
         setUser(data.data.response)
+        setCurrency(data.data.response.currency)
         setAddress0(data.data.response.wallets[0])
         setIx(0)
         console.log({ data: data.data.response })
         return data.data.response
       })
       .then(user => {
+        axios.post('/current', { currency: user.currency })
+          .then(data => {
+            setCurrent({
+              bnb: data.data.bnb,
+              eth: data.data.eth,
+              usdt: data.data.usdt,
+              btc: data.data.btc,
+              ltc: data.data.ltc,
+              trx: data.data.trx
+            })
+          })
         axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
           .then((data) => {
             setBTC(data.data.balance)
@@ -270,7 +285,7 @@ function Crypto() {
       asset: address.name,
       amount: rAmount,
       userID: user._id,
-      currency: user.currency
+      currency: currency
     }
     setLoading(true)
 
@@ -592,7 +607,7 @@ function Crypto() {
       <View style={styles.containerSend}>
 
         <TouchableOpacity onPress={() => setPage(null)} style={styles.cancel}>
-          <Feather name="x" size={24} color="black" />
+          <Ionicons name="arrow-back-sharp" size={24} color="black" />
         </TouchableOpacity>
 
         <View>
@@ -613,7 +628,13 @@ function Crypto() {
 
           <Text style={styles.addressText}>Amount:</Text>
           <View style={styles.addressInput}>
-            <Text style={{ fontSize: 30 }}>&#x20A6;</Text>
+            <Text onPress={() => {
+              if(currency == user.currency){
+                setCurrency("USD")
+              }else{
+                setCurrency(user.currency)
+              }
+            }} style={{ fontSize: 15, fontWeight: "600", marginHorizontal: 20 }}>{currency} ^</Text>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
@@ -624,6 +645,16 @@ function Crypto() {
 
             />
           </View>
+
+          <Text style={styles.txFees}>Transaction fee ({address.name}): {gas} {address.name}</Text>
+
+          <Text style={styles.txFees}>Transaction fee ({user.currency}): {parseInt(
+            address.name === "BTC" && current.btc * gas
+            || address.name === "BNB" && current.bnb * gas
+            || address.name === "LTC" && current.ltc * gas
+            || address.name === "ETH" && current.eth * gas
+            || address.name === "TRX" && current.trx * gas
+            || address.name.indexOf("USDT") !== -1 && current.usdt * gas).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} {user.currency}</Text>
 
         </View>
         {verifiedSend ?
@@ -643,7 +674,7 @@ function Crypto() {
       <View style={styles.containerSend}>
 
         <TouchableOpacity onPress={() => setPage(null)} style={styles.cancel}>
-          <Feather name="x" size={24} color="black" />
+          <Ionicons name="arrow-back-sharp" size={24} color="black" />
         </TouchableOpacity>
 
         <View style={styles.qrView} >
@@ -685,7 +716,7 @@ function Crypto() {
       <View style={styles.containerSend}>
 
         <TouchableOpacity onPress={() => setPage(null)} style={styles.cancel}>
-          <Feather name="x" size={24} color="black" />
+          <Ionicons name="arrow-back-sharp" size={24} color="black" />
         </TouchableOpacity>
 
         <View>
@@ -733,7 +764,7 @@ function Crypto() {
       <View style={styles.containerSend}>
 
         <TouchableOpacity onPress={() => setPage(null)} style={styles.cancel}>
-          <Feather name="x" size={24} color="black" />
+          <Ionicons name="arrow-back-sharp" size={24} color="black" />
         </TouchableOpacity>
 
         <View>
@@ -863,7 +894,13 @@ function Crypto() {
 
               </TouchableOpacity> */}
 
-              <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
+              <TouchableOpacity style={styles.buttonView} onPress={() => {
+                setPage("Send")
+                axios.post("/gas", { asset: address.name, address: address.address })
+                  .then(data => {
+                    setGas(data.data.gas)
+                  })
+              }}>
                 <View style={styles.button}>
 
                   <Feather name="send" size={20} color="whitesmoke" />
@@ -1003,17 +1040,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
-    marginBottom: 40
+    marginBottom: 40,
+    borderRadius: 10,
+    borderWidth: 3,
+    borderColor: "#febf12",
+    paddingRight: 6
   },
   address: {
     paddingHorizontal: 10,
     paddingVertical: 20,
     width: "90%",
     backgroundColor: "white",
-    borderRadius: 10,
-    marginBottom: 10,
-    borderWidth: 3,
-    borderColor: "#febf12",
+    // borderRadius: 10,
+    // marginBottom: 10,
+    // borderWidth: 3,
+    // borderColor: "#febf12",
   },
   containerInner: {
     marginTop: 40,
@@ -1046,13 +1087,16 @@ const styles = StyleSheet.create({
   text_wallet: {
     fontWeight: '300',
     fontSize: 20,
-    fontFamily: "Optien"
+    fontFamily: "Optien",
+    marginTop: 10,
+    marginBottom: 10,
   },
   text_header: {
     color: 'black',
     fontWeight: 'bold',
     fontSize: 20,
     marginBottom: 20,
+    marginTop: 10
   },
   buttons: {
     display: "flex",
@@ -1077,7 +1121,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontWeight: "bold",
-    color: "grey"
+    color: "grey",
+    marginTop: 5,
   },
   panel: {
     padding: 20,
@@ -1265,6 +1310,10 @@ const styles = StyleSheet.create({
   qrtext2: {
     fontWeight: "bold",
     marginBottom: 50
+  },
+  txFees: {
+    marginBottom: 15,
+    fontWeight: "600",
   },
 });
 

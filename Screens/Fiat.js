@@ -1,4 +1,4 @@
-import React, { useEffect, Component } from "react";
+import React, { useEffect, Component, useState } from "react";
 import { StyleSheet, Text, View, TextInput, Platform, TouchableOpacity, ScrollView, RefreshControl, Alert } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from 'reanimated-bottom-sheet';
@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { PayWithFlutterwave } from 'flutterwave-react-native';
 import banks from "./available_banks";
 import { UserInterfaceIdiom } from "expo-constants";
@@ -22,6 +23,9 @@ import { ActivityIndicator } from "react-native-paper";
 import * as Clipboard from 'expo-clipboard';
 import Modal from "react-native-modal";
 import { useFonts } from "expo-font";
+import TipProvider from "react-native-tip";
+import { Tip } from "react-native-tip";
+import { Fontisto } from '@expo/vector-icons';
 
 const FiatStack = createStackNavigator()
 
@@ -34,7 +38,7 @@ const customFonts = {
 function Fiat({ navigation }) {
 
     const [isLoaded] = useFonts(customFonts);
-    const [option, setOption] = React.useState("None")
+    const [option, setOption] = React.useState("Bank")
 
     const [amount, setAmount] = React.useState(0)
     const [currency, setcurrency] = React.useState("NGN")
@@ -72,6 +76,8 @@ function Fiat({ navigation }) {
     const [loading, setLoading] = React.useState(false)
     const [item, setItem] = React.useState({})
 
+    const [bvn, setBVN] = React.useState("")
+
 
     const [txs, setTxs] = React.useState([
         {
@@ -106,6 +112,7 @@ function Fiat({ navigation }) {
         axios.post('/user', { userID: id })
             .then((data) => {
                 setUser(data.data.response)
+                setOption(data.data.response.currency === "NGN" ? "Bank" : "Card")
                 setTxs(data.data.response.transactions)
                 setRefreshing(false)
                 console.log({ data: data.data.response })
@@ -187,6 +194,34 @@ function Fiat({ navigation }) {
         )
     }
 
+    const bvnRegistration = () => {
+        setLoading(true)
+        let data = {
+            email: user.email,
+            bvn,
+            userID: user._id
+        }
+        axios.post('/bvn-reg', data)
+            .then(res => {
+                if (res.data.id) {
+                    setLoading(false)
+                    setCleanUp(cleanup++)
+                    Alert.alert("Congratulations...", "Your account number has been created. You can now make bank transfers to fund your Clyp wallet")
+                }
+                else{
+                    setLoading(false)
+                    setCleanUp(cleanup++)
+                    Alert.alert("Failed", res.data.message)
+                }
+                
+            })
+            .catch(err => {
+                setLoading(false)
+                setCleanUp(cleanup++)
+                Alert.alert("Failed", "Your account number creation failed... please try again!")
+            })
+    }
+
 
     if (page === "Fund") {
         return (
@@ -194,20 +229,28 @@ function Fiat({ navigation }) {
                 <View style={styles.container}>
                     <View>
                         <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
-                            <Feather name="x" size={24} color="black" />
+                            <Ionicons name="arrow-back-sharp" size={24} color="black" />
                         </TouchableOpacity>
 
                         <Text style={styles.fundOption}>Select Your Funding Option</Text>
 
-                        <TouchableOpacity style={styles.option} onPress={() => setOption("Bank")}>
-                            <FontAwesome name="bank" size={35} color="whitesmoke" />
-                            <Text style={styles.optionText}>
-                                Fund with bank transfer
-                            </Text>
-                        </TouchableOpacity>
+                        {user && user.currency === "NGN" &&
+                            <TouchableOpacity style={styles.option} onPress={() => setOption("Bank")}>
+                                <FontAwesome name="bank" size={35} color="whitesmoke" />
+                                <Text style={styles.optionText}>
+                                    Fund with bank transfer
+                                </Text>
+
+                                {option === "Bank" &&
+                                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", flex: 1 }}>
+                                        <Fontisto name="radio-btn-active" size={24} color="white" />
+                                    </View>
+                                }
+                            </TouchableOpacity>}
 
 
                         <TouchableOpacity style={styles.option} onPress={() => setOption("Card")}>
+
                             <Ionicons
                                 name="card-outline"
                                 size={44}
@@ -215,16 +258,27 @@ function Fiat({ navigation }) {
                             <Text style={styles.optionText}>
                                 Fund with bank Card
                             </Text>
+
+                            {option === "Card" &&
+                                <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", flex: 1 }}>
+                                    <Fontisto name="radio-btn-active" size={24} color="white" />
+                                </View>
+                            }
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.option} onPress={() => navigation.navigate("Crypto")}>
-                            <Entypo
-                                name="cycle"
-                                size={44}
-                                color="whitesmoke" />
+                        <TouchableOpacity style={styles.option} onPress={() => setOption("Link")}>
+
+                            <Feather name="link" size={44} color="whitesmoke" />
                             <Text style={styles.optionText}>
-                                Withdraw from your Crypto balance
+                                Send Clyp payment link
                             </Text>
+
+                            {option === "Link" &&
+                                <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", flex: 1 }}>
+                                    <Fontisto name="radio-btn-active" size={24} color="white" />
+                                </View>
+                            }
+
                         </TouchableOpacity>
 
                         {(option === "Card") ?
@@ -266,7 +320,7 @@ function Fiat({ navigation }) {
                                                 onPress={props.onPress}
                                                 isBusy={props.isInitializing}
                                                 disabled={props.disabled}>
-                                                <Text style={styles.paymentButtonText}>Fund {user.currency} {amount}</Text>
+                                                <Text style={styles.paymentButtonText}>Fund {user.currency} {amount.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
                                             </TouchableOpacity>
                                         )}
                                     />
@@ -277,7 +331,8 @@ function Fiat({ navigation }) {
                         }
 
                         {(option === "Bank") ?
-                            <View>
+
+                            (user && user.account_number ? (<View>
 
                                 <Text style={{
                                     marginTop: 35, fontWeight: "600"
@@ -291,19 +346,31 @@ function Fiat({ navigation }) {
                                     </Text>
                                 </View>
 
-                                <Text style={{
+                                <Text onPress={() => {
+                                    Clipboard.setString(user.account_number);
+                                    Alert.alert("Copied", `You've copied your account number, time to receive money...`)
+                                }} style={{
                                     marginTop: 35, fontWeight: "600"
                                 }} >Account Number:</Text>
+
                                 <TouchableOpacity onPress={() => {
                                     Clipboard.setString(user.account_number);
                                     Alert.alert("Copied", `You've copied your account number, time to receive money...`)
-                                }} style={styles.inputF}>
+                                }} style={styles.inputF2}>
+
                                     <FontAwesome5 name="piggy-bank" size={30} color="grey" />
-                                    <Text style={styles.textInputF}
-                                        onPress={(val) => { }}
+                                    <Text onPress={() => {
+                                        Clipboard.setString(user.account_number);
+                                        Alert.alert("Copied", `You've copied your account number, time to receive money...`)
+                                    }} style={styles.textInputF}
                                     >
                                         {user.account_number}
                                     </Text>
+
+                                    <Feather onPress={() => {
+                                        Clipboard.setString(user.account_number);
+                                        Alert.alert("Copied", `You've copied your account number, time to receive money...`)
+                                    }} name="copy" size={24} color="black" />
                                 </TouchableOpacity>
 
                                 <Text style={{
@@ -318,11 +385,79 @@ function Fiat({ navigation }) {
                                     </Text>
                                 </View>
 
+                            </View>)
+                                :
+                                <View>
+                                    <Text style={{
+                                        marginTop: 35, fontWeight: "600"
+                                    }} >BVN
+                                        <Tip title="Why BVN?" body="We use your BVN to create a virtual account number for you. We will never save your BVN on our Database." >
+                                            <FontAwesome style={{ marginLeft: 4 }} name="question-circle" size={20} color="grey" />
+                                        </Tip>
+                                    </Text>
+
+                                    <View style={styles.input}>
+                                        <FontAwesome name="bank" size={30} color="grey" />
+                                        <TextInput
+                                            placeholder="BVN"
+                                            style={styles.textInput}
+                                            autoCapitalize="none"
+                                            keyboardType="numeric"
+                                            returnKeyType="done"
+                                            enablesReturnKeyAutomatically
+                                            onChangeText={(val) => setBVN(val)}
+                                        />
+                                    </View>
+
+                                    {bvn.length === 11 &&
+                                        <TouchableOpacity style={styles.paymentButton} onPress={()=>{
+                                            bvnRegistration()
+                                        }}>
+                                            <Text style={styles.paymentButtonText}>Submit</Text>
+                                        </TouchableOpacity>
+                                    }
+                                </View>) : null
+
+                        }
+
+                        {(option === "Link") ?
+                            <View>
+                                <Text onPress={() => {
+                                    Clipboard.setString(`https://pay.clypapp.com/pay/${user.email}/${user._id}`);
+                                    Alert.alert("Copied", `You've copied your payment link, time to receive money...`)
+                                }} style={{
+                                    marginTop: 35, fontWeight: "600"
+                                }} >Copy link:</Text>
+
+                                <TouchableOpacity onPress={() => {
+                                    Clipboard.setString(`https://pay.clypapp.com/pay/${user.email}/${user._id}`);
+                                    Alert.alert("Copied", `You've copied your payment link, time to receive money...`)
+                                }} style={styles.inputF2}>
+
+                                    <Feather name="link" size={30} color="grey" />
+                                    <Text style={styles.textInputF}
+                                        onPress={() => {
+                                            Clipboard.setString(`https://pay.clypapp.com/pay/${user.email}/${user._id}`);
+                                            Alert.alert("Copied", `You've copied your payment link, time to receive money...`)
+                                        }}
+                                    >
+                                        {`https://pay.clypapp.com/pay/${user.email}/${user._id}`}
+                                    </Text>
+
+                                    <Feather onPress={() => {
+                                        Clipboard.setString(`https://pay.clypapp.com/pay/${user.email}/${user._id}`);
+                                        Alert.alert("Copied", `You've copied your payment link, time to receive money...`)
+                                    }} name="copy" size={24} color="black" />
+                                </TouchableOpacity>
+
+                                <Text>Send payment link or paste in browser to fund your wallet</Text>
+
                             </View> : null
                         }
 
                     </View>
                 </View>
+                <TipProvider />
             </ScrollView>
         )
     }
@@ -525,7 +660,7 @@ function Fiat({ navigation }) {
                 <View>
 
                     <TouchableOpacity onPress={() => setPage("Fiat")} style={styles.cancel}>
-                        <Feather name="x" size={24} color="black" />
+                        <Ionicons name="arrow-back-sharp" size={24} color="black" />
                     </TouchableOpacity>
 
                     <Text style={styles.withdrawText}>Bank: </Text>
@@ -602,7 +737,7 @@ function Fiat({ navigation }) {
                 renderItem={({ item }) => (
                     <TouchableOpacity style={styles.txTouch} onPress={() => {
                         setItem(item)
-                        setModalVisible(true)
+                        Platform.OS === "ios" ? setModalVisible(true) : setPage("Android-Modal")
                     }
                     }>
 
@@ -615,7 +750,7 @@ function Fiat({ navigation }) {
                                 size={24}
                                 color="#febf12" />}
 
-                            {item.name === "Withdrawal Successful" && <Feather name="send" size={24} color="#febf12" />}
+                            {item.name === "Withdrawal Successful" && <Feather name="send" size={24} color="#40a507" />}
 
                             {item.name === "Withdrawal Failed" && <MaterialIcons name="cancel" size={24} color="#fd343480" />}
 
@@ -629,7 +764,7 @@ function Fiat({ navigation }) {
 
                             {item.name.indexOf("Bill") != -1 && <FontAwesome5 name="file-alt" size={24} color="#febf12" />}
 
-                            {item.name.indexOf("Pending") != -1 && <MaterialIcons name="pending" size={24} color="#febf12" />}
+                            {item.name.indexOf("Pending") != -1 && <MaterialIcons name="pending" size={24} color="#0271e5" />}
 
                             <View>
                                 <Text style={styles.txText}>{item.name}</Text>
@@ -655,13 +790,42 @@ function Fiat({ navigation }) {
         <View style={styles.pheader}>
             <View style={styles.panelHeader}>
                 <View style={styles.panelHandle} />
-                <View style={{ alignItems: 'center' }}>
+                <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: 'center', paddingHorizontal: 10, width: 320 }}>
                     {/* <Text style={styles.panelTitle}>Your Transactions</Text> */}
                     <Text style={styles.panelSubtitle}>Transactions</Text>
+                    <AntDesign name="filetext1" size={24}
+                        color="whitesmoke" />
                 </View>
             </View>
         </View>
     );
+
+    if (page === "Android-Modal") {
+        return (
+
+            <View style={styles.modal}>
+                <Text style={styles.modalHead}>{item.name}</Text>
+
+                <Text style={styles.modalNote}>Amount:</Text>
+                <Text style={styles.modalDetails}>{item.amount}</Text>
+
+                <Text style={styles.modalNote}>Reference:</Text>
+                <Text style={styles.modalDetails}>{item.reference}</Text>
+
+                <Text style={styles.modalNote}>Details:</Text>
+                <Text style={styles.modalDetails}>{item.details}</Text>
+
+                <Text style={styles.modalNote}>Time:</Text>
+                <Text style={styles.modalDetails}>{item.time}</Text>
+
+                <TouchableOpacity style={styles.modalButton} onPress={() => {
+                    setPage("Fiat")
+                }} >
+                    <Text style={styles.modalButtonText}>Close</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
 
 
     if (page === "Fiat") {
@@ -827,7 +991,8 @@ const styles = StyleSheet.create({
         marginTop: 25,
         // backgroundColor: '#febf1226',
         alignItems: 'center',
-        paddingBottom: 100
+        paddingBottom: 100,
+        paddingHorizontal: 10
         // justifyContent: 'center',
     },
     container2: {
@@ -865,10 +1030,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 20,
         paddingBottom: 20,
-        backgroundColor: "#febf12",
+        backgroundColor: "#f7efde",
         borderRadius: 10,
-        borderColor: "#bebbbb",
-        borderWidth: 1,
+        // borderColor: "#bebbbb",
+        // borderWidth: 1,
         width: 350,
     },
     text_wallet: {
@@ -878,11 +1043,15 @@ const styles = StyleSheet.create({
         fontFamily: "Optien",
     },
     text_header: {
-        color: 'white',
         fontWeight: 'bold',
         fontSize: 30,
         paddingBottom: 10,
-        paddingTop: 5
+        paddingTop: 5,
+        borderBottomWidth: 2,
+        borderBottomColor: "#fe8100"
+    },
+    text_sub_header: {
+        color: "grey"
     },
     buttons: {
         marginTop: 35,
@@ -897,10 +1066,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between"
     },
     button: {
-        borderRadius: 50,
+        borderRadius: 10,
         height: 50,
         width: 50,
-        backgroundColor: "#febf12",
+        backgroundColor: "#fe8100",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -909,7 +1078,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontWeight: "bold",
-        color: "white",
+        color: "black",
         fontFamily: "Optien",
         paddingTop: 5
     },
@@ -951,7 +1120,7 @@ const styles = StyleSheet.create({
     },
     panelSubtitle: {
         fontSize: 16,
-        color: 'gray',
+        color: 'whitesmoke',
         height: 30,
         fontWeight: "bold",
         fontFamily: "Prompt"
@@ -1034,6 +1203,15 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "whitesmoke",
         padding: 10,
+        borderRadius: 10,
+    },
+    inputF2: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "whitesmoke",
+        padding: 20,
         borderRadius: 10,
     },
     textInput: {
