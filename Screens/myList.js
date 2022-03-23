@@ -101,7 +101,7 @@ function myListing({ navigation }) {
 
                 axios.post('/all-mine', { userID: id })
                     .then(data => {
-                        setVendors(data.data.response.filter(v => v.option === "Sell"))
+                        setVendors(option === "Sell" ? data.data.response.filter(v => v.option === "Sell") : data.data.response.filter(v => v.option === "Buy") )
                         setVend(data.data.response)
                         console.log(data.data.response)
                     })
@@ -225,25 +225,46 @@ function myListing({ navigation }) {
             available: value
         }
 
-        if (minRange > maxRange) {
-            Alert.alert('Range Error', `Invalid range please make sure your Maximum amount is greater than Minimum amount`)
-            return false
-        }
-        if (value < maxRange) {
-            Alert.alert('Invalid amount', `Your maximum range is more than your current ${asset} balance`)
-            return false
-        }
-        if (minRange == "" || maxRange == "") {
-            Alert.alert('Input Error', `Please indicate minium and maximum amount for each transaction`)
-            return false
-        }
         if (option === "Sell") {
-            if (maxRange > balance) {
-                Alert.alert('Insufficient Balance', `Your ${asset} balance is not sufficient for your maximum range specification`)
+
+            if (minRange > maxRange) {
+                Alert.alert('Range Error', `Invalid range please make sure your Maximum amount is greater than Minimum amount`)
+                setLoading(false)
+                return false
+            }
+            if (value < maxRange) {
+                Alert.alert('Invalid amount', `Your maximum range is more than your current ${asset} balance`)
+                setLoading(false)
+                return false
+            }
+            if (minRange == "" || maxRange == "") {
+                Alert.alert('Input Error', `Please indicate minium and maximum amount for each transaction`)
+                setLoading(false)
+                return false
+            }
+            if (option === "Sell") {
+                if (maxRange > balance) {
+                    Alert.alert('Insufficient Balance', `Your ${asset} balance is not sufficient for your maximum range specification`)
+                    setLoading(false)
+                    return false
+                }
+            }
+
+        }
+        if (option === "Buy"){
+
+            if (minRange > maxRange) {
+                Alert.alert('Range Error', `Invalid range please make sure your Maximum amount is greater than Minimum amount`)
+                setLoading(false)
+                return false
+            }
+            if (minRange == "" || maxRange == "") {
+                Alert.alert('Input Error', `Please indicate minium and maximum amount for each transaction`)
                 setLoading(false)
                 return false
             }
         }
+
         axios.post('/list', data)
             .then(res => {
                 setCleanUp(cleanup++)
@@ -259,6 +280,7 @@ function myListing({ navigation }) {
                 console.log(res.data)
             })
             .catch(err => {
+                setLoading(false)
                 Alert.alert('Listing Failed', `Your listing of ${asset} for P2P transaction failed`, [
                     {
                         text: "OK",
@@ -267,7 +289,7 @@ function myListing({ navigation }) {
                         }
                     }
                 ])
-                console.log(res.data)
+                console.log(err)
             })
     }
 
@@ -439,90 +461,94 @@ function myListing({ navigation }) {
                         </TouchableOpacity>
                     </View>
 
-                    <FlatList
+                    {/* <FlatList
                         keyExtractor={(item) => item.reference + item.name + item.amount + item.asset + item.minRange + item.maxRange + item.available + new Date}
                         data={vendors}
-                        renderItem={({ item }) => (
-                            <View style={styles.card}>
+                        renderItem={({ item }) => ( */}
+                    {vendors && vendors.map(item => (
+                        <View style={styles.card}>
 
-                                <View>
+                            <View>
 
-                                    <Text style={styles.cardName}>{item.asset}</Text>
-                                    <View style={styles.cardDetBt}>
+                                <Text style={styles.cardName}>{item.asset}</Text>
+                                <View style={styles.cardDetBt}>
 
-                                        <View style={styles.vCardPrice}>
-                                            <Text>{item.name}</Text>
-                                            <Text>{
-                                                current && parseInt(item.asset === "BTC" && current.btc || item.asset === "BNB" && current.bnb || item.asset === "LTC" && current.ltc || item.asset === "ETH" && current.eth || item.asset === "TRX" && current.trx || item.asset.indexOf("USDT") !== -1 && current.usdt).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-                                            } {user.currency}</Text>
+                                    <View style={styles.vCardPrice}>
+                                        <Text>{item.name}</Text>
+                                        <Text>{
+                                            current && parseInt(item.asset === "BTC" && current.btc || item.asset === "BNB" && current.bnb || item.asset === "LTC" && current.ltc || item.asset === "ETH" && current.eth || item.asset === "TRX" && current.trx || item.asset.indexOf("USDT") !== -1 && current.usdt).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+                                        } {user.currency}</Text>
 
-                                            <View style={styles.avaRange}>
-                                                <Text style={styles.det}>Range: </Text>
-                                                <Text>{item.minRange} {item.asset}
-                                                    -
-                                                    {item.maxRange} {item.asset} 
-                                                </Text>
-                                            </View>
-                                            <View style={styles.avaRange}>
-                                                <Text style={styles.det}>Available: </Text>
-                                                <Text>{item.available} {item.asset}</Text>
-                                            </View>
+                                        <View style={styles.avaRange}>
+                                            <Text style={styles.det}>Range: </Text>
+                                            <Text>{item.minRange}
+                                                -
+                                                {item.maxRange} ({item.asset})
+                                            </Text>
                                         </View>
-
-
+                                        <View style={styles.avaRange}>
+                                            <Text style={styles.det}>Available: </Text>
+                                            <Text>{item.available} {item.asset}</Text>
+                                        </View>
                                     </View>
+
 
                                 </View>
 
-                                <TouchableOpacity style={styles.cardButton} onPress={() => {
-                                    setPage("Purchase")
-                                    setList(item)
-                                    if (item.asset === "BTC") {
-                                        setBalance(btc)
-                                        setValue(btcValue)
-                                    }
-                                    if (item.asset === "LTC") {
-                                        setBalance(ltc)
-                                        setValue(ltcValue)
-                                    }
-                                    if (item.asset === "BNB") {
-                                        setBalance(bnb)
-                                        setValue(bnbValue)
-                                    }
-                                    if (item.asset === "ETH") {
-                                        setBalance(eth)
-                                        setValue(ethValue)
-                                    }
-                                    if (item.asset === "TRX") {
-                                        setBalance(trx)
-                                        setValue(trxValue)
-                                    }
-                                    if (item.asset === "USDT") {
-                                        setBalance(usdt)
-                                        setValue(usdtValue)
-                                    }
-                                    if (item.asset === "USDT-BEP20") {
-                                        setBalance(usdt_bep20)
-                                        setValue(usdt_bep20Value)
-                                    }
-                                    if (item.asset === "USDT-TRC20") {
-                                        setBalance(usdt_trc20)
-                                        setValue(usdt_trc20Value)
-                                    }
-                                    Alert.alert("Delete?", "Are you sure you want to delete this listing", [{
-                                        text: "Yes", onPress: () => {
-                                            deleting()
-                                        }
-                                    }, {
-                                        text: "Cancel"
-                                    }])
-                                }}>
-                                    <Text style={styles.cardButtonText}>Delete</Text>
-                                </TouchableOpacity>
-
                             </View>
-                        )}
-                    />
+
+                            <TouchableOpacity style={styles.cardButton} onPress={() => {
+                                setPage("Purchase")
+                                setList(item)
+                                if (item.asset === "BTC") {
+                                    setBalance(btc)
+                                    setValue(btcValue)
+                                }
+                                if (item.asset === "LTC") {
+                                    setBalance(ltc)
+                                    setValue(ltcValue)
+                                }
+                                if (item.asset === "BNB") {
+                                    setBalance(bnb)
+                                    setValue(bnbValue)
+                                }
+                                if (item.asset === "ETH") {
+                                    setBalance(eth)
+                                    setValue(ethValue)
+                                }
+                                if (item.asset === "TRX") {
+                                    setBalance(trx)
+                                    setValue(trxValue)
+                                }
+                                if (item.asset === "USDT") {
+                                    setBalance(usdt)
+                                    setValue(usdtValue)
+                                }
+                                if (item.asset === "USDT-BEP20") {
+                                    setBalance(usdt_bep20)
+                                    setValue(usdt_bep20Value)
+                                }
+                                if (item.asset === "USDT-TRC20") {
+                                    setBalance(usdt_trc20)
+                                    setValue(usdt_trc20Value)
+                                }
+                                Alert.alert("Delete?", "Are you sure you want to delete this listing", [{
+                                    text: "Yes", onPress: () => {
+                                        deleting()
+                                    }
+                                }, {
+                                    text: "Cancel"
+                                }])
+                            }}>
+                                <Text style={styles.cardButtonText}>Delete</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                    ))
+                    }
+
+                    {/* )}
+                    /> */}
 
 
 
