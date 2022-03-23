@@ -628,13 +628,16 @@ function Crypto() {
 
           <Text style={styles.addressText}>Amount:</Text>
           <View style={styles.addressInput}>
-            <Text onPress={() => {
-              if(currency == user.currency){
-                setCurrency("USD")
-              }else{
-                setCurrency(user.currency)
-              }
-            }} style={{ fontSize: 15, fontWeight: "600", marginHorizontal: 20 }}>{currency} ^</Text>
+            <View>
+              <Text onPress={() => {
+                if (currency == user.currency) {
+                  setCurrency("USD")
+                } else {
+                  setCurrency(user.currency)
+                }
+              }} style={{ fontSize: 15, fontWeight: "600", marginHorizontal: 20 }}>{currency}</Text>
+              <AntDesign name="down" size={24} color="black" />
+            </View>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
               style={styles.address}
