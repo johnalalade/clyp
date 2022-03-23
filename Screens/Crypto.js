@@ -628,19 +628,25 @@ function Crypto() {
 
           <Text style={styles.addressText}>Amount:</Text>
           <View style={styles.addressInput}>
-            <View>
+            <View style={{ display: "flex", flexDirection: "row"}}>
               <Text onPress={() => {
                 if (currency == user.currency) {
                   setCurrency("USD")
                 } else {
                   setCurrency(user.currency)
                 }
-              }} style={{ fontSize: 15, fontWeight: "600", marginHorizontal: 20 }}>{currency}</Text>
-              <AntDesign name="down" size={24} color="black" />
+              }} style={{ fontSize: 15, fontWeight: "600", marginHorizontal: 0 }}>{currency}</Text>
+              <AntDesign onPress={() => {
+                if (currency == user.currency) {
+                  setCurrency("USD")
+                } else {
+                  setCurrency(user.currency)
+                }
+              }} name="down" size={20} color="black" />
             </View>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
-              style={styles.address}
+              style={styles.address2}
               placeholder="500"
               onChangeText={(val) => sendamount(val)}
               keyboardType="numeric"
@@ -1053,6 +1059,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 20,
     width: "90%",
+    backgroundColor: "white",
+    // borderRadius: 10,
+    // marginBottom: 10,
+    // borderWidth: 3,
+    // borderColor: "#febf12",
+  },
+  address2: {
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    width: "75%",
     backgroundColor: "white",
     // borderRadius: 10,
     // marginBottom: 10,
