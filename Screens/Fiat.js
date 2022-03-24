@@ -306,7 +306,7 @@ function Fiat({ navigation }) {
                                         onRedirect={handleOnRedirect}
                                         options={{
                                             tx_ref: + user._id + Date.now,
-                                            authorization: 'FLWPUBK-b73d166127557d9fc24d219eb9ac96e2-X',
+                                            authorization: 'FLWPUBK-57aaf5d699d0f349c00922e44dbf151a-X',
                                             customer: {
                                                 email: user.email
                                             },

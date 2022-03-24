@@ -268,14 +268,16 @@ export default function App() {
             setLoggedIn(true)
           }
           else {
-            setLoggedIn(true)
+            setLoggedIn(false)
+            setLoading(false)
             Alert.alert('Error', `${data.data.message}`)
           }
 
         })
         .catch((err) => {
           setLoading(false)
-
+          setLoggedIn(false)
+            Alert.alert('Error', `${data.data.message}`)
         })
     },
     signOut: () => {

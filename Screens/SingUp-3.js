@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from "react-native-paper";
 import TipProvider from "react-native-tip";
 import { Tip } from "react-native-tip";
+import HyperLink from "react-native-hyperlink";
 
 function SignUp3({ navigation }) {
     const { signUp, password, cpassword, bvn, count, load } = React.useContext(AuthContext)
@@ -151,9 +152,16 @@ function SignUp3({ navigation }) {
                             <Text style={styles.color_textPrivate}>
                                 By signing up you agree to our
                             </Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold', paddingLeft: 4 }]}>Terms of service</Text>
+
+                            <HyperLink linkDefault={true} linkStyle={{ backgroundColor: null }} linkText="Terms of service">
+                                <Text style={[styles.color_textPrivate, { fontWeight: 'bold', paddingLeft: 4 }]}>https://www.clypapp.com/terms</Text>
+                            </HyperLink>
+
                             <Text style={styles.color_textPrivate}>and</Text>
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold', paddingLeft: 3 }]}>Privacy policy</Text>
+
+                            <HyperLink linkDefault={true} linkStyle={{ backgroundColor: null }} linkText="Privacy Policy" >
+                                <Text style={[styles.color_textPrivate, { fontWeight: 'bold', paddingLeft: 3 }]}>https://www.clypapp.com/privacy</Text>
+                            </HyperLink>
                         </View>
                         <View style={styles.button}>
 

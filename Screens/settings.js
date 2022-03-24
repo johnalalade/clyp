@@ -191,7 +191,7 @@ function Settings({ navigation }) {
             <View style={styles.optionView}>
               <View style={styles.optionDet}>
                 <MaterialIcons name="privacy-tip" size={24} color="black" />
-                <Text style={styles.optionText}>https://www.uniconne.com</Text>
+                <Text style={styles.optionText}>https://www.clypapp.com/privacy</Text>
               </View>
               <Ionicons name="chevron-forward-outline" size={24} color="black" />
             </View>
@@ -204,7 +204,7 @@ function Settings({ navigation }) {
             <View style={styles.optionView}>
               <View style={styles.optionDet}>
                 <Entypo name="info-with-circle" size={24} color="black" />
-                <Text style={styles.optionText}>https://www.clyp.com</Text>
+                <Text style={styles.optionText}>https://www.clypapp.com/</Text>
               </View>
               <Ionicons name="chevron-forward-outline" size={24} color="black" />
             </View>
