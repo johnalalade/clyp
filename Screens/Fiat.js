@@ -208,12 +208,12 @@ function Fiat({ navigation }) {
                     setCleanUp(cleanup++)
                     Alert.alert("Congratulations...", "Your account number has been created. You can now make bank transfers to fund your Clyp wallet")
                 }
-                else{
+                else {
                     setLoading(false)
                     setCleanUp(cleanup++)
                     Alert.alert("Failed", res.data.message)
                 }
-                
+
             })
             .catch(err => {
                 setLoading(false)
@@ -270,7 +270,7 @@ function Fiat({ navigation }) {
 
                             <Feather name="link" size={44} color="whitesmoke" />
                             <Text style={styles.optionText}>
-                                Send Clyp payment link
+                                Send your Clyp payment link
                             </Text>
 
                             {option === "Link" &&
@@ -387,7 +387,9 @@ function Fiat({ navigation }) {
 
                             </View>)
                                 :
-                                <View>
+                                <View style={{ marginBottom: 120 }}>
+                                    <Text style={styles.bvnNotification}>Submit your BVN to create a virtual account number for you to accept bank transfers. We will never save your BVN on our Database.</Text>
+
                                     <Text style={{
                                         marginTop: 35, fontWeight: "600"
                                     }} >BVN
@@ -410,7 +412,7 @@ function Fiat({ navigation }) {
                                     </View>
 
                                     {bvn.length === 11 &&
-                                        <TouchableOpacity style={styles.paymentButton} onPress={()=>{
+                                        <TouchableOpacity style={styles.paymentButton} onPress={() => {
                                             bvnRegistration()
                                         }}>
                                             <Text style={styles.paymentButtonText}>Submit</Text>
@@ -1274,7 +1276,11 @@ const styles = StyleSheet.create({
         color: "whitesmoke",
         fontWeight: "400",
 
-    }
+    },
+    bvnNotification: {
+        paddingTop: 20,
+        fontWeight: "500"
+    },
 });
 
 export default Fiat
