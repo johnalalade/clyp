@@ -81,7 +81,7 @@ function SignUp3({ navigation }) {
 
                         <Text style={[styles.text_footer, {
                             marginTop: 35
-                        }]}>Password</Text>
+                        }]}>Password *</Text>
                         <View style={styles.action}>
                             <Feather
                                 name="lock"
@@ -116,7 +116,7 @@ function SignUp3({ navigation }) {
 
                         <Text style={[styles.text_footer, {
                             marginTop: 35
-                        }]}>Confirm Password</Text>
+                        }]}>Confirm Password *</Text>
                         <View style={styles.action}>
                             <Feather
                                 name="lock"

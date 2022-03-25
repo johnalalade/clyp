@@ -101,7 +101,7 @@ function SignUp2({ navigation }) {
                     <ScrollView>
                         <Text style={[styles.text_footer, {
                             marginTop: 35
-                        }]}>Email</Text>
+                        }]}>Email *</Text>
                         <View style={styles.action}>
                             <Fontisto name="email" size={20} color="#05375a" />
                             <TextInput
@@ -126,7 +126,7 @@ function SignUp2({ navigation }) {
 
                         <Text style={[styles.text_footer, {
                             marginTop: 35
-                        }]}>Phone</Text>
+                        }]}>Phone *</Text>
                         <View style={styles.action}>
                             <Feather
                                 name="phone"
@@ -154,7 +154,7 @@ function SignUp2({ navigation }) {
 
                         <Text style={[styles.text_footer, {
                             marginTop: 35
-                        }]} >Country</Text>
+                        }]} >Country *</Text>
                         <View style={styles.action}>
                             <FontAwesome name="flag-checkered" size={24} color="#05375a" />
                             <TouchableOpacity

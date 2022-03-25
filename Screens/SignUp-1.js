@@ -26,7 +26,7 @@ function SignUp1({ navigation }) {
                     <ScrollView>
                         <Text style={[styles.text_footer, {
                             marginTop: 35
-                        }]} >Full name</Text>
+                        }]} >Full name *</Text>
                         <View style={styles.action}>
                             <FontAwesome
                                 name="user-o"
@@ -54,7 +54,7 @@ function SignUp1({ navigation }) {
 
                         <Text style={[styles.text_footer, {
                             marginTop: 35
-                        }]}>Username</Text>
+                        }]}>Username *</Text>
                         <View style={styles.action}>
                             <Ionicons name="at-circle-sharp" size={20} color="#05375a" />
                             <TextInput

@@ -230,6 +230,7 @@ export default function App() {
         })
         .catch((err) => {
           setLoading(false)
+          Alert.alert('Error', `${err}`)
           console.log({ err })
         })
     },
@@ -252,38 +253,56 @@ export default function App() {
       }
       setLoading(true)
       console.log(data)
-      axios.post('/register', data)
-        .then(async (data) => {
-          if (data.data.id) {
-            await AsyncStorage.setItem('token', data.data.token)
-            await AsyncStorage.setItem('id', data.data.id)
-            await AsyncStorage.setItem('name', data.data.response.name)
-            await AsyncStorage.setItem('username', data.data.response.username)
-            await AsyncStorage.setItem('email', data.data.response.email)
-            await AsyncStorage.setItem('phone', data.data.response.phone)
-            await AsyncStorage.setItem('country', data.data.response.country)
-            await AsyncStorage.setItem('currency', data.data.response.currency)
-            await AsyncStorage.setItem('rate', data.data.response.rate)
-            setLoading(false)
-            setLoggedIn(true)
-          }
-          else {
-            setLoggedIn(false)
-            setLoading(false)
-            Alert.alert('Error', `${data.data.message}`)
-          }
+      if (data.name === "" || data.username === "" || data.email === "" || data.phone === "" || data.password === "" || cpassword === "") {
+        Alert.alert("Fill all required fields", "Please make sure you fill up all required field")
+        setLoading(false)
+        return false
+      }
+      if (data.password.length > 8) {
+        Alert.alert("Password too short", "Please make sure your password is 8 characters long")
+        setLoading(false)
+        return false
+      }
+      if (data.password !== cpassword) {
+        Alert.alert("Password does not match", "Please make sure your password matches the confirmation")
+        setLoading(false)
+        return false
+      }
+      else {
+        axios.post('/register', data)
+          .then(async (data) => {
+            if (data.data.id) {
+              await AsyncStorage.setItem('token', data.data.token)
+              await AsyncStorage.setItem('id', data.data.id)
+              await AsyncStorage.setItem('name', data.data.response.name)
+              await AsyncStorage.setItem('username', data.data.response.username)
+              await AsyncStorage.setItem('email', data.data.response.email)
+              await AsyncStorage.setItem('phone', data.data.response.phone)
+              await AsyncStorage.setItem('country', data.data.response.country)
+              await AsyncStorage.setItem('currency', data.data.response.currency)
+              await AsyncStorage.setItem('rate', data.data.response.rate)
+              setLoading(false)
+              setLoggedIn(true)
+            }
+            else {
+              setLoggedIn(false)
+              setLoading(false)
+              Alert.alert('Error', `${data.data.message}`)
+            }
 
-        })
-        .catch((err) => {
-          setLoading(false)
-          setLoggedIn(false)
-            Alert.alert('Error', `${data.data.message}`)
-        })
+          })
+          .catch((err) => {
+            setLoading(false)
+            setLoggedIn(false)
+            Alert.alert('Error', `${err}`)
+          })
+      }
+
     },
     signOut: () => {
       AsyncStorage.clear()
       setLoggedIn(false)
-      setLoading(false)
+      // setLoading(false)
     },
 
     setName,

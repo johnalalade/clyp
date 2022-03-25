@@ -312,7 +312,12 @@ function Fiat({ navigation }) {
                                             },
                                             amount: amount,
                                             currency: user.currency,
-                                            payment_options: 'card'
+                                            payment_options: 'card',
+                                            customizations: {
+                                                title: 'Clyp Pay',
+                                                description: 'Funding Clyp account',
+                                                logo: 'https://clyp-solutio.herokuapp.com/uploads/clyp.png',
+                                            }
                                         }}
                                         customButton={(props) => (
                                             <TouchableOpacity
@@ -432,27 +437,27 @@ function Fiat({ navigation }) {
                                 }} >Copy link:</Text>
 
                                 <TouchableOpacity onPress={() => {
-                                    Clipboard.setString(`https://pay.clypapp.com/pay/${user.email}/${user._id}`);
+                                    Clipboard.setString(`https://pay.clypapp.com/pay/${user.username}/${user._id}`);
                                     Alert.alert("Copied", `You've copied your payment link, time to receive money...`)
                                 }} style={styles.inputF2}>
 
                                     <Feather name="link" size={30} color="grey" />
                                     <Text style={styles.textInputF}
                                         onPress={() => {
-                                            Clipboard.setString(`https://pay.clypapp.com/pay/${user.email}/${user._id}`);
+                                            Clipboard.setString(`https://pay.clypapp.com/pay/${user.username}/${user._id}`);
                                             Alert.alert("Copied", `You've copied your payment link, time to receive money...`)
                                         }}
                                     >
-                                        {`https://pay.clypapp.com/pay/${user.email}/${user._id}`}
+                                        {`https://pay.clypapp.com/pay/${user.username}/${user._id}`}
                                     </Text>
 
                                     <Feather onPress={() => {
-                                        Clipboard.setString(`https://pay.clypapp.com/pay/${user.email}/${user._id}`);
+                                        Clipboard.setString(`https://pay.clypapp.com/pay/${user.username}/${user._id}`);
                                         Alert.alert("Copied", `You've copied your payment link, time to receive money...`)
                                     }} name="copy" size={24} color="black" />
                                 </TouchableOpacity>
 
-                                <Text>Send payment link or paste in browser to fund your wallet</Text>
+                                <Text>Send payment link anywhere in the world or paste in browser to fund your wallet.</Text>
 
                             </View> : null
                         }
@@ -835,7 +840,7 @@ function Fiat({ navigation }) {
             <View style={{ flex: 1 }}>
                 <BottomSheet
                     ref={bs}
-                    snapPoints={[500, 230]}
+                    snapPoints={[500, 280]}
                     renderContent={renderInner}
                     renderHeader={renderHeader}
                     initialSnap={1}
