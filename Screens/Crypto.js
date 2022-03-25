@@ -657,7 +657,7 @@ function Crypto() {
 
           <Text style={styles.txFees}>Transaction fee ({address.name}): {gas} {address.name}</Text>
 
-          <Text style={styles.txFees}>Transaction fee ({user.currency}): {parseInt(
+          <Text style={styles.txFees}>Transaction fee ({user.currency}): {Number(
             address.name === "BTC" && current.btc * gas
             || address.name === "BNB" && current.bnb * gas
             || address.name === "LTC" && current.ltc * gas
