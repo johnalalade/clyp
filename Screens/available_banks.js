@@ -312,7 +312,7 @@ let banks = [
     {
       "Id": 171,
       "Code": "305",
-      "Name": "Paycom",
+      "Name": "Paycom (Opay)",
       "currency": "NGN",
       "rate": 460,
       "country": "Nigeria"

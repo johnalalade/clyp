@@ -71,7 +71,7 @@ function myListing({ navigation }) {
     const [vend, setVend] = useState([])
     const [id, setId] = useState("")
     const [amStyle, setAmStyle] = useState(styles.noErr)
-    const [loading, setLoading] = React.useState(false)
+    const [loading, setLoading] = React.useState(true)
     const [current, setCurrent] = React.useState({})
 
 
@@ -104,6 +104,7 @@ function myListing({ navigation }) {
                         setVendors(option === "Sell" ? data.data.response.filter(v => v.option === "Sell") : data.data.response.filter(v => v.option === "Buy") )
                         setVend(data.data.response)
                         console.log(data.data.response)
+                        setLoading(false)
                     })
                 axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
                     .then((data) => {
@@ -635,7 +636,7 @@ const styles = StyleSheet.create({
     card: {
         display: "flex",
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "flex-start",
         justifyContent: "space-between",
         backgroundColor: "white",
         borderRadius: 10,
@@ -668,10 +669,10 @@ const styles = StyleSheet.create({
         fontFamily: "Optien"
     },
     cardButton: {
-        backgroundColor: "red",
-        paddingHorizontal: 25,
-        paddingVertical: 15,
-        borderRadius: 20
+        backgroundColor: "#fe8100",
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 15
     },
     cardButtonText: {
         color: "whitesmoke",
@@ -763,12 +764,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#febf12",
-        width: 60,
-        height: 60,
+        width: 50,
+        height: 50,
         borderRadius: 30,
         position: 'absolute',
-        bottom: 10,
-        right: 10,
+        bottom: 20,
+        right: 20,
     },
     noErr: {
         opacity: 0,

@@ -738,7 +738,7 @@ function Fiat({ navigation }) {
     const renderInner = () => (
         <View style={styles.panel}>
 
-            <FlatList
+            {user && user.transactions && user.transactions.length > 0 && <FlatList
                 keyExtractor={(item) => item.reference + item.name + item.amount}
                 data={user.transactions}
                 renderItem={({ item }) => (
@@ -785,6 +785,12 @@ function Fiat({ navigation }) {
 
                 )}
             />
+                ||
+                <View style={styles.placeholder}>
+                    <FontAwesome5 name="money-bill-wave" size={50} color="#febf12" />
+                    <Text style={styles.placeholder_text}>Make your Clyp first transaction</Text>
+                </View>
+            }
             {/* <TouchableOpacity
                 style={styles.panelButton}
                 onPress={() => bs.current.snapTo(0)}>
@@ -861,8 +867,10 @@ function Fiat({ navigation }) {
                         <View style={styles.container2}>
 
                             <TouchableOpacity onPress={() => navigation.navigate("Settings")} style={styles.name_co}>
-
-                                <Text style={styles.name}>{user.username}</Text>
+                                <View>
+                                    <FontAwesome5 name="user-circle" size={24} color="grey" />
+                                    <Text style={styles.name}>{user.username}</Text>
+                                </View>
 
                                 <Text style={styles.text_wallet}>Clyp ID: {user.clypID}</Text>
 
@@ -1285,6 +1293,20 @@ const styles = StyleSheet.create({
     bvnNotification: {
         paddingTop: 20,
         fontWeight: "500"
+    },
+    placeholder: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center"
+    },
+    placeholder_text: {
+        fontFamily: "Optien",
+        fontWeight: "600",
+        fontSize: 17
+    },
+    placeholder_icon: {
+        color: "#febf12"
     },
 });
 

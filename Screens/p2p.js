@@ -71,7 +71,7 @@ function P2P({ navigation }) {
     const [vend, setVend] = useState([])
     const [id, setId] = useState("")
     const [amStyle, setAmStyle] = useState(styles.noErr)
-    const [loading, setLoading] = React.useState(false)
+    const [loading, setLoading] = React.useState(true)
     const [current, setCurrent] = React.useState({})
 
 
@@ -103,6 +103,7 @@ function P2P({ navigation }) {
                         setVendors(option === "Sell" ? data.data.response.filter(v => v.option === "Sell") : data.data.response.filter(v => v.option === "Buy"))
                         setVend(data.data.response)
                         console.log(data.data.response)
+                        setLoading(false)
                     })
 
                 axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
@@ -847,7 +848,7 @@ const styles = StyleSheet.create({
     card: {
         display: "flex",
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "flex-start",
         justifyContent: "space-between",
         backgroundColor: "white",
         borderRadius: 10,
@@ -880,10 +881,10 @@ const styles = StyleSheet.create({
         fontFamily: "Optien"
     },
     cardButton: {
-        backgroundColor: "#febf12",
-        paddingHorizontal: 25,
-        paddingVertical: 15,
-        borderRadius: 20
+        backgroundColor: "#fe8100",
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 15
     },
     cardButtonText: {
         color: "whitesmoke",
@@ -980,8 +981,8 @@ const styles = StyleSheet.create({
         height: 55,
         borderRadius: 30,
         position: 'absolute',
-        bottom: 10,
-        right: 10,
+        bottom: 15,
+        right: 15,
     },
     noErr: {
         opacity: 0,

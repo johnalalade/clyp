@@ -427,6 +427,7 @@ export default function App() {
             }} /> */}
 
             <Drawer.Screen name="Home" component={HomeStackScreen} options={{ title: "Home" }} options={{
+              headerTitleAlign: "center",
 
               drawerIcon: ({ focused, size }) => (
                 <AntDesign
@@ -436,17 +437,8 @@ export default function App() {
               )
             }} />
 
-            <Drawer.Screen name="My Listing" component={myListing} options={{ title: "My Listing" }} options={{
-
-              drawerIcon: ({ focused, size }) => (
-                <MaterialIcons
-                  name="list-alt"
-                  size={size}
-                  color={focused ? 'lightblue' : '#ccc'} />
-              )
-            }} />
-
             {(country === "Nigeria" || country === "Ghana") ? <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Airtime" }} options={{
+              headerTitleAlign: "center",
               drawerIcon: ({ focused, size }) => (
                 <Feather
                   name="phone"
@@ -456,23 +448,34 @@ export default function App() {
             }} /> : null}
 
             {(country === "Nigeria") ? <Drawer.Screen name="Pay Bills" component={Bills} options={{ title: "Bills" }} options={{
+              headerTitleAlign: "center",
               drawerIcon: ({ focused, size }) => (
                 <AntDesign name="filetext1" size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
             }} /> : null}
 
-            <Drawer.Screen name="Settings" component={Settings} options={{
-              title: "Settings",
+            <Drawer.Screen name="My Listing" component={myListing} options={{ title: "My Listing" }} options={{
+              headerTitleAlign: "center",
               drawerIcon: ({ focused, size }) => (
-                <Ionicons
-                  name="settings"
+                <MaterialIcons
+                  name="list-alt"
                   size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
             }} />
 
+            {uname && uname !== "" && <Drawer.Screen name="Refferals" component={Settings} options={{
+              title: "Referrals",
+              headerTitleAlign: "center",
+              drawerIcon: ({ focused, size }) => (
+                <FontAwesome5 name="people-arrows" size={size} color={focused ? 'lightblue' : '#ccc'} />
+              )
+            }} /> || null}
+
+
             <Drawer.Screen name="Contact Us" component={Contact} options={{ title: "Coontact Us" }} options={{
+              headerTitleAlign: "center",
               drawerIcon: ({ focused, size }) => (
                 <Ionicons
                   name="chatbubbles-sharp"
@@ -481,16 +484,16 @@ export default function App() {
               )
             }} />
 
-            {uname && uname !== "" && <Drawer.Screen name={uname} component={Settings} options={{ title: "Settings" }} options={{
+            <Drawer.Screen name="Settings" component={Settings} options={{
+              title: "Settings & Others",
+              headerTitleAlign: "center",
               drawerIcon: ({ focused, size }) => (
-                <FontAwesome5 name="user-circle" size={size} color={focused ? 'lightblue' : '#ccc'} />
-                // <AntDesign
-                //   name="user"
-                //   size={size}
-                //   color={focused ? 'lightblue' : '#ccc'} />
+                <Ionicons
+                  name="settings"
+                  size={size}
+                  color={focused ? 'lightblue' : '#ccc'} />
               )
-            }} /> || null}
-
+            }} />
 
 
           </Drawer.Navigator>
@@ -498,9 +501,9 @@ export default function App() {
           (
             !isNew ?
               <AuthStack.Navigator >
-                <AuthStack.Screen name="SignIn" component={SignIn} options={{ title: "Clyp" }} />
-                <AuthStack.Screen name="SignUp" component={SignUp} options={{ title: "Clyp" }} />
-                <AuthStack.Screen name="Password" component={Password} options={{ title: "Clyp" }} />
+                <AuthStack.Screen name="SignIn" component={SignIn} options={{ title: "Clyp", headerShown: false }} />
+                <AuthStack.Screen name="SignUp" component={SignUp} options={{ title: "Clyp", headerShown: false }} />
+                <AuthStack.Screen name="Password" component={Password} options={{ title: "Clyp", headerShown: false }} />
               </AuthStack.Navigator>
               :
               <AppIntroSlider renderItem={renderItem} data={slides} onDone={onDone} />

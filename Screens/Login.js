@@ -39,104 +39,117 @@ function SignIn({ navigation }) {
     return (
         <View style={styles.container}>
 
-            <View style={styles.container}>
-                <StatusBar backgroundColor='#FF6347' barStyle="light-content" />
-                <View style={styles.header}>
-                    <Text style={styles.text_header}>Welcome, Sign in!</Text>
-                </View>
-                <Animatable.View
-                    animation="fadeInUpBig"
-                    style={styles.footer}
-                >
-                    <ScrollView>
-
-                        <Text style={[styles.text_footer, {
-                            marginTop: 35
-                        }]}>Email</Text>
-                        <View style={styles.action}>
-                            <FontAwesome
-                                name="user-o"
-                                color="#05375a"
-                                size={20}
-                            />
-                            <TextInput
-                                placeholder="email@email.com"
-                                style={styles.textInput}
-                                autoCapitalize="none"
-                                onChangeText={(val) => email(val)}
-                                defaultValue={mail}
-                            />
-
-                        </View>
-
-                        <Text style={[styles.text_footer, {
-                            marginTop: 35
-                        }]}>Password</Text>
-                        <View style={styles.action}>
-                            <Feather
-                                name="lock"
-                                color="#05375a"
-                                size={20}
-                            />
-                            <TextInput
-                                placeholder="Confirm Your Password"
-                                secureTextEntry={secE}
-                                style={styles.textInput}
-                                autoCapitalize="none"
-                                onChangeText={(val) => password(val)}
-                            />
-                            <TouchableOpacity
-                                onPress={sec}
-                            >
-                                {secE ?
-                                    <Feather
-                                        name="eye-off"
-                                        color="grey"
-                                        size={20}
-                                    />
-                                    :
-                                    <Feather
-                                        name="eye"
-                                        color="grey"
-                                        size={20}
-                                    />
-                                }
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.textPrivate}>
-                            <Text style={styles.color_textPrivate}>
-                                You don't have an account ?
-                            </Text>
-                            {/* <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Terms of service</Text>
-                            <Text style={styles.color_textPrivate}>{" "}and</Text> */}
-                            <Text style={[styles.color_textPrivate, { fontWeight: 'bold', color: "#febf12" }]} onPress={() => navigation.push("SignUp")}>{" "}Sign up</Text>
-                        </View>
-                        <View style={styles.button}>
-
-                            <TouchableOpacity
-                                onPress={() => { signIn(); setLoading(true); 
-                                    // setTimeout(() => { setLoading(false) }, 3000)
-                                 }}
-                                style={[styles.signIn, {
-                                    backgroundColor: "#febf12",
-                                    borderColor: 'whitesmoke',
-                                    borderWidth: 1,
-                                    marginTop: 15
-                                }]}
-                            >
-                                <Text style={[styles.textSign, {
-                                    color: 'white'
-                                }]}>Login</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <Text style={[styles.color_textPrivate, { fontWeight: 'bold', color: "#febf12", marginTop: 15,  }]} onPress={() => navigation.push("Password")}>{" "}Forgot password?</Text>
-                    </ScrollView>
-                </Animatable.View>
+            {/* <View style={styles.container}> */}
+            <StatusBar backgroundColor='#FF6347' barStyle="light-content" />
+            <View style={styles.header}>
+                <Text style={styles.text_header}>Welcome, Sign in!</Text>
             </View>
+            <Animatable.View
+                animation="fadeInUpBig"
+                style={styles.footer}
+            >
+                <ScrollView>
+
+                    <Text style={[styles.text_footer, {
+                        marginTop: 35
+                    }]}>Email</Text>
+                    <View style={styles.action}>
+                        <FontAwesome
+                            name="user-o"
+                            color="#05375a"
+                            size={20}
+                        />
+                        <TextInput
+                            placeholder="email@email.com"
+                            style={styles.textInput}
+                            autoCapitalize="none"
+                            onChangeText={(val) => email(val)}
+                            defaultValue={mail}
+                        />
+
+                    </View>
+
+                    <Text style={[styles.text_footer, {
+                        marginTop: 35
+                    }]}>Password</Text>
+                    <View style={styles.action}>
+                        <Feather
+                            name="lock"
+                            color="#05375a"
+                            size={20}
+                        />
+                        <TextInput
+                            placeholder="Confirm Your Password"
+                            secureTextEntry={secE}
+                            style={styles.textInput}
+                            autoCapitalize="none"
+                            onChangeText={(val) => password(val)}
+                        />
+                        <TouchableOpacity
+                            onPress={sec}
+                        >
+                            {secE ?
+                                <Feather
+                                    name="eye-off"
+                                    color="grey"
+                                    size={20}
+                                />
+                                :
+                                <Feather
+                                    name="eye"
+                                    color="grey"
+                                    size={20}
+                                />
+                            }
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.textPrivate}>
+                        <Text style={styles.color_textPrivate} onPress={() => navigation.push("SignUp")}>
+                            You don't have an account ?
+                        </Text>
+                        {/* <Text style={[styles.color_textPrivate, { fontWeight: 'bold' }]}>{" "}Terms of service</Text>
+                            <Text style={styles.color_textPrivate}>{" "}and</Text> */}
+                        <Text style={[styles.color_textPrivate, { fontWeight: 'bold', color: "#febf12" }]} onPress={() => navigation.push("SignUp")}>{" "}Sign up</Text>
+                    </View>
+
+
+                    <View style={styles.button}>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                signIn(); setLoading(true);
+                                // setTimeout(() => { setLoading(false) }, 3000)
+                            }}
+                            style={[styles.signIn, {
+                                backgroundColor: "#febf12",
+                                borderColor: 'whitesmoke',
+                                borderWidth: 1,
+                            }]}
+                        >
+                            <Text style={[styles.textSign, {
+                                color: 'white'
+                            }]}>Login</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <Text style={[styles.color_textPrivate, { fontWeight: 'bold', color: "#febf12", marginTop: 15, }]} onPress={() => navigation.push("Password")}>{" "}Forgot password?</Text>
+                </ScrollView>
+
+                <View style={styles.textPrivate}>
+
+                    <Text style={styles.color_textPrivate2}>
+
+                    </Text>
+
+                    <Text style={styles.color_textPrivate2} ></Text>
+
+                </View>
+            </Animatable.View>
+            {/* </View> */}
 
             {/* <Button title="Sign Up" onPress={() => navigation.push("SignUp")} />
             <Button title="Log In" onPress={() => signIn()} /> */}
+
         </View>
     )
 
@@ -205,11 +218,19 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     textPrivate: {
+        display: "flex",
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 20
+        marginTop: 20,
+        alignItems: "center",
+        alignSelf: "center"
     },
     color_textPrivate: {
+        color: 'grey',
+        // width: "100%",
+        alignSelf: "center"
+    },
+    color_textPrivate2: {
         color: 'grey',
         width: "100%"
     }

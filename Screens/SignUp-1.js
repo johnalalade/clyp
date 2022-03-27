@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: "column",
         paddingBottom: 90,
+        paddingTop: 30
     },
     header: {
         flex: 0.5,

@@ -11,21 +11,21 @@ function Password({ navigation }) {
     const [loading, setLoading] = React.useState(false)
 
     const submit = () => {
-        axios.post('/retrive', {email: mail})
-        .then(data => {
-            setLoading(false)
-            Alert.alert("Message", `${data.data.message}`, [
-                (data.data.message !== "User Doesn't Exist.") ? {
-                    text: 'Sign in', onPress: () => {
-                        navigation.push("SignIn")
+        axios.post('/retrive', { email: mail })
+            .then(data => {
+                setLoading(false)
+                Alert.alert("Message", `${data.data.message}`, [
+                    (data.data.message !== "User Doesn't Exist.") ? {
+                        text: 'Sign in', onPress: () => {
+                            navigation.push("SignIn")
+                        }
+                    } : {
+                        text: 'Sign up', onPress: () => {
+                            navigation.push("SignUp")
+                        }
                     }
-                } : {
-                    text: 'Sign up', onPress: () => {
-                        navigation.push("SignUp")
-                    }
-                }
-            ])
-        })
+                ])
+            })
     }
 
     const email = (val) => {
@@ -80,14 +80,14 @@ function Password({ navigation }) {
                             <Text style={styles.color_textPrivate}>
                                 You don't have an account ?
                             </Text>
-            
+
                             <Text style={[styles.color_textPrivate, { fontWeight: 'bold', color: "#febf12" }]} onPress={() => navigation.push("SignUp")}>{" "}Sign up</Text>
-                            
+
                         </View>
                         <View style={styles.button}>
 
                             <TouchableOpacity
-                                onPress={() => { submit(); setLoading(true)}}
+                                onPress={() => { submit(); setLoading(true) }}
                                 style={[styles.signIn, {
                                     backgroundColor: "#febf12",
                                     borderColor: 'whitesmoke',
@@ -102,6 +102,15 @@ function Password({ navigation }) {
 
                         </View>
                     </ScrollView>
+                    <View style={styles.textPrivate}>
+                        <Text style={styles.color_textPrivate2}>
+
+                        </Text>
+
+                        <Text style={styles.color_textPrivate2}></Text>
+
+                    </View>
+
                 </Animatable.View>
             </View>
 
@@ -174,10 +183,14 @@ const styles = StyleSheet.create({
     textPrivate: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 20
+        marginTop: 20,
+        alignSelf: "center"
     },
     color_textPrivate: {
         color: 'grey',
+        // width: "100%"
+    },
+    color_textPrivate2: {
         width: "100%"
     }
 
