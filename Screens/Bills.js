@@ -1,5 +1,5 @@
 import React, { useEffect, Component, useState } from "react";
-import { StyleSheet, Text, View, TextInput, Alert, RefreshControl, } from "react-native";
+import { StyleSheet, Text, View, TextInput, Alert, RefreshControl, ImageBackground, } from "react-native";
 import { FlatList, ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -17,7 +17,7 @@ const customFonts = {
     Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
     Optien: require("../assets/fonts/Optien.ttf"),
     Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
-  };
+};
 
 function Bills({ navigation }) {
 
@@ -1440,76 +1440,83 @@ function Bills({ navigation }) {
 
     if (!isLoaded) {
         return (
-          <View></View>
+            <View></View>
         )
-      }
+    }
 
     return (
-        <ScrollView refreshControl={
-            <RefreshControl refreshing={refreshing}
-                onRefresh={() => {
-                    setRefreshing(true)
-                    setCleanUp(cleanup + 1)
+        <ImageBackground source={require('../assets/mash-up.png')} resizeMode="cover" style={styles.backgroundImage} imageStyle=
+            {{ opacity: 0.2 }}>
+            <ScrollView refreshControl={
+                <RefreshControl refreshing={refreshing}
+                    onRefresh={() => {
+                        setRefreshing(true)
+                        setCleanUp(cleanup + 1)
 
-                }} />
-        }>
-            <View style={styles.container}>
-                <TouchableOpacity style={styles.options} onPress={() => { setPage("Cables") }}>
+                    }} />
+            }>
+                <View style={styles.container}>
+                    <TouchableOpacity style={styles.options} onPress={() => { setPage("Cables") }}>
 
-                    <Avatar.Image
-                        source={
-                            require('../assets/undraw_monitor_iqpq.png')
-                        }
-                        style={{ backgroundColor: "#febf1226" }, styles.avt}
-                        size={70}
-                    />
+                        <Avatar.Image
+                            source={
+                                require('../assets/undraw_monitor_iqpq.png')
+                            }
+                            style={{ backgroundColor: "#febf1226" }, styles.avt}
+                            size={70}
+                        />
 
-                    <Text style={styles.optionHead}>Cables & Entertainment</Text>
-                    <Text style={styles.optionText}>Pay for your entertainment bill (e.g DSTV, GoTV, Strong, Nova etc) all with your fiat or crypto balance</Text>
-                </TouchableOpacity>
+                        <Text style={styles.optionHead}>Cables & Entertainment</Text>
+                        <Text style={styles.optionText}>Pay for your entertainment bill (e.g DSTV, GoTV, Strong, Nova etc) all with your fiat or crypto balance</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles.options} onPress={() => { setPage("data_bundle") }}>
-                    <Avatar.Image
-                        source={
-                            require('../assets/undraw_Mobile_app_re_catg.png')
-                        }
-                        style={{ backgroundColor: "#febf1226" }, styles.avt}
-                        size={70}
-                    />
-                    <Text style={styles.optionHead}>Data Bundles</Text>
-                    <Text style={styles.optionText}>Get data bundles with your Fiat or Crypto balance</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.options} onPress={() => { setPage("data_bundle") }}>
+                        <Avatar.Image
+                            source={
+                                require('../assets/undraw_Mobile_app_re_catg.png')
+                            }
+                            style={{ backgroundColor: "#febf1226" }, styles.avt}
+                            size={70}
+                        />
+                        <Text style={styles.optionHead}>Data Bundles</Text>
+                        <Text style={styles.optionText}>Get data bundles with your Fiat or Crypto balance</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles.options} onPress={() => { setPage("power") }}>
-                    <Avatar.Image
-                        source={
-                            require('../assets/undraw_lightbulb_moment_re_ulyo.png')
-                        }
-                        style={{ backgroundColor: "#febf1226" }, styles.avt}
-                        size={70}
-                    />
-                    <Text style={styles.optionHead}>Power & Utilities</Text>
-                    <Text style={styles.optionText}>Pay for your power bill, water and other utilities all with your Fiat and Crypto balance</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.options} onPress={() => { setPage("power") }}>
+                        <Avatar.Image
+                            source={
+                                require('../assets/undraw_lightbulb_moment_re_ulyo.png')
+                            }
+                            style={{ backgroundColor: "#febf1226" }, styles.avt}
+                            size={70}
+                        />
+                        <Text style={styles.optionHead}>Power & Utilities</Text>
+                        <Text style={styles.optionText}>Pay for your power bill, water and other utilities all with your Fiat and Crypto balance</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles.options} onPress={() => { setPage("internet") }}>
-                    <Avatar.Image
-                        source={
-                            require('../assets/undraw_Internet_on_the_go_re_vben.png')
-                        }
-                        style={{ backgroundColor: "#febf1226" }, styles.avt}
-                        size={70}
-                    />
-                    <Text style={styles.optionHead}>Internet</Text>
-                    <Text style={styles.optionText}>Pay for internet subscriptions with your Fiat or Crypto balance</Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+                    <TouchableOpacity style={styles.options} onPress={() => { setPage("internet") }}>
+                        <Avatar.Image
+                            source={
+                                require('../assets/undraw_Internet_on_the_go_re_vben.png')
+                            }
+                            style={{ backgroundColor: "#febf1226" }, styles.avt}
+                            size={70}
+                        />
+                        <Text style={styles.optionHead}>Internet</Text>
+                        <Text style={styles.optionText}>Pay for internet subscriptions with your Fiat or Crypto balance</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </ImageBackground>
     )
 
 }
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        width: "100%",
+        height: "100%",
+    },
     cancel: {
         top: 0,
         marginBottom: 20,

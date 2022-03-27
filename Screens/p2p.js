@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Component } from "react";
-import { StyleSheet, Text, View, TextInput, Alert, ScrollView, RefreshControl } from "react-native";
+import { StyleSheet, Text, View, TextInput, Alert, ScrollView, RefreshControl, ImageBackground } from "react-native";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from '@expo/vector-icons';
 import axios from "./axios";
@@ -234,7 +234,7 @@ function P2P({ navigation }) {
 
     const purchase = () => {
         let filt = user.wallets.filter(u => u.name === list.asset)
-        
+
         setLoading(true)
         if (option === "Sell") {
             let data = {
@@ -470,6 +470,26 @@ function P2P({ navigation }) {
                         }
                         <Text style={styles.value}>{value} {list.asset}</Text>
 
+                        <View>
+                            <Text>Range: </Text>
+                            <Text>{list.minRange}{list.asset} ({
+                                list.asset === "BTC" && current.btc * Number(list.minRange)
+                                || list.asset === "BNB" && current.bnb * Number(list.minRange)
+                                || list.asset === "LTC" && current.ltc * Number(list.minRange)
+                                || list.asset === "ETH" && current.eth * Number(list.minRange)
+                                || list.asset === "TRX" && current.trx * Number(list.minRange)
+                                || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.minRange)
+                            } {user.currency}) - {list.maxRange}{list.asset} ({
+                                    list.asset === "BTC" && current.btc * Number(list.maxRange)
+                                    || list.asset === "BNB" && current.bnb * Number(list.maxRange)
+                                    || list.asset === "LTC" && current.ltc * Number(list.maxRange)
+                                    || list.asset === "ETH" && current.eth * Number(list.maxRange)
+                                    || list.asset === "TRX" && current.trx * Number(list.maxRange)
+                                    || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.maxRange)
+                                } {user.currency})
+                            </Text>
+                        </View>
+
                         <Text style={styles.airText}>Amount ({list.asset}): </Text>
                         <View style={styles.airView}>
                             <TextInput
@@ -626,60 +646,63 @@ function P2P({ navigation }) {
     }
 
     return (
-        <View style={styles.container}>
-            <ScrollView style={{ flex: 1 }} refreshControl={
-                <RefreshControl refreshing={refreshing}
-                    onRefresh={() => {
-                        setRefreshing(true)
-                        setCleanUp(cleanup + 1)
+        <ImageBackground source={require('../assets/mash-up.png')} resizeMode="cover" style={styles.backgroundImage} imageStyle=
+            {{ opacity: 0.2 }}>
 
-                    }} />
-            }>
+            <View style={styles.container}>
+                <ScrollView style={{ flex: 1 }} refreshControl={
+                    <RefreshControl refreshing={refreshing}
+                        onRefresh={() => {
+                            setRefreshing(true)
+                            setCleanUp(cleanup + 1)
 
-                <View>
+                        }} />
+                }>
 
-                    <View style={styles.options}>
-                        <TouchableOpacity style={option === "Sell" ? styles.opActive : styles.opInActive} onPress={() => {
-                            setOption("Sell")
-                            setVendors(vend.filter(v => v.option === "Sell"))
-                        }}>
-                            {/* <Ionicons name="checkmark" size={24} color="#febf12" /> */}
-                            <Text style={option === "Sell" ? styles.opTextActive : styles.opTextInActive} >Sellers</Text>
-                        </TouchableOpacity>
+                    <View>
 
-                        <TouchableOpacity style={option === "Buy" ? styles.opActive : styles.opInActive} onPress={() => {
-                            setOption("Buy")
-                            setVendors(vend.filter(v => v.option === "Buy"))
-                        }}>
-                            {/* <Ionicons name="checkmark" size={24} color="#febf12" /> */}
-                            <Text style={option === "Buy" ? styles.opTextActive : styles.opTextInActive}>Buyers</Text>
-                        </TouchableOpacity>
-                    </View>
+                        <View style={styles.options}>
+                            <TouchableOpacity style={option === "Sell" ? styles.opActive : styles.opInActive} onPress={() => {
+                                setOption("Sell")
+                                setVendors(vend.filter(v => v.option === "Sell"))
+                            }}>
+                                {/* <Ionicons name="checkmark" size={24} color="#febf12" /> */}
+                                <Text style={option === "Sell" ? styles.opTextActive : styles.opTextInActive} >Sellers</Text>
+                            </TouchableOpacity>
 
-                    {/* <FlatList
+                            <TouchableOpacity style={option === "Buy" ? styles.opActive : styles.opInActive} onPress={() => {
+                                setOption("Buy")
+                                setVendors(vend.filter(v => v.option === "Buy"))
+                            }}>
+                                {/* <Ionicons name="checkmark" size={24} color="#febf12" /> */}
+                                <Text style={option === "Buy" ? styles.opTextActive : styles.opTextInActive}>Buyers</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* <FlatList
                         keyExtractor={(item) => item.reference + item.name + item.amount + item.asset + item.minRange + item.maxRange + item.available + new Date}
                         data={vendors}
                         renderItem={({ item }) => ( */}
 
-                    {vendors && vendors.map(item => (
-                        <View style={styles.card} key={item.reference + item.name + item.amount + item.asset + item.minRange + item.maxRange + item.available + new Date + Math.random()}>
+                        {vendors && vendors.map(item => (
+                            <View style={styles.card} key={item.reference + item.name + item.amount + item.asset + item.minRange + item.maxRange + item.available + new Date + Math.random()}>
 
-                            <View>
+                                <View>
 
-                                <Text style={styles.cardName}>{item.asset}</Text>
-                                <View style={styles.cardDetBt}>
+                                    <Text style={styles.cardName}>{item.asset}</Text>
+                                    <View style={styles.cardDetBt}>
 
-                                    <View style={styles.vCardPrice}>
-                                        <Text>{item.name}</Text>
+                                        <View style={styles.vCardPrice}>
+                                            <Text style={styles.listName}>{item.name}</Text>
 
-                                        <Text>{
-                                            current && parseInt(item.asset === "BTC" && current.btc || item.asset === "BNB" && current.bnb || item.asset === "LTC" && current.ltc || item.asset === "ETH" && current.eth || item.asset === "TRX" && current.trx || item.asset.indexOf("USDT") !== -1 && current.usdt).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-                                        } {user.currency}</Text>
+                                            <Text>{
+                                                current && parseInt(item.asset === "BTC" && current.btc || item.asset === "BNB" && current.bnb || item.asset === "LTC" && current.ltc || item.asset === "ETH" && current.eth || item.asset === "TRX" && current.trx || item.asset.indexOf("USDT") !== -1 && current.usdt).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+                                            } {user.currency}</Text>
 
-                                        <View style={styles.avaRange}>
-                                            <Text style={styles.det}>Range: </Text>
-                                            <Text>{item.minRange}
-                                                {/* ({parseInt(
+                                            <View style={styles.avaRange}>
+                                                <Text style={styles.det}>Range: </Text>
+                                                <Text>{item.minRange}
+                                                    {/* ({parseInt(
                                                     item.asset === "BTC" && current.btc * item.minRange
                                                     || item.asset === "BNB" && current.bnb * item.minRange
                                                     || item.asset === "LTC" && current.ltc * item.minRange
@@ -687,8 +710,8 @@ function P2P({ navigation }) {
                                                     || item.asset === "TRX" && current.trx * item.minRange
                                                     || item.asset.indexOf("USDT") !== -1 && current.usdt * item.minRange).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                                                 } {user.currency}) */}
-                                                - {item.maxRange} ({item.asset})
-                                                {/* ({parseInt(
+                                                    - {item.maxRange} ({item.asset})
+                                                    {/* ({parseInt(
                                                         item.asset === "BTC" && current.btc * item.maxRange
                                                         || item.asset === "BNB" && current.bnb * item.maxRange
                                                         || item.asset === "LTC" && current.ltc * item.maxRange
@@ -696,93 +719,98 @@ function P2P({ navigation }) {
                                                         || item.asset === "TRX" && current.trx * item.maxRange
                                                         || item.asset.indexOf("USDT") !== -1 && current.usdt * item.maxRange).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                                                     } {user.currency}) */}
-                                            </Text>
+                                                </Text>
+                                            </View>
+                                            <View style={styles.avaRange}>
+                                                <Text style={styles.det}>Available: </Text>
+                                                <Text>{item.available
+                                                    // ).toFixed(6).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} ({parseInt(
+                                                    // item.asset === "BTC" && current.btc * item.available
+                                                    // || item.asset === "BNB" && current.bnb * item.available
+                                                    // || item.asset === "LTC" && current.ltc * item.available
+                                                    // || item.asset === "ETH" && current.eth * item.available
+                                                    // || item.asset === "TRX" && current.trx * item.available
+                                                    // || item.asset.indexOf("USDT") !== -1 && current.usdt * item.available).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+                                                } {item.asset}</Text>
+                                            </View>
                                         </View>
-                                        <View style={styles.avaRange}>
-                                            <Text style={styles.det}>Available: </Text>
-                                            <Text>{item.available
-                                                // ).toFixed(6).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} ({parseInt(
-                                                // item.asset === "BTC" && current.btc * item.available
-                                                // || item.asset === "BNB" && current.bnb * item.available
-                                                // || item.asset === "LTC" && current.ltc * item.available
-                                                // || item.asset === "ETH" && current.eth * item.available
-                                                // || item.asset === "TRX" && current.trx * item.available
-                                                // || item.asset.indexOf("USDT") !== -1 && current.usdt * item.available).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-                                            } {item.asset}</Text>
-                                        </View>
+
                                     </View>
 
                                 </View>
 
+                                <TouchableOpacity style={styles.cardButton} onPress={() => {
+                                    setPage("Purchase")
+                                    setList(item)
+                                    if (item.asset === "BTC") {
+                                        setBalance(btc)
+                                        setValue(btcValue)
+                                    }
+                                    if (item.asset === "LTC") {
+                                        setBalance(ltc)
+                                        setValue(ltcValue)
+                                    }
+                                    if (item.asset === "BNB") {
+                                        setBalance(bnb)
+                                        setValue(bnbValue)
+                                    }
+                                    if (item.asset === "ETH") {
+                                        setBalance(eth)
+                                        setValue(ethValue)
+                                    }
+                                    if (item.asset === "TRX") {
+                                        setBalance(trx)
+                                        setValue(trxValue)
+                                    }
+                                    if (item.asset === "USDT") {
+                                        setBalance(usdt)
+                                        setValue(usdtValue)
+                                    }
+                                    if (item.asset === "USDT-BEP20") {
+                                        setBalance(usdt_bep20)
+                                        setValue(usdt_bep20Value)
+                                    }
+                                    if (item.asset === "USDT-TRC20") {
+                                        setBalance(usdt_trc20)
+                                        setValue(usdt_trc20Value)
+                                    }
+
+                                }}>
+                                    <Text style={styles.cardButtonText}>{item.option === "Buy" ? "Sell" : "Buy"}</Text>
+                                </TouchableOpacity>
+
                             </View>
+                        ))}
 
-                            <TouchableOpacity style={styles.cardButton} onPress={() => {
-                                setPage("Purchase")
-                                setList(item)
-                                if (item.asset === "BTC") {
-                                    setBalance(btc)
-                                    setValue(btcValue)
-                                }
-                                if (item.asset === "LTC") {
-                                    setBalance(ltc)
-                                    setValue(ltcValue)
-                                }
-                                if (item.asset === "BNB") {
-                                    setBalance(bnb)
-                                    setValue(bnbValue)
-                                }
-                                if (item.asset === "ETH") {
-                                    setBalance(eth)
-                                    setValue(ethValue)
-                                }
-                                if (item.asset === "TRX") {
-                                    setBalance(trx)
-                                    setValue(trxValue)
-                                }
-                                if (item.asset === "USDT") {
-                                    setBalance(usdt)
-                                    setValue(usdtValue)
-                                }
-                                if (item.asset === "USDT-BEP20") {
-                                    setBalance(usdt_bep20)
-                                    setValue(usdt_bep20Value)
-                                }
-                                if (item.asset === "USDT-TRC20") {
-                                    setBalance(usdt_trc20)
-                                    setValue(usdt_trc20Value)
-                                }
-
-                            }}>
-                                <Text style={styles.cardButtonText}>{item.option === "Buy" ? "Sell" : "Buy"}</Text>
-                            </TouchableOpacity>
-
-                        </View>
-                    ))}
-
-                    {/* )} */}
-                    {/* /> */}
+                        {/* )} */}
+                        {/* /> */}
 
 
 
+                    </View>
+
+                </ScrollView>
+
+                <View style={styles.float}>
+                    <TouchableOpacity onPress={() => {
+                        setPage("List")
+                    }}>
+                        <AntDesign style={styles.floatIcon} name="plus" size={44} color="whitesmoke" />
+                    </TouchableOpacity>
                 </View>
 
-            </ScrollView>
 
-            <View style={styles.float}>
-                <TouchableOpacity onPress={() => {
-                    setPage("List")
-                }}>
-                    <AntDesign style={styles.floatIcon} name="plus" size={44} color="whitesmoke" />
-                </TouchableOpacity>
             </View>
-
-
-        </View>
+        </ImageBackground>
     )
 }
 
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        width: "100%",
+        height: "100%",
+    },
     cancel: {
         top: 0,
         marginBottom: 20,
@@ -874,7 +902,7 @@ const styles = StyleSheet.create({
     avaRange: {
         display: "flex",
         flexDirection: "row",
-        paddingBottom: 5
+        paddingVertical: 3
     },
     det: {
         color: "gray",
@@ -990,6 +1018,11 @@ const styles = StyleSheet.create({
     err: {
         opacity: 1,
         color: "red"
+    },
+    listName: {
+        fontWeight: "600",
+        fontFamily: "Optien",
+        paddingVertical: 6,
     }
 });
 

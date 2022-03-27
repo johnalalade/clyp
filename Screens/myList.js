@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Component } from "react";
-import { StyleSheet, Text, View, TextInput, Alert, ScrollView, RefreshControl } from "react-native";
+import { StyleSheet, Text, View, TextInput, Alert, ScrollView, RefreshControl, ImageBackground } from "react-native";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from '@expo/vector-icons';
 import axios from "./axios";
@@ -101,7 +101,7 @@ function myListing({ navigation }) {
 
                 axios.post('/all-mine', { userID: id })
                     .then(data => {
-                        setVendors(option === "Sell" ? data.data.response.filter(v => v.option === "Sell") : data.data.response.filter(v => v.option === "Buy") )
+                        setVendors(option === "Sell" ? data.data.response.filter(v => v.option === "Sell") : data.data.response.filter(v => v.option === "Buy"))
                         setVend(data.data.response)
                         console.log(data.data.response)
                         setLoading(false)
@@ -252,7 +252,7 @@ function myListing({ navigation }) {
             }
 
         }
-        if (option === "Buy"){
+        if (option === "Buy") {
 
             if (minRange > maxRange) {
                 Alert.alert('Range Error', `Invalid range please make sure your Maximum amount is greater than Minimum amount`)
@@ -432,146 +432,153 @@ function myListing({ navigation }) {
     }
 
     return (
-        <View style={styles.container}>
-            <ScrollView style={{ flex: 1 }} refreshControl={
-                <RefreshControl refreshing={refreshing}
-                    onRefresh={() => {
-                        setRefreshing(true)
-                        setCleanUp(cleanup + 1)
+        <ImageBackground source={require('../assets/mash-up.png')} resizeMode="cover" style={styles.backgroundImage} imageStyle=
+            {{ opacity: 0.2 }}>
+            <View style={styles.container}>
+                <ScrollView style={{ flex: 1 }} refreshControl={
+                    <RefreshControl refreshing={refreshing}
+                        onRefresh={() => {
+                            setRefreshing(true)
+                            setCleanUp(cleanup + 1)
 
-                    }} />
-            }>
+                        }} />
+                }>
 
-                <View>
+                    <View>
 
-                    <View style={styles.options}>
-                        <TouchableOpacity style={option === "Sell" ? styles.opActive : styles.opInActive} onPress={() => {
-                            setOption("Sell")
-                            setVendors(vend.filter(v => v.option === "Sell"))
-                        }}>
-                            {/* <Ionicons name="checkmark" size={24} color="#febf12" /> */}
-                            <Text style={option === "Sell" ? styles.opTextActive : styles.opTextInActive} >Sellings</Text>
-                        </TouchableOpacity>
+                        <View style={styles.options}>
+                            <TouchableOpacity style={option === "Sell" ? styles.opActive : styles.opInActive} onPress={() => {
+                                setOption("Sell")
+                                setVendors(vend.filter(v => v.option === "Sell"))
+                            }}>
+                                {/* <Ionicons name="checkmark" size={24} color="#febf12" /> */}
+                                <Text style={option === "Sell" ? styles.opTextActive : styles.opTextInActive} >Sellings</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={option === "Buy" ? styles.opActive : styles.opInActive} onPress={() => {
-                            setOption("Buy")
-                            setVendors(vend.filter(v => v.option === "Buy"))
-                        }}>
-                            {/* <Ionicons name="checkmark" size={24} color="#febf12" /> */}
-                            <Text style={option === "Buy" ? styles.opTextActive : styles.opTextInActive}>Buyings</Text>
-                        </TouchableOpacity>
-                    </View>
+                            <TouchableOpacity style={option === "Buy" ? styles.opActive : styles.opInActive} onPress={() => {
+                                setOption("Buy")
+                                setVendors(vend.filter(v => v.option === "Buy"))
+                            }}>
+                                {/* <Ionicons name="checkmark" size={24} color="#febf12" /> */}
+                                <Text style={option === "Buy" ? styles.opTextActive : styles.opTextInActive}>Buyings</Text>
+                            </TouchableOpacity>
+                        </View>
 
-                    {/* <FlatList
+                        {/* <FlatList
                         keyExtractor={(item) => item.reference + item.name + item.amount + item.asset + item.minRange + item.maxRange + item.available + new Date}
                         data={vendors}
                         renderItem={({ item }) => ( */}
-                    {vendors && vendors.map(item => (
-                        <View style={styles.card}>
+                        {vendors && vendors.map(item => (
+                            <View style={styles.card}>
 
-                            <View>
+                                <View>
 
-                                <Text style={styles.cardName}>{item.asset}</Text>
-                                <View style={styles.cardDetBt}>
+                                    <Text style={styles.cardName}>{item.asset}</Text>
+                                    <View style={styles.cardDetBt}>
 
-                                    <View style={styles.vCardPrice}>
-                                        <Text>{item.name}</Text>
-                                        <Text>{
-                                            current && parseInt(item.asset === "BTC" && current.btc || item.asset === "BNB" && current.bnb || item.asset === "LTC" && current.ltc || item.asset === "ETH" && current.eth || item.asset === "TRX" && current.trx || item.asset.indexOf("USDT") !== -1 && current.usdt).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-                                        } {user.currency}</Text>
+                                        <View style={styles.vCardPrice}>
+                                            <Text>{item.name}</Text>
+                                            <Text>{
+                                                current && parseInt(item.asset === "BTC" && current.btc || item.asset === "BNB" && current.bnb || item.asset === "LTC" && current.ltc || item.asset === "ETH" && current.eth || item.asset === "TRX" && current.trx || item.asset.indexOf("USDT") !== -1 && current.usdt).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+                                            } {user.currency}</Text>
 
-                                        <View style={styles.avaRange}>
-                                            <Text style={styles.det}>Range: </Text>
-                                            <Text>{item.minRange}
-                                                -
-                                                {item.maxRange} ({item.asset})
-                                            </Text>
+                                            <View style={styles.avaRange}>
+                                                <Text style={styles.det}>Range: </Text>
+                                                <Text>{item.minRange}
+                                                    -
+                                                    {item.maxRange} ({item.asset})
+                                                </Text>
+                                            </View>
+                                            <View style={styles.avaRange}>
+                                                <Text style={styles.det}>Available: </Text>
+                                                <Text>{item.available} {item.asset}</Text>
+                                            </View>
                                         </View>
-                                        <View style={styles.avaRange}>
-                                            <Text style={styles.det}>Available: </Text>
-                                            <Text>{item.available} {item.asset}</Text>
-                                        </View>
+
+
                                     </View>
-
 
                                 </View>
 
-                            </View>
-
-                            <TouchableOpacity style={styles.cardButton} onPress={() => {
-                                setPage("Purchase")
-                                setList(item)
-                                if (item.asset === "BTC") {
-                                    setBalance(btc)
-                                    setValue(btcValue)
-                                }
-                                if (item.asset === "LTC") {
-                                    setBalance(ltc)
-                                    setValue(ltcValue)
-                                }
-                                if (item.asset === "BNB") {
-                                    setBalance(bnb)
-                                    setValue(bnbValue)
-                                }
-                                if (item.asset === "ETH") {
-                                    setBalance(eth)
-                                    setValue(ethValue)
-                                }
-                                if (item.asset === "TRX") {
-                                    setBalance(trx)
-                                    setValue(trxValue)
-                                }
-                                if (item.asset === "USDT") {
-                                    setBalance(usdt)
-                                    setValue(usdtValue)
-                                }
-                                if (item.asset === "USDT-BEP20") {
-                                    setBalance(usdt_bep20)
-                                    setValue(usdt_bep20Value)
-                                }
-                                if (item.asset === "USDT-TRC20") {
-                                    setBalance(usdt_trc20)
-                                    setValue(usdt_trc20Value)
-                                }
-                                Alert.alert("Delete?", "Are you sure you want to delete this listing", [{
-                                    text: "Yes", onPress: () => {
-                                        deleting()
+                                <TouchableOpacity style={styles.cardButton} onPress={() => {
+                                    setPage("Purchase")
+                                    setList(item)
+                                    if (item.asset === "BTC") {
+                                        setBalance(btc)
+                                        setValue(btcValue)
                                     }
-                                }, {
-                                    text: "Cancel"
-                                }])
-                            }}>
-                                <Text style={styles.cardButtonText}>Delete</Text>
-                            </TouchableOpacity>
+                                    if (item.asset === "LTC") {
+                                        setBalance(ltc)
+                                        setValue(ltcValue)
+                                    }
+                                    if (item.asset === "BNB") {
+                                        setBalance(bnb)
+                                        setValue(bnbValue)
+                                    }
+                                    if (item.asset === "ETH") {
+                                        setBalance(eth)
+                                        setValue(ethValue)
+                                    }
+                                    if (item.asset === "TRX") {
+                                        setBalance(trx)
+                                        setValue(trxValue)
+                                    }
+                                    if (item.asset === "USDT") {
+                                        setBalance(usdt)
+                                        setValue(usdtValue)
+                                    }
+                                    if (item.asset === "USDT-BEP20") {
+                                        setBalance(usdt_bep20)
+                                        setValue(usdt_bep20Value)
+                                    }
+                                    if (item.asset === "USDT-TRC20") {
+                                        setBalance(usdt_trc20)
+                                        setValue(usdt_trc20Value)
+                                    }
+                                    Alert.alert("Delete?", "Are you sure you want to delete this listing", [{
+                                        text: "Yes", onPress: () => {
+                                            deleting()
+                                        }
+                                    }, {
+                                        text: "Cancel"
+                                    }])
+                                }}>
+                                    <Text style={styles.cardButtonText}>Delete</Text>
+                                </TouchableOpacity>
 
-                        </View>
-                    ))
-                    }
+                            </View>
+                        ))
+                        }
 
-                    {/* )}
+                        {/* )}
                     /> */}
 
 
 
+                    </View>
+
+                </ScrollView>
+
+                <View style={styles.float}>
+                    <TouchableOpacity onPress={() => {
+                        setPage("List")
+                    }}>
+                        <AntDesign style={styles.floatIcon} name="plus" size={44} color="whitesmoke" />
+                    </TouchableOpacity>
                 </View>
 
-            </ScrollView>
 
-            <View style={styles.float}>
-                <TouchableOpacity onPress={() => {
-                    setPage("List")
-                }}>
-                    <AntDesign style={styles.floatIcon} name="plus" size={44} color="whitesmoke" />
-                </TouchableOpacity>
             </View>
-
-
-        </View>
+        </ImageBackground>
     )
 }
 
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        width: "100%",
+        height: "100%",
+    },
     cancel: {
         top: 0,
         marginBottom: 20,

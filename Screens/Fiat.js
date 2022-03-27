@@ -1,5 +1,5 @@
 import React, { useEffect, Component, useState } from "react";
-import { StyleSheet, Text, View, TextInput, Platform, TouchableOpacity, ScrollView, RefreshControl, Alert } from "react-native";
+import { StyleSheet, Text, View, TextInput, Platform, TouchableOpacity, ScrollView, RefreshControl, Alert, ImageBackground } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
@@ -843,78 +843,80 @@ function Fiat({ navigation }) {
 
     if (page === "Fiat") {
         return (
-            <View style={{ flex: 1 }}>
-                <BottomSheet
-                    ref={bs}
-                    snapPoints={[500, 280]}
-                    renderContent={renderInner}
-                    renderHeader={renderHeader}
-                    initialSnap={1}
-                    callbackNode={fall}
-                    enabledGestureInteraction={true}
-                />
+            <ImageBackground source={require('../assets/mash-up.png')} resizeMode="cover" style={styles.backgroundImage} imageStyle=
+                {{ opacity: 0.2 }}>
+                <View style={{ flex: 1 }}>
+                    <BottomSheet
+                        ref={bs}
+                        snapPoints={[500, 280]}
+                        renderContent={renderInner}
+                        renderHeader={renderHeader}
+                        initialSnap={1}
+                        callbackNode={fall}
+                        enabledGestureInteraction={true}
+                    />
 
-                <ScrollView style={{ flex: 1 }} refreshControl={
-                    <RefreshControl refreshing={refreshing}
-                        onRefresh={() => {
-                            setRefreshing(true)
-                            setCleanUp(cleanup + 1)
+                    <ScrollView style={{ flex: 1 }} refreshControl={
+                        <RefreshControl refreshing={refreshing}
+                            onRefresh={() => {
+                                setRefreshing(true)
+                                setCleanUp(cleanup + 1)
 
-                        }} />
-                }>
-                    <View style={styles.container}>
+                            }} />
+                    }>
+                        <View style={styles.container}>
 
-                        <View style={styles.container2}>
+                            <View style={styles.container2}>
 
-                            <TouchableOpacity onPress={() => navigation.navigate("Settings")} style={styles.name_co}>
-                                <View>
-                                    <FontAwesome5 name="user-circle" size={24} color="grey" />
-                                    <Text style={styles.name}>{user.username}</Text>
-                                </View>
+                                <TouchableOpacity onPress={() => navigation.navigate("Settings")} style={styles.name_co}>
+                                    <View>
+                                        <FontAwesome5 name="user-circle" size={24} color="grey" />
+                                        <Text style={styles.name}>{user.username}</Text>
+                                    </View>
 
-                                <Text style={styles.text_wallet}>Clyp ID: {user.clypID}</Text>
+                                    <Text style={styles.text_wallet}>Clyp ID: {user.clypID}</Text>
 
-                            </TouchableOpacity>
+                                </TouchableOpacity>
 
-                            <View style={styles.header}>
+                                <View style={styles.header}>
 
-                                {/* <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" /> */}
+                                    {/* <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" /> */}
 
-                                {user.country === "Nigeria" ?
-                                    <Text style={styles.text_header}>  &#x20A6; {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
-                                    :
-                                    <Text style={styles.text_header}> {user.currency} {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>}
+                                    {user.country === "Nigeria" ?
+                                        <Text style={styles.text_header}>  &#x20A6; {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
+                                        :
+                                        <Text style={styles.text_header}> {user.currency} {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>}
 
-                                {user.country === "Nigeria" ?
-                                    <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
-                                    :
-                                    <Text style={styles.text_sub_header}> {user.currency} {(user.ledger_balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>}
+                                    {user.country === "Nigeria" ?
+                                        <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
+                                        :
+                                        <Text style={styles.text_sub_header}> {user.currency} {(user.ledger_balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>}
 
-                                <View style={styles.buttons}>
+                                    <View style={styles.buttons}>
 
-                                    <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Fund")}>
-                                        <View style={styles.button}>
-                                            <MaterialIcons name="add" size={40} color="whitesmoke" />
-                                            {/* <Feather name="send" size={24} color="whitesmoke" /> */}
-                                        </View>
-                                        <Text style={styles.buttonText}>
-                                            Add Funds
-                                        </Text>
+                                        <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Fund")}>
+                                            <View style={styles.button}>
+                                                <MaterialIcons name="add" size={40} color="whitesmoke" />
+                                                {/* <Feather name="send" size={24} color="whitesmoke" /> */}
+                                            </View>
+                                            <Text style={styles.buttonText}>
+                                                Add Funds
+                                            </Text>
 
-                                    </TouchableOpacity>
+                                        </TouchableOpacity>
 
-                                    <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
-                                        <View style={styles.button}>
+                                        <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
+                                            <View style={styles.button}>
 
-                                            <Feather name="send" size={24} color="whitesmoke" />
-                                        </View>
-                                        <Text style={styles.buttonText}>
-                                            Send Funds
-                                        </Text>
+                                                <Feather name="send" size={24} color="whitesmoke" />
+                                            </View>
+                                            <Text style={styles.buttonText}>
+                                                Send Funds
+                                            </Text>
 
-                                    </TouchableOpacity>
+                                        </TouchableOpacity>
 
-                                    {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
+                                        {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
                                 <View style={styles.button}>
 
                                     <Feather name="send" size={24} color="whitesmoke" />
@@ -924,38 +926,40 @@ function Fiat({ navigation }) {
                                 </Text>
 
                             </TouchableOpacity> */}
+                                    </View>
                                 </View>
-                            </View>
 
-                            {/* <Text>Fiat Screen!</Text>
+                                {/* <Text>Fiat Screen!</Text>
                 <Button title="Fund" onPress={() => this.props.navigation.goBack()} /> */}
+                            </View>
                         </View>
-                    </View>
-                </ScrollView>
+                    </ScrollView>
 
-                <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)} animationInTiming={0} animationOutTiming={0}>
-                    <View style={styles.modal}>
-                        <Text style={styles.modalHead}>{item.name}</Text>
+                    <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)} animationInTiming={0} animationOutTiming={0}>
+                        <View style={styles.modal}>
+                            <Text style={styles.modalHead}>{item.name}</Text>
 
-                        <Text style={styles.modalNote}>Amount:</Text>
-                        <Text style={styles.modalDetails}>{item.amount}</Text>
+                            <Text style={styles.modalNote}>Amount:</Text>
+                            <Text style={styles.modalDetails}>{item.amount}</Text>
 
-                        <Text style={styles.modalNote}>Reference:</Text>
-                        <Text style={styles.modalDetails}>{item.reference}</Text>
+                            <Text style={styles.modalNote}>Reference:</Text>
+                            <Text style={styles.modalDetails}>{item.reference}</Text>
 
-                        <Text style={styles.modalNote}>Details:</Text>
-                        <Text style={styles.modalDetails}>{item.details}</Text>
+                            <Text style={styles.modalNote}>Details:</Text>
+                            <Text style={styles.modalDetails}>{item.details}</Text>
 
-                        <Text style={styles.modalNote}>Time:</Text>
-                        <Text style={styles.modalDetails}>{item.time}</Text>
+                            <Text style={styles.modalNote}>Time:</Text>
+                            <Text style={styles.modalDetails}>{item.time}</Text>
 
-                        <TouchableOpacity style={styles.modalButton} onPress={toggleModal} >
-                            <Text style={styles.modalButtonText}>Close</Text>
-                        </TouchableOpacity>
-                    </View>
-                </Modal>
+                            <TouchableOpacity style={styles.modalButton} onPress={toggleModal} >
+                                <Text style={styles.modalButtonText}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Modal>
 
-            </View>
+                </View>
+
+            </ImageBackground>
 
         )
     }
@@ -963,6 +967,10 @@ function Fiat({ navigation }) {
 
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        width: "100%",
+        height: "100%",
+    },
     cancel: {
         top: 0,
         marginBottom: 20,

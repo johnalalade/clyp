@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Component, } from "react";
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ScrollView, Image, RefreshControl, Alert } from "react-native";
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ScrollView, Image, RefreshControl, Alert, ImageBackground } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 // import QRCode from 'react-native-qrcode-svg';
@@ -628,7 +628,7 @@ function Crypto() {
 
           <Text style={styles.addressText}>Amount:</Text>
           <View style={styles.addressInput}>
-            <View style={{ display: "flex", flexDirection: "row"}}>
+            <View style={{ display: "flex", flexDirection: "row" }}>
               <Text onPress={() => {
                 if (currency == user.currency) {
                   setCurrency("USD")
@@ -831,67 +831,69 @@ function Crypto() {
 
         }} />
     }>
-      <View style={styles.container}>
+      <ImageBackground source={require('../assets/mash-up.png')} resizeMode="cover" style={styles.backgroundImage} imageStyle=
+        {{ opacity: 0.2 }}>
+        <View style={styles.container}>
 
-        {/* <View style={styles.container}> */}
-        <View style={styles.containerInner}>
+          {/* <View style={styles.container}> */}
+          <View style={styles.containerInner}>
 
-          <View style={styles.header}>
-            <Text style={styles.text_wallet}>{address.name}</Text>
-            {/* <Text style={styles.text_header}>${address.name === "BNB" && bnb / 242205133645110.0000 || address.name === "ETH" && eth / 242205133645110.0000}</Text> */}
-            <Avatar.Image
-              source={
-                images[ix]
+            <View style={styles.header}>
+              <Text style={styles.text_wallet}>{address.name}</Text>
+              {/* <Text style={styles.text_header}>${address.name === "BNB" && bnb / 242205133645110.0000 || address.name === "ETH" && eth / 242205133645110.0000}</Text> */}
+              <Avatar.Image
+                source={
+                  images[ix]
+                }
+                style={{ backgroundColor: "white" }}
+                size={40}
+              />
+              {
+                user && user.currency === "NGN" ? (
+                  <View>
+                    {address.name === "BTC" ? <Text style={styles.text_header}>&#x20A6; {(btc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "LTC" ? <Text style={styles.text_header}>&#x20A6; {(ltc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "BNB" ? <Text style={styles.text_header}>&#x20A6; {(bnb / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "ETH" ? <Text style={styles.text_header}>&#x20A6; {(eth / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "TRX" ? <Text style={styles.text_header}>&#x20A6; {(trx / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "USDT" ? <Text style={styles.text_header}>&#x20A6; {(usdt / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>&#x20A6; {(usdt_bep20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>&#x20A6; {(usdt_trc20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+                  </View>
+                )
+                  :
+                  <View>
+                    {address.name === "BTC" ? <Text style={styles.text_header}>{user.currency} {(btc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "LTC" ? <Text style={styles.text_header}>{user.currency} {(ltc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "BNB" ? <Text style={styles.text_header}>{user.currency} {(bnb / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "ETH" ? <Text style={styles.text_header}>{user.currency} {(eth / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "TRX" ? <Text style={styles.text_header}>{user.currency} {(trx / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "USDT" ? <Text style={styles.text_header}>{user.currency} {(usdt / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>{user.currency} {(usdt_bep20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+
+                    {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>{user.currency} {(usdt_trc20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
+                  </View>
               }
-              style={{ backgroundColor: "white" }}
-              size={40}
-            />
-            {
-              user && user.currency === "NGN" ? (
-                <View>
-                  {address.name === "BTC" ? <Text style={styles.text_header}>&#x20A6; {(btc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
 
-                  {address.name === "LTC" ? <Text style={styles.text_header}>&#x20A6; {(ltc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "BNB" ? <Text style={styles.text_header}>&#x20A6; {(bnb / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "ETH" ? <Text style={styles.text_header}>&#x20A6; {(eth / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "TRX" ? <Text style={styles.text_header}>&#x20A6; {(trx / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "USDT" ? <Text style={styles.text_header}>&#x20A6; {(usdt / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>&#x20A6; {(usdt_bep20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>&#x20A6; {(usdt_trc20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-                </View>
-              )
-                :
-                <View>
-                  {address.name === "BTC" ? <Text style={styles.text_header}>{user.currency} {(btc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "LTC" ? <Text style={styles.text_header}>{user.currency} {(ltc / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "BNB" ? <Text style={styles.text_header}>{user.currency} {(bnb / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "ETH" ? <Text style={styles.text_header}>{user.currency} {(eth / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "TRX" ? <Text style={styles.text_header}>{user.currency} {(trx / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "USDT" ? <Text style={styles.text_header}>{user.currency} {(usdt / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "USDT-BEP20" ? <Text style={styles.text_header}>{user.currency} {(usdt_bep20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-
-                  {address.name === "USDT-TRC20" ? <Text style={styles.text_header}>{user.currency} {(usdt_trc20 / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text> : null}
-                </View>
-            }
-
-            <Text style={styles.value}>{value} {address.name}</Text>
+              <Text style={styles.value}>{value} {address.name}</Text>
 
 
-            <View style={styles.buttons}>
+              <View style={styles.buttons}>
 
-              {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Sell")}>
+                {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Sell")}>
                 <View style={styles.button}>
                   
                   <Feather name="arrow-up-left" size={24} color="whitesmoke" />
@@ -903,24 +905,24 @@ function Crypto() {
 
               </TouchableOpacity> */}
 
-              <TouchableOpacity style={styles.buttonView} onPress={() => {
-                setPage("Send")
-                axios.post("/gas", { asset: address.name, address: address.address })
-                  .then(data => {
-                    setGas(data.data.gas)
-                  })
-              }}>
-                <View style={styles.button}>
+                <TouchableOpacity style={styles.buttonView} onPress={() => {
+                  setPage("Send")
+                  axios.post("/gas", { asset: address.name, address: address.address })
+                    .then(data => {
+                      setGas(data.data.gas)
+                    })
+                }}>
+                  <View style={styles.button}>
 
-                  <Feather name="send" size={20} color="whitesmoke" />
-                </View>
-                <Text style={styles.buttonText}>
-                  Send {address.name}
-                </Text>
+                    <Feather name="send" size={20} color="whitesmoke" />
+                  </View>
+                  <Text style={styles.buttonText}>
+                    Send {address.name}
+                  </Text>
 
-              </TouchableOpacity>
+                </TouchableOpacity>
 
-              {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
+                {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Buy")}>
                 <View style={styles.button}>
                   
                   <Feather name="arrow-down-left" size={24} color="whitesmoke" />
@@ -932,7 +934,7 @@ function Crypto() {
 
               </TouchableOpacity> */}
 
-              {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
+                {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
               <View style={styles.button}>
 
                 <Feather name="send" size={20} color="whitesmoke" />
@@ -942,85 +944,90 @@ function Crypto() {
               </Text>
 
             </TouchableOpacity> */}
+              </View>
             </View>
+
+
+          </View>
+
+          <View style={styles.cryptos}>
+            <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
+              setPage("Receive")
+            }}>
+
+              <Text style={styles.cryptoAddress}>
+                {address.address.toString().slice(0, 26)}...
+              </Text>
+              <AntDesign name="qrcode" size={24} color="black" />
+            </TouchableOpacity>
+
+            <ScrollView horizontal={true}>
+              <View style={styles.cryptoList}>
+                {
+                  user && user.wallets.map((item, ix) => (
+                    <TouchableOpacity horizontal={true} style={ix !== index ? styles.crypCont : styles.crypContSelected} key={item.address + item.name} onPress={() => {
+                      setAddress0(item); setIx(ix); setIndex(ix)
+                      if (item.name === "BTC") {
+                        setBalance(btc)
+                        setValue(btcValue)
+                      }
+                      if (item.name === "LTC") {
+                        setBalance(ltc)
+                        setValue(ltcValue)
+                      }
+                      if (item.name === "BNB") {
+                        setBalance(bnb)
+                        setValue(bnbValue)
+                      }
+                      if (item.name === "ETH") {
+                        setBalance(eth)
+                        setValue(ethValue)
+                      }
+                      if (item.name === "TRx") {
+                        setBalance(trx)
+                        setValue(trxValue)
+                      }
+                      if (item.name === "USDT") {
+                        setBalance(usdt)
+                        setValue(usdtValue)
+                      }
+                      if (item.name === "USDT-BEP20") {
+                        setBalance(usdt_bep20)
+                        setValue(usdt_bep20Value)
+                      }
+                      if (item.name === "USDT-TRC20") {
+                        setBalance(usdt_trc20)
+                        setValue(usdt_trc20Value)
+                      }
+                    }}>
+                      <Avatar.Image
+                        source={
+                          images[ix]
+                        }
+                        style={{ backgroundColor: "white" }}
+                        size={40}
+                      />
+                      <Text style={styles.crypText}>{item.name}</Text>
+                    </TouchableOpacity>
+                  ))
+                }
+              </View>
+            </ScrollView>
+
           </View>
 
 
         </View>
-
-        <View style={styles.cryptos}>
-          <TouchableOpacity style={styles.cryptoAddressTouch} onPress={() => {
-            setPage("Receive")
-          }}>
-
-            <Text style={styles.cryptoAddress}>
-              {address.address.toString().slice(0, 26)}...
-            </Text>
-            <AntDesign name="qrcode" size={24} color="black" />
-          </TouchableOpacity>
-
-          <ScrollView horizontal={true}>
-            <View style={styles.cryptoList}>
-              {
-                user && user.wallets.map((item, ix) => (
-                  <TouchableOpacity horizontal={true} style={ix !== index ? styles.crypCont : styles.crypContSelected} key={item.address + item.name} onPress={() => {
-                    setAddress0(item); setIx(ix); setIndex(ix)
-                    if (item.name === "BTC") {
-                      setBalance(btc)
-                      setValue(btcValue)
-                    }
-                    if (item.name === "LTC") {
-                      setBalance(ltc)
-                      setValue(ltcValue)
-                    }
-                    if (item.name === "BNB") {
-                      setBalance(bnb)
-                      setValue(bnbValue)
-                    }
-                    if (item.name === "ETH") {
-                      setBalance(eth)
-                      setValue(ethValue)
-                    }
-                    if (item.name === "TRx") {
-                      setBalance(trx)
-                      setValue(trxValue)
-                    }
-                    if (item.name === "USDT") {
-                      setBalance(usdt)
-                      setValue(usdtValue)
-                    }
-                    if (item.name === "USDT-BEP20") {
-                      setBalance(usdt_bep20)
-                      setValue(usdt_bep20Value)
-                    }
-                    if (item.name === "USDT-TRC20") {
-                      setBalance(usdt_trc20)
-                      setValue(usdt_trc20Value)
-                    }
-                  }}>
-                    <Avatar.Image
-                      source={
-                        images[ix]
-                      }
-                      style={{ backgroundColor: "white" }}
-                      size={40}
-                    />
-                    <Text style={styles.crypText}>{item.name}</Text>
-                  </TouchableOpacity>
-                ))
-              }
-            </View>
-          </ScrollView>
-
-        </View>
-
-
-      </View>
+      </ImageBackground>
     </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    width: "100%",
+    height: "100%",
+  },
   cancel: {
     top: 0,
     marginBottom: 20,
