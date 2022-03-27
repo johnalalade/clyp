@@ -788,7 +788,7 @@ function Fiat({ navigation }) {
                 ||
                 <View style={styles.placeholder}>
                     <FontAwesome5 name="money-bill-wave" size={50} color="#febf12" />
-                    <Text style={styles.placeholder_text}>Make your Clyp first transaction</Text>
+                    <Text style={styles.placeholder_text}>Make your Clyp first transaction ✌️</Text>
                 </View>
             }
             {/* <TouchableOpacity

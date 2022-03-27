@@ -35,7 +35,7 @@ function P2P({ navigation }) {
     const [minRange, setMinRange] = useState("")
     const [maxRange, setMaxRange] = useState("")
     const [list, setList] = useState({})
-    const [amount, setAmount] = useState()
+    const [amount, setAmount] = useState(0)
     const [cleanup, setCleanUp] = React.useState(0)
     const [refreshing, setRefreshing] = React.useState(false)
 
@@ -414,27 +414,27 @@ function P2P({ navigation }) {
                 {option === "Sell" ?
                     <View style={styles.airContainer}>
                         {user && user.currency === "NGN" ?
-                            <Text style={styles.balance}>Balance: &#x20A6; {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
+                            <Text style={styles.balance1}>Fiat Balance: &#x20A6; {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                             :
-                            <Text style={styles.balance}>Balance: {user && user.currency} {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
+                            <Text style={styles.balance1}>Fiat Balance: {user && user.currency} {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                         }
 
-                        <View>
-                            <Text>Range: </Text>
+                        <View style={styles.pRangeView}>
+                            <Text style={styles.pRangeText}>Range: </Text>
                             <Text>{list.minRange}{list.asset} ({
-                                list.asset === "BTC" && current.btc * Number(list.minRange)
-                                || list.asset === "BNB" && current.bnb * Number(list.minRange)
-                                || list.asset === "LTC" && current.ltc * Number(list.minRange)
-                                || list.asset === "ETH" && current.eth * Number(list.minRange)
-                                || list.asset === "TRX" && current.trx * Number(list.minRange)
-                                || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.minRange)
+                                (list.asset === "BTC" && current.btc * Number(list.minRange)
+                                    || list.asset === "BNB" && current.bnb * Number(list.minRange)
+                                    || list.asset === "LTC" && current.ltc * Number(list.minRange)
+                                    || list.asset === "ETH" && current.eth * Number(list.minRange)
+                                    || list.asset === "TRX" && current.trx * Number(list.minRange)
+                                    || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.minRange)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                             } {user.currency}) - {list.maxRange}{list.asset} ({
-                                    list.asset === "BTC" && current.btc * Number(list.maxRange)
+                                    (list.asset === "BTC" && current.btc * Number(list.maxRange)
                                     || list.asset === "BNB" && current.bnb * Number(list.maxRange)
                                     || list.asset === "LTC" && current.ltc * Number(list.maxRange)
                                     || list.asset === "ETH" && current.eth * Number(list.maxRange)
                                     || list.asset === "TRX" && current.trx * Number(list.maxRange)
-                                    || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.maxRange)
+                                    || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.maxRange)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                                 } {user.currency})
                             </Text>
                         </View>
@@ -449,7 +449,7 @@ function P2P({ navigation }) {
                                 returnKeyType="done"
                             />
                         </View>
-                        <Text style={amStyle}>Amount not in range</Text>
+                        <Text style={amStyle}>Amount not in range / Insufficient Fait Balance</Text>
 
                         <Text style={styles.airText}>You get: </Text>
                         <View style={styles.airView}>
@@ -464,28 +464,28 @@ function P2P({ navigation }) {
                     :
                     <View style={styles.airContainer}>
                         {user && user.currency === "NGN" ?
-                            <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
+                            <Text style={styles.balance}>{list.asset} Balance: &#x20A6; {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                             :
-                            <Text style={styles.balance}>Balance: {user && user.currency} {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
+                            <Text style={styles.balance}>{list.asset} Balance: {user && user.currency} {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
                         }
                         <Text style={styles.value}>{value} {list.asset}</Text>
 
                         <View>
-                            <Text>Range: </Text>
+                            <Text style={styles.pRangeText}>Range: </Text>
                             <Text>{list.minRange}{list.asset} ({
-                                list.asset === "BTC" && current.btc * Number(list.minRange)
-                                || list.asset === "BNB" && current.bnb * Number(list.minRange)
-                                || list.asset === "LTC" && current.ltc * Number(list.minRange)
-                                || list.asset === "ETH" && current.eth * Number(list.minRange)
-                                || list.asset === "TRX" && current.trx * Number(list.minRange)
-                                || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.minRange)
+                                (list.asset === "BTC" && current.btc * Number(list.minRange)
+                                    || list.asset === "BNB" && current.bnb * Number(list.minRange)
+                                    || list.asset === "LTC" && current.ltc * Number(list.minRange)
+                                    || list.asset === "ETH" && current.eth * Number(list.minRange)
+                                    || list.asset === "TRX" && current.trx * Number(list.minRange)
+                                    || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.minRange)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                             } {user.currency}) - {list.maxRange}{list.asset} ({
-                                    list.asset === "BTC" && current.btc * Number(list.maxRange)
+                                    (list.asset === "BTC" && current.btc * Number(list.maxRange)
                                     || list.asset === "BNB" && current.bnb * Number(list.maxRange)
                                     || list.asset === "LTC" && current.ltc * Number(list.maxRange)
                                     || list.asset === "ETH" && current.eth * Number(list.maxRange)
                                     || list.asset === "TRX" && current.trx * Number(list.maxRange)
-                                    || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.maxRange)
+                                    || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.maxRange)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                                 } {user.currency})
                             </Text>
                         </View>
@@ -500,7 +500,7 @@ function P2P({ navigation }) {
                                 returnKeyType="done"
                             />
                         </View>
-                        <Text style={amStyle}>Amount not in range</Text>
+                        <Text style={amStyle}>Amount not in range / Insufficient {list.asset} Balance</Text>
 
                         <Text style={styles.airText}>You get: </Text>
                         <View style={styles.airView}>
@@ -917,6 +917,17 @@ const styles = StyleSheet.create({
     cardButtonText: {
         color: "whitesmoke",
         fontWeight: "700",
+    },
+    balance1: {
+        marginBottom: 10,
+        fontWeight: "600",
+        fontSize: 15
+    },
+    pRangeView: {
+        marginBottom: 10
+    },
+    pRangeText: {
+        fontFamily: "Optien"
     },
     airContainer: {
         flex: 1,

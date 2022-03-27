@@ -615,7 +615,7 @@ function Crypto() {
           <Text style={styles.addressText}>{address.name} Address:</Text>
           <View style={styles.addressInput}>
             <TextInput
-              style={styles.address}
+              style={styles.address1}
               placeholder={address.address}
               defaultValue={rAddress}
               onChangeText={(val) => setRAddress(val)}
@@ -1067,10 +1067,14 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     width: "90%",
     backgroundColor: "white",
-    // borderRadius: 10,
-    // marginBottom: 10,
-    // borderWidth: 3,
-    // borderColor: "#febf12",
+    
+  },
+  address1: {
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    width: "75%",
+    backgroundColor: "white",
+    
   },
   address2: {
     paddingHorizontal: 10,
