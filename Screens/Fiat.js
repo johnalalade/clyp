@@ -310,7 +310,7 @@ function Fiat({ navigation }) {
                                             customer: {
                                                 email: user.email
                                             },
-                                            amount: amount + 4,
+                                            amount: Number(amount) + 4,
                                             currency: user.currency,
                                             payment_options: 'card',
                                             customizations: {
