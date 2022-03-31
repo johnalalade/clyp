@@ -38,7 +38,7 @@ const customFonts = {
 function Fiat({ navigation }) {
 
     const [isLoaded] = useFonts(customFonts);
-    const [option, setOption] = React.useState("Bank")
+    const [option, setOption] = React.useState("Card")
 
     const [amount, setAmount] = React.useState(0)
     const [currency, setcurrency] = React.useState("NGN")
@@ -234,20 +234,6 @@ function Fiat({ navigation }) {
 
                         <Text style={styles.fundOption}>Select Your Funding Option</Text>
 
-                        {user && user.currency === "NGN" &&
-                            <TouchableOpacity style={styles.option} onPress={() => setOption("Bank")}>
-                                <FontAwesome name="bank" size={35} color="whitesmoke" />
-                                <Text style={styles.optionText}>
-                                    Fund with bank transfer
-                                </Text>
-
-                                {option === "Bank" &&
-                                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", flex: 1 }}>
-                                        <Fontisto name="radio-btn-active" size={24} color="white" />
-                                    </View>
-                                }
-                            </TouchableOpacity>}
-
 
                         <TouchableOpacity style={styles.option} onPress={() => setOption("Card")}>
 
@@ -270,7 +256,7 @@ function Fiat({ navigation }) {
 
                             <Feather name="link" size={44} color="whitesmoke" />
                             <Text style={styles.optionText}>
-                                Send your Clyp payment link
+                                Copy your Clyp payment link
                             </Text>
 
                             {option === "Link" &&
@@ -280,6 +266,20 @@ function Fiat({ navigation }) {
                             }
 
                         </TouchableOpacity>
+
+                        {user && user.currency === "NGN" &&
+                            <TouchableOpacity style={styles.option} onPress={() => setOption("Bank")}>
+                                <FontAwesome name="bank" size={35} color="whitesmoke" />
+                                <Text style={styles.optionText}>
+                                    Fund with bank transfer
+                                </Text>
+
+                                {option === "Bank" &&
+                                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", flex: 1 }}>
+                                        <Fontisto name="radio-btn-active" size={24} color="white" />
+                                    </View>
+                                }
+                            </TouchableOpacity>}
 
                         {(option === "Card") ?
                             <View>
@@ -310,7 +310,7 @@ function Fiat({ navigation }) {
                                             customer: {
                                                 email: user.email
                                             },
-                                            amount: amount,
+                                            amount: amount + 4,
                                             currency: user.currency,
                                             payment_options: 'card',
                                             customizations: {
