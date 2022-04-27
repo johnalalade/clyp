@@ -72,9 +72,9 @@ function SignUp2({ navigation }) {
         </View>
     );
 
+    
     let bs = React.createRef();
     let fall = new Animated.Value(1);
-
 
     return (
         <View style={styles.container}>
