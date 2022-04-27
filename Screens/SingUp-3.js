@@ -154,13 +154,13 @@ function SignUp3({ navigation }) {
                             </Text>
 
                             <HyperLink linkDefault={true} linkStyle={{ backgroundColor: null }} linkText="Terms of service">
-                                <Text style={[styles.color_textPrivate, { fontWeight: 'bold', paddingLeft: 4 }]}>https://www.clypapp.com/terms</Text>
+                                <Text style={[styles.color_textPrivate, { fontWeight: 'bold', paddingLeft: 4 }]}>https://www.clypapp.com/terms.html</Text>
                             </HyperLink>
 
                             <Text style={styles.color_textPrivate}>and</Text>
 
                             <HyperLink linkDefault={true} linkStyle={{ backgroundColor: null }} linkText="Privacy Policy" >
-                                <Text style={[styles.color_textPrivate, { fontWeight: 'bold', paddingLeft: 3 }]}>https://www.clypapp.com/privacy</Text>
+                                <Text style={[styles.color_textPrivate, { fontWeight: 'bold', paddingLeft: 3 }]}>https://www.clypapp.com/privacy.html</Text>
                             </HyperLink>
                         </View>
                         <View style={styles.button}>

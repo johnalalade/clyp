@@ -89,23 +89,23 @@ const slides = [
 const HomeStackScreen = () => (
   <Tabs.Navigator>
 
-    <Tabs.Screen name="Fiat" component={Fiat} options={{
+    <Tabs.Screen name="Portfolio" component={Fiat} options={{
       tabBarIcon: ({ focused, size }) => (
         <FontAwesome5 name="money-bill-wave" size={size} color={focused ? '#febf12' : '#ccc'} />
       ), headerShown: false, tabBarLabelStyle: { color: "#febf12" }
     }} />
 
-    <Tabs.Screen name="Crypto" component={Crypto} options={{
+    <Tabs.Screen name="Wallets" component={Crypto} options={{
       tabBarIcon: ({ focused, size }) => (
         <FontAwesome5 name="bitcoin" size={size} color={focused ? '#febf12' : '#ccc'} />
       ), headerShown: false, tabBarLabelStyle: { color: "#febf12" }
     }} />
 
-    <Tabs.Screen name="P2P" component={P2P} options={{
+    {/* <Tabs.Screen name="P2P" component={P2P} options={{
       tabBarIcon: ({ focused, size }) => (
         <FontAwesome5 name="exchange-alt" size={size} color={focused ? '#febf12' : '#ccc'} />
       ), headerShown: false, tabBarLabelStyle: { color: "#febf12" }
-    }} />
+    }} /> */}
 
   </Tabs.Navigator>
 )
@@ -437,7 +437,7 @@ export default function App() {
               )
             }} />
 
-            {(country === "Nigeria" || country === "Ghana") ? <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Airtime" }} options={{
+            {/* {(country === "Nigeria" || country === "Ghana") ? <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Airtime" }} options={{
               headerTitleAlign: "center",
               drawerIcon: ({ focused, size }) => (
                 <Feather
@@ -445,17 +445,17 @@ export default function App() {
                   size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
-            }} /> : null}
+            }} /> : null} */}
 
-            {(country === "Nigeria") ? <Drawer.Screen name="Pay Bills" component={Bills} options={{ title: "Bills" }} options={{
+            {/* {(country === "Nigeria") ? <Drawer.Screen name="Pay Bills" component={Bills} options={{ title: "Bills" }} options={{
               headerTitleAlign: "center",
               drawerIcon: ({ focused, size }) => (
                 <AntDesign name="filetext1" size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
-            }} /> : null}
+            }} /> : null} */}
 
-            <Drawer.Screen name="My Listing" component={myListing} options={{ title: "My Listing" }} options={{
+            {/* <Drawer.Screen name="My Listing" component={myListing} options={{ title: "My Listing" }} options={{
               headerTitleAlign: "center",
               drawerIcon: ({ focused, size }) => (
                 <MaterialIcons
@@ -463,7 +463,7 @@ export default function App() {
                   size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
-            }} />
+            }} /> */}
 
             {uname && uname !== "" && <Drawer.Screen name="Refferals" component={Settings} options={{
               title: "Referrals",

@@ -365,7 +365,7 @@ function myListing({ navigation }) {
                                             setBalance(eth)
                                             setValue(ethValue)
                                         }
-                                        if (item.name === "TRx") {
+                                        if (item.name === "TRX") {
                                             setBalance(trx)
                                             setValue(trxValue)
                                         }

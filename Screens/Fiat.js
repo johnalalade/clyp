@@ -78,6 +78,29 @@ function Fiat({ navigation }) {
 
     const [bvn, setBVN] = React.useState("")
 
+    const [btc, setBTC] = React.useState()
+    const [bnb, setBNB] = React.useState()
+    const [eth, setETH] = React.useState()
+    const [usdt, setUSDT] = React.useState()
+    const [usdt_bep20, setUSDTBEP20] = React.useState()
+    const [usdt_trc20, setUSDTTRC20] = React.useState()
+    const [ltc, setLTC] = React.useState()
+    const [trx, setTRX] = React.useState()
+
+    const [btcValue, setBTCValue] = React.useState()
+    const [bnbValue, setBNBValue] = React.useState()
+    const [ethValue, setETHValue] = React.useState()
+    const [usdtValue, setUSDTValue] = React.useState()
+    const [usdt_bep20Value, setUSDTBEP20Value] = React.useState()
+    const [usdt_trc20Value, setUSDTTRC20Value] = React.useState()
+    const [ltcValue, setLTCValue] = React.useState()
+    const [trxValue, setTRXValue] = React.useState()
+
+    const [value, setValue] = React.useState(0)
+
+    const [balance, setBalance] = React.useState()
+
+
 
     const [txs, setTxs] = React.useState([
         {
@@ -117,6 +140,92 @@ function Fiat({ navigation }) {
                 setRefreshing(false)
                 console.log({ data: data.data.response })
                 return data.data.response
+            })
+            .then(user => {
+
+                axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
+                    .then((data) => {
+                        setBTC(data.data.balance)
+                        setBTCValue(data.data.value_balance)
+                        setBalance(data.data.balance)
+                        setValue(data.data.value_balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get BTC balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
+                    .then((data) => {
+                        setLTC(data.data.balance)
+                        setLTCValue(data.data.value_balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get LTC balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
+                    .then((data) => {
+                        setBNB(data.data.balance)
+                        setBNBValue(data.data.value_balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get BNB balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
+                    .then((data) => {
+                        setETH(data.data.balance)
+                        setETHValue(data.data.value_balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get ETH balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
+                    .then((data) => {
+                        setTRX(data.data.balance)
+                        setTRXValue(data.data.value_balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get TRX balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
+                    .then((data) => {
+                        setUSDT(data.data.balance)
+                        setUSDTValue(data.data.value_balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get USDT balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
+                    .then((data) => {
+                        setUSDTBEP20(data.data.balance)
+                        setUSDTBEP20Value(data.data.value_balance)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
+                    })
+
+                axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
+                    .then((data) => {
+                        setUSDTTRC20(data.data.balance)
+                        setUSDTTRC20Value(data.data.value_balance)
+                        setRefreshing(false)
+                        console.log(data.data.balance)
+                    })
+                    .catch((err) => {
+                        console.log({ Err: "Unable to get USDT-TRC20 balance " + err })
+                    })
+                return user
             })
             .then(resp => {
                 setBanks2(abanks.sort((a, b) => {
@@ -306,7 +415,7 @@ function Fiat({ navigation }) {
                                         onRedirect={handleOnRedirect}
                                         options={{
                                             tx_ref: + user._id + Date.now,
-                                            authorization: 'FLWPUBK-b73d166127557d9fc24d219eb9ac96e2-X',
+                                            authorization: 'FLWPUBK-e128118f7c4220b338a99987339798d8-X',
                                             customer: {
                                                 email: user.email
                                             },
@@ -713,7 +822,7 @@ function Fiat({ navigation }) {
                                 style={styles.paymentButton}
                                 onPress={() => { send() }}
                             >
-                                <Text style={styles.paymentButtonText}>Withdraw</Text>
+                                <Text style={styles.paymentButtonText}>Withdraw {user.currency} {Number(wamount).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
                             </TouchableOpacity>
                         </View>
                     }
@@ -772,6 +881,8 @@ function Fiat({ navigation }) {
                             {item.name.indexOf("Bill") != -1 && <FontAwesome5 name="file-alt" size={24} color="#febf12" />}
 
                             {item.name.indexOf("Pending") != -1 && <MaterialIcons name="pending" size={24} color="#0271e5" />}
+
+                            {item.name.indexOf("(P2P)") != -1 && <FontAwesome5 name="coins" size={24} color="#febf12" />}
 
                             <View>
                                 <Text style={styles.txText}>{item.name}</Text>
@@ -883,35 +994,35 @@ function Fiat({ navigation }) {
                                     {/* <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" /> */}
 
                                     {user.country === "Nigeria" ?
-                                        <Text style={styles.text_header}>  &#x20A6; {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
+                                        <Text style={styles.text_header}>  &#x20A6; {((btc + bnb + eth + usdt + usdt_bep20 + usdt_trc20 + ltc + trx) / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
                                         :
                                         <Text style={styles.text_header}> {user.currency} {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>}
 
-                                    {user.country === "Nigeria" ?
+                                    {/* {user.country === "Nigeria" ?
                                         <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
                                         :
-                                        <Text style={styles.text_sub_header}> {user.currency} {(user.ledger_balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>}
+                                        <Text style={styles.text_sub_header}> {user.currency} {(user.ledger_balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>} */}
 
                                     <View style={styles.buttons}>
 
-                                        <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Fund")}>
+                                        <TouchableOpacity style={styles.buttonView} onPress={() => navigation.navigate("Wallets")}>
                                             <View style={styles.button}>
                                                 <MaterialIcons name="add" size={40} color="whitesmoke" />
                                                 {/* <Feather name="send" size={24} color="whitesmoke" /> */}
                                             </View>
                                             <Text style={styles.buttonText}>
-                                                Add Funds
+                                                Receive
                                             </Text>
 
                                         </TouchableOpacity>
 
-                                        <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Send")}>
+                                        <TouchableOpacity style={styles.buttonView} onPress={() => navigation.navigate("Wallets")}>
                                             <View style={styles.button}>
 
                                                 <Feather name="send" size={24} color="whitesmoke" />
                                             </View>
                                             <Text style={styles.buttonText}>
-                                                Send Funds
+                                                Send
                                             </Text>
 
                                         </TouchableOpacity>

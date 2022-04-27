@@ -223,11 +223,12 @@ function P2P({ navigation }) {
             }
         }
         else {
-            if (val > balance) {
+            if (Number(val) < amoMin || Number(val) > amoMax || Number(val) > balance) {
                 setAmStyle(styles.error)
             }
             else {
                 setAmount(Number(val))
+                setAmStyle(styles.noErr)
             }
         }
     }
@@ -325,7 +326,7 @@ function P2P({ navigation }) {
             userID: id,
             private_key: user.wallets[index].privateKey,
             address: user.wallets[index].address,
-            available: value
+            available: option === "Sell" ? value : user.balance
         }
         if (option === "Sell") {
 
@@ -371,7 +372,7 @@ function P2P({ navigation }) {
             .then(res => {
                 setLoading(false)
                 setCleanUp(cleanup + 1)
-                Alert.alert('Listing Successfull', `You've Successfully listed ${asset} for P2P transaction`, [
+                Alert.alert('Listing Successfull', `You've Successfully listed ${asset} for P2P transaction, ${user.balance < maxRange ? `PLEASE MAKE SURE YOUR AVAILABLE FIAT BALANCE IS ALWAYS UP TO ${user.currency} ${maxRange}, Your listing will be deleted once you have lower 😉` : `☺`}`, [
                     {
                         text: "OK",
                         onPress: () => {
@@ -430,11 +431,11 @@ function P2P({ navigation }) {
                                     || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.minRange)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                             } {user.currency}) - {list.maxRange}{list.asset} ({
                                     (list.asset === "BTC" && current.btc * Number(list.maxRange)
-                                    || list.asset === "BNB" && current.bnb * Number(list.maxRange)
-                                    || list.asset === "LTC" && current.ltc * Number(list.maxRange)
-                                    || list.asset === "ETH" && current.eth * Number(list.maxRange)
-                                    || list.asset === "TRX" && current.trx * Number(list.maxRange)
-                                    || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.maxRange)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+                                        || list.asset === "BNB" && current.bnb * Number(list.maxRange)
+                                        || list.asset === "LTC" && current.ltc * Number(list.maxRange)
+                                        || list.asset === "ETH" && current.eth * Number(list.maxRange)
+                                        || list.asset === "TRX" && current.trx * Number(list.maxRange)
+                                        || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.maxRange)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                                 } {user.currency})
                             </Text>
                         </View>
@@ -481,16 +482,16 @@ function P2P({ navigation }) {
                                     || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.minRange)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                             } {user.currency}) - {list.maxRange}{list.asset} ({
                                     (list.asset === "BTC" && current.btc * Number(list.maxRange)
-                                    || list.asset === "BNB" && current.bnb * Number(list.maxRange)
-                                    || list.asset === "LTC" && current.ltc * Number(list.maxRange)
-                                    || list.asset === "ETH" && current.eth * Number(list.maxRange)
-                                    || list.asset === "TRX" && current.trx * Number(list.maxRange)
-                                    || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.maxRange)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+                                        || list.asset === "BNB" && current.bnb * Number(list.maxRange)
+                                        || list.asset === "LTC" && current.ltc * Number(list.maxRange)
+                                        || list.asset === "ETH" && current.eth * Number(list.maxRange)
+                                        || list.asset === "TRX" && current.trx * Number(list.maxRange)
+                                        || list.asset.indexOf("USDT") !== -1 && current.usdt * Number(list.maxRange)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                                 } {user.currency})
                             </Text>
                         </View>
 
-                        <Text style={styles.airText}>Amount ({list.asset}): </Text>
+                        <Text style={styles.airText}>Amount ({user.currency}): </Text>
                         <View style={styles.airView}>
                             <TextInput
                                 style={styles.nums}
@@ -507,7 +508,7 @@ function P2P({ navigation }) {
                             <Text style={styles.nums}>{amount - (amount * 0.05)}</Text>
                         </View>
 
-                        <TouchableOpacity style={styles.paymentButton}>
+                        <TouchableOpacity onPress={() => purchase()} style={styles.paymentButton}>
                             <Text style={styles.paymentButtonText} >Sell</Text>
                         </TouchableOpacity>
 
@@ -573,7 +574,7 @@ function P2P({ navigation }) {
                                             setBalance(eth)
                                             setValue(ethValue)
                                         }
-                                        if (item.name === "TRx") {
+                                        if (item.name === "TRX") {
                                             setBalance(trx)
                                             setValue(trxValue)
                                         }
@@ -723,7 +724,7 @@ function P2P({ navigation }) {
                                             </View>
                                             <View style={styles.avaRange}>
                                                 <Text style={styles.det}>Available: </Text>
-                                                <Text>{item.available
+                                                <Text>{item.option === "Buy" ? item.currency : null} {item.available
                                                     // ).toFixed(6).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} ({parseInt(
                                                     // item.asset === "BTC" && current.btc * item.available
                                                     // || item.asset === "BNB" && current.bnb * item.available
@@ -731,7 +732,7 @@ function P2P({ navigation }) {
                                                     // || item.asset === "ETH" && current.eth * item.available
                                                     // || item.asset === "TRX" && current.trx * item.available
                                                     // || item.asset.indexOf("USDT") !== -1 && current.usdt * item.available).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-                                                } {item.asset}</Text>
+                                                } {item.option === "Sell" ? item.asset : null}</Text>
                                             </View>
                                         </View>
 

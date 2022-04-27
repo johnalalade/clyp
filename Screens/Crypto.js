@@ -289,7 +289,16 @@ function Crypto() {
     }
     setLoading(true)
 
-    if (balance < payload.amount) {
+    if (balance < (
+      payload.amount + Number(
+        address.name === "BTC" && current.btc * gas
+        || address.name === "BNB" && current.bnb * gas
+        || address.name === "LTC" && current.ltc * gas
+        || address.name === "ETH" && current.eth * gas
+        || address.name === "TRX" && current.trx * gas
+        || address.name.indexOf("USDT") !== -1 && current.usdt * gas)
+    )
+    ) {
       setLoading(false)
       Alert.alert("Insufficient balance", `${(user.country === "Nigeria") ? `Comrade, your ${payload.asset} balance is insufficient for the payment you want to make...` : `Your ${payload.asset} balance is insufficient for the payment you want to make...`}`, [
         (user.country === "Nigeria") ? {
@@ -606,12 +615,13 @@ function Crypto() {
     return (
       <View style={styles.containerSend}>
 
-        <TouchableOpacity onPress={() => setPage(null)} style={styles.cancel}>
+        <TouchableOpacity onPress={() => { setPage(null); setGas("Calculating...") }} style={styles.cancel}>
           <Ionicons name="arrow-back-sharp" size={24} color="black" />
         </TouchableOpacity>
 
         <View>
           <Text style={styles.convertTop}>Send {address.name}</Text>
+          <Text style={styles.sendBalance}>Balance: {balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
           <Text style={styles.addressText}>{address.name} Address:</Text>
           <View style={styles.addressInput}>
             <TextInput
@@ -668,7 +678,7 @@ function Crypto() {
         </View>
         {verifiedSend ?
           <TouchableOpacity style={styles.sendBtn} onPress={() => { send() }}>
-            <Text style={styles.sendText}> Send </Text>
+            <Text style={styles.sendText}> Send {currency} {Number(rAmount).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
             <Feather name="send" size={20} color="whitesmoke" />
           </TouchableOpacity>
           :
@@ -983,9 +993,10 @@ function Crypto() {
                         setBalance(eth)
                         setValue(ethValue)
                       }
-                      if (item.name === "TRx") {
+                      if (item.name === "TRX") {
                         setBalance(trx)
                         setValue(trxValue)
+
                       }
                       if (item.name === "USDT") {
                         setBalance(usdt)
@@ -1067,14 +1078,14 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     width: "90%",
     backgroundColor: "white",
-    
+
   },
   address1: {
     paddingHorizontal: 10,
     paddingVertical: 20,
     width: "75%",
     backgroundColor: "white",
-    
+
   },
   address2: {
     paddingHorizontal: 10,

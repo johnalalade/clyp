@@ -191,7 +191,7 @@ function Settings({ navigation }) {
             <View style={styles.optionView}>
               <View style={styles.optionDet}>
                 <MaterialIcons name="privacy-tip" size={24} color="black" />
-                <Text style={styles.optionText}>https://www.clypapp.com/privacy</Text>
+                <Text style={styles.optionText}>https://www.clypapp.com/privacy.html</Text>
               </View>
               <Ionicons name="chevron-forward-outline" size={24} color="black" />
             </View>

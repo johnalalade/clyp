@@ -10,30 +10,31 @@ import { Fontisto } from '@expo/vector-icons';
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
 import { FlatList } from "react-native-gesture-handler";
+import countries from "./countries";
 
 function SignUp2({ navigation }) {
     const { email, phone, country, currency, rate, rate2, code } = React.useContext(AuthContext)
-    const [myCountry, setMyCountry] = React.useState("Nigeria")
-    const [myCurrency, setCurrency] = React.useState("NGN")
+    const [myCountry, setMyCountry] = React.useState("Andorra")
+    const [myCurrency, setCurrency] = React.useState("EUR")
     const [myRate, setRate] = React.useState(480)
 
-    const [countries, setCountries] = React.useState([
-        { name: 'Nigeria', code: 'NG', currency: "NGN", rate: 500, rate2: 480  },
-        { name: 'Ghana', code: 'GH', currency: "GHS", rate: 6, rate2: 6.5 },
-        { name: 'Kenya', code: 'KE', currency: "KES", rate: 112, rate2: 114, },
-        // { name: 'Uganda', code: 'UG', currency: "", rate:  },
-        { name: 'Tanzania, United Republic of', code: 'TZ', currency: "TZS", rate: 2303, rate2: 2306 },
-        { name: 'South Africa', code: 'ZA', currency: "ZAR", rate: 15, rate2: 16 },
-        // { name: 'Cote D\'Ivoire', code: 'CI', currency: "" },
-    ])
+    // const [countries, setCountries] = React.useState([
+    //     { name: 'Nigeria', code: 'NG', currency: "NGN", rate: 500, rate2: 480  },
+    //     { name: 'Ghana', code: 'GH', currency: "GHS", rate: 6, rate2: 6.5 },
+    //     { name: 'Kenya', code: 'KE', currency: "KES", rate: 112, rate2: 114, },
+    //     // { name: 'Uganda', code: 'UG', currency: "", rate:  },
+    //     { name: 'Tanzania, United Republic of', code: 'TZ', currency: "TZS", rate: 2303, rate2: 2306 },
+    //     { name: 'South Africa', code: 'ZA', currency: "ZAR", rate: 15, rate2: 16 },
+    //     // { name: 'Cote D\'Ivoire', code: 'CI', currency: "" },
+    // ])
 
     const countryHandler = (val) => {
-        setMyCountry(val.name)
-        country(val.name)
-        currency(val.currency)
-        rate(val.rate)
-        rate2(val.rate2)
-        code(val.code)
+        setMyCountry(val.countryName)
+        country(val.countryName)
+        currency(val.currencyCode)
+        rate(0)
+        rate2(0)
+        code(val.countryCode)
         bs.current.snapTo(2)
     }
 
@@ -45,7 +46,7 @@ function SignUp2({ navigation }) {
             </View>
             <ScrollView>
                 {countries.map(item => (
-                    <TouchableOpacity key={item.code} style={(myCountry === item.name) ? styles.countryTextSelected : styles.countryText} onPress={() => countryHandler(item)}><Text>{item.name}</Text></TouchableOpacity>
+                    <TouchableOpacity key={item.countryCode} style={(myCountry === item.countryName) ? styles.countryTextSelected : styles.countryText} onPress={() => countryHandler(item)}><Text>{item.countryName}</Text></TouchableOpacity>
                 ))}
             </ScrollView>
             {/* <FlatList 
@@ -79,7 +80,7 @@ function SignUp2({ navigation }) {
         <View style={styles.container}>
             <BottomSheet
                 ref={bs}
-                snapPoints={[400, 330, 0]}
+                snapPoints={[550, 330, 0]}
                 renderContent={renderInner}
                 renderHeader={renderHeader}
                 initialSnap={2}
