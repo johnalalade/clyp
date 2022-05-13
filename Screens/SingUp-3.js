@@ -41,7 +41,7 @@ function SignUp3({ navigation }) {
                 >
                     <ScrollView>
 
-                        {(count === "Nigeria") ? <View>
+                        {/* {(count === "Nigeria") ? <View>
                             <Text style={[styles.text_footer, {
                                 marginTop: 35
                             }]}>BVN
@@ -57,7 +57,7 @@ function SignUp3({ navigation }) {
                                     style={styles.textInput}
                                     autoCapitalize="none"
                                     onChangeText={(val) => bvn(val)}
-                                />
+                                /> */}
                                 {/* <TouchableOpacity
                                     onPress={sec}
                                 >
@@ -75,9 +75,10 @@ function SignUp3({ navigation }) {
                                         />
                                     }
                                 </TouchableOpacity> */}
-                            </View>
+                            {/* </View>
                         </View>
-                            : null}
+                            : null} */}
+                            
 
                         <Text style={[styles.text_footer, {
                             marginTop: 35

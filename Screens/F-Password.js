@@ -23,6 +23,9 @@ function Password({ navigation }) {
                         text: 'Sign up', onPress: () => {
                             navigation.push("SignUp")
                         }
+                    },
+                    {
+                        text: 'Ok'
                     }
                 ])
             })

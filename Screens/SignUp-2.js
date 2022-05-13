@@ -14,8 +14,8 @@ import countries from "./countries";
 
 function SignUp2({ navigation }) {
     const { email, phone, country, currency, rate, rate2, code } = React.useContext(AuthContext)
-    const [myCountry, setMyCountry] = React.useState("Andorra")
-    const [myCurrency, setCurrency] = React.useState("EUR")
+    const [myCountry, setMyCountry] = React.useState("Afghanistan")
+    const [myCurrency, setCurrency] = React.useState("AFN")
     const [myRate, setRate] = React.useState(480)
 
     // const [countries, setCountries] = React.useState([
@@ -40,27 +40,25 @@ function SignUp2({ navigation }) {
 
     const renderInner = () => (
         <View style={styles.panel}>
-            <View style={{ alignItems: 'center' }}>
-                <Text style={styles.panelTitle}>Your Country</Text>
-                <Text style={styles.panelSubtitle}>Availabe Countries</Text>
-            </View>
-            <ScrollView>
-                {countries.map(item => (
+
+            {/* <ScrollView style={styles.panelCountries}> */}
+            <FlatList
+                keyExtractor={(item) => item.countryCode + item.countryName}
+                data={countries.filter(count => count.currencyCode !== "")}
+                renderItem={({ item }) => (
+
+
                     <TouchableOpacity key={item.countryCode} style={(myCountry === item.countryName) ? styles.countryTextSelected : styles.countryText} onPress={() => countryHandler(item)}><Text>{item.countryName}</Text></TouchableOpacity>
-                ))}
-            </ScrollView>
-            {/* <FlatList 
-            keyExtractor={(item) => item.code}
-            data={countries}
-            renderItem={( { item } ) => (
-                <TouchableOpacity style={(myCountry === item.name) ? styles.countryText : styles.countryTextSelected } onPress={) => countryHandler(item.name)}><Text>{item.name}</Text></TouchableOpacity>
-            )}
-            /> */}
-            <TouchableOpacity
+
+                )}
+            />
+            {/* </ScrollView> */}
+
+            {/* <TouchableOpacity
                 style={styles.panelButton}
                 onPress={() => bs.current.snapTo(2)}>
                 <Text style={styles.panelButtonTitle}>Cancel</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 
@@ -68,11 +66,15 @@ function SignUp2({ navigation }) {
         <View style={styles.header}>
             <View style={styles.panelHeader}>
                 <View style={styles.panelHandle} />
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={styles.panelTitle}>Your Country</Text>
+                    <Text style={styles.panelSubtitle}>Availabe Countries</Text>
+                </View>
             </View>
         </View>
     );
 
-    
+
     let bs = React.createRef();
     let fall = new Animated.Value(1);
 
@@ -311,6 +313,7 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#FFFFFF',
         paddingTop: 20,
+        marginBottom: 40,
         // borderTopLeftRadius: 20,
         // borderTopRightRadius: 20,
         // shadowColor: '#000000',
@@ -340,14 +343,17 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     panelTitle: {
-        fontSize: 27,
-        height: 35,
+        fontSize: 20,
+        height: 25,
     },
     panelSubtitle: {
-        fontSize: 14,
+        fontSize: 10,
         color: 'gray',
-        height: 30,
+        height: 20,
         marginBottom: 10,
+    },
+    panelCountries: {
+        marginBottom: 20,
     },
     panelButton: {
         padding: 13,

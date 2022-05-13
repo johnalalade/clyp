@@ -78,23 +78,23 @@ function Fiat({ navigation }) {
 
     const [bvn, setBVN] = React.useState("")
 
-    const [btc, setBTC] = React.useState()
-    const [bnb, setBNB] = React.useState()
-    const [eth, setETH] = React.useState()
-    const [usdt, setUSDT] = React.useState()
-    const [usdt_bep20, setUSDTBEP20] = React.useState()
-    const [usdt_trc20, setUSDTTRC20] = React.useState()
-    const [ltc, setLTC] = React.useState()
-    const [trx, setTRX] = React.useState()
+    const [btc, setBTC] = React.useState(0)
+    const [bnb, setBNB] = React.useState(0)
+    const [eth, setETH] = React.useState(0)
+    const [usdt, setUSDT] = React.useState(0)
+    const [usdt_bep20, setUSDTBEP20] = React.useState(0)
+    const [usdt_trc20, setUSDTTRC20] = React.useState(0)
+    const [ltc, setLTC] = React.useState(0)
+    const [trx, setTRX] = React.useState(0)
 
-    const [btcValue, setBTCValue] = React.useState()
-    const [bnbValue, setBNBValue] = React.useState()
-    const [ethValue, setETHValue] = React.useState()
-    const [usdtValue, setUSDTValue] = React.useState()
-    const [usdt_bep20Value, setUSDTBEP20Value] = React.useState()
-    const [usdt_trc20Value, setUSDTTRC20Value] = React.useState()
-    const [ltcValue, setLTCValue] = React.useState()
-    const [trxValue, setTRXValue] = React.useState()
+    const [btcValue, setBTCValue] = React.useState(0)
+    const [bnbValue, setBNBValue] = React.useState(0)
+    const [ethValue, setETHValue] = React.useState(0)
+    const [usdtValue, setUSDTValue] = React.useState(0)
+    const [usdt_bep20Value, setUSDTBEP20Value] = React.useState(0)
+    const [usdt_trc20Value, setUSDTTRC20Value] = React.useState(0)
+    const [ltcValue, setLTCValue] = React.useState(0)
+    const [trxValue, setTRXValue] = React.useState(0)
 
     const [value, setValue] = React.useState(0)
 
@@ -132,115 +132,227 @@ function Fiat({ navigation }) {
     useEffect(async () => {
         let id = await AsyncStorage.getItem('id').then(value => value)
         setID(id)
+        navigation.addListener('focus', async () => {
+            axios.post('/user', { userID: id })
+                .then((data) => {
+                    setUser(data.data.response)
+                    setOption(data.data.response.currency === "NGN" ? "Bank" : "Card")
+                    setTxs(data.data.response.transactions)
+                    setRefreshing(false)
+                    console.log({ data: data.data.response })
+                    return data.data.response
+                })
+                .then(user => {
+
+                    axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
+                        .then((data) => {
+                            setBTC(data.data.balance)
+                            setBTCValue(data.data.value_balance)
+                            setBalance(data.data.balance)
+                            setValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get BTC balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
+                        .then((data) => {
+                            setLTC(data.data.balance)
+                            setLTCValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get LTC balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
+                        .then((data) => {
+                            setBNB(data.data.balance)
+                            setBNBValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get BNB balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
+                        .then((data) => {
+                            setETH(data.data.balance)
+                            setETHValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get ETH balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
+                        .then((data) => {
+                            setTRX(data.data.balance)
+                            setTRXValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get TRX balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
+                        .then((data) => {
+                            setUSDT(data.data.balance)
+                            setUSDTValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get USDT balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
+                        .then((data) => {
+                            setUSDTBEP20(data.data.balance)
+                            setUSDTBEP20Value(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
+                        .then((data) => {
+                            setUSDTTRC20(data.data.balance)
+                            setUSDTTRC20Value(data.data.value_balance)
+                            setRefreshing(false)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get USDT-TRC20 balance " + err })
+                        })
+                    return user
+                })
+                .then(resp => {
+                    setBanks2(abanks.sort((a, b) => {
+                        if (a.Name < b.Name) {
+                            return -1
+                        }
+                        if (a.Name > b.Name) {
+                            return 1
+                        }
+                        return 0
+                    }).filter((it) => it.country === resp.country))
+                })
+                .catch(err => {
+                    setRefreshing(false)
+                })
+        })
+
         axios.post('/user', { userID: id })
-            .then((data) => {
-                setUser(data.data.response)
-                setOption(data.data.response.currency === "NGN" ? "Bank" : "Card")
-                setTxs(data.data.response.transactions)
-                setRefreshing(false)
-                console.log({ data: data.data.response })
-                return data.data.response
-            })
-            .then(user => {
+                .then((data) => {
+                    setUser(data.data.response)
+                    setOption(data.data.response.currency === "NGN" ? "Bank" : "Card")
+                    setTxs(data.data.response.transactions)
+                    setRefreshing(false)
+                    console.log({ data: data.data.response })
+                    return data.data.response
+                })
+                .then(user => {
 
-                axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
-                    .then((data) => {
-                        setBTC(data.data.balance)
-                        setBTCValue(data.data.value_balance)
-                        setBalance(data.data.balance)
-                        setValue(data.data.value_balance)
-                        console.log(data.data.balance)
-                    })
-                    .catch((err) => {
-                        console.log({ Err: "Unable to get BTC balance " + err })
-                    })
+                    axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
+                        .then((data) => {
+                            setBTC(data.data.balance)
+                            setBTCValue(data.data.value_balance)
+                            setBalance(data.data.balance)
+                            setValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get BTC balance " + err })
+                        })
 
-                axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
-                    .then((data) => {
-                        setLTC(data.data.balance)
-                        setLTCValue(data.data.value_balance)
-                        console.log(data.data.balance)
-                    })
-                    .catch((err) => {
-                        console.log({ Err: "Unable to get LTC balance " + err })
-                    })
+                    axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
+                        .then((data) => {
+                            setLTC(data.data.balance)
+                            setLTCValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get LTC balance " + err })
+                        })
 
-                axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
-                    .then((data) => {
-                        setBNB(data.data.balance)
-                        setBNBValue(data.data.value_balance)
-                        console.log(data.data.balance)
-                    })
-                    .catch((err) => {
-                        console.log({ Err: "Unable to get BNB balance " + err })
-                    })
+                    axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
+                        .then((data) => {
+                            setBNB(data.data.balance)
+                            setBNBValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get BNB balance " + err })
+                        })
 
-                axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
-                    .then((data) => {
-                        setETH(data.data.balance)
-                        setETHValue(data.data.value_balance)
-                        console.log(data.data.balance)
-                    })
-                    .catch((err) => {
-                        console.log({ Err: "Unable to get ETH balance " + err })
-                    })
+                    axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
+                        .then((data) => {
+                            setETH(data.data.balance)
+                            setETHValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get ETH balance " + err })
+                        })
 
-                axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
-                    .then((data) => {
-                        setTRX(data.data.balance)
-                        setTRXValue(data.data.value_balance)
-                        console.log(data.data.balance)
-                    })
-                    .catch((err) => {
-                        console.log({ Err: "Unable to get TRX balance " + err })
-                    })
+                    axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
+                        .then((data) => {
+                            setTRX(data.data.balance)
+                            setTRXValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get TRX balance " + err })
+                        })
 
-                axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
-                    .then((data) => {
-                        setUSDT(data.data.balance)
-                        setUSDTValue(data.data.value_balance)
-                        console.log(data.data.balance)
-                    })
-                    .catch((err) => {
-                        console.log({ Err: "Unable to get USDT balance " + err })
-                    })
+                    axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
+                        .then((data) => {
+                            setUSDT(data.data.balance)
+                            setUSDTValue(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get USDT balance " + err })
+                        })
 
-                axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
-                    .then((data) => {
-                        setUSDTBEP20(data.data.balance)
-                        setUSDTBEP20Value(data.data.value_balance)
-                        console.log(data.data.balance)
-                    })
-                    .catch((err) => {
-                        console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
-                    })
+                    axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
+                        .then((data) => {
+                            setUSDTBEP20(data.data.balance)
+                            setUSDTBEP20Value(data.data.value_balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
+                        })
 
-                axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
-                    .then((data) => {
-                        setUSDTTRC20(data.data.balance)
-                        setUSDTTRC20Value(data.data.value_balance)
-                        setRefreshing(false)
-                        console.log(data.data.balance)
-                    })
-                    .catch((err) => {
-                        console.log({ Err: "Unable to get USDT-TRC20 balance " + err })
-                    })
-                return user
-            })
-            .then(resp => {
-                setBanks2(abanks.sort((a, b) => {
-                    if (a.Name < b.Name) {
-                        return -1
-                    }
-                    if (a.Name > b.Name) {
-                        return 1
-                    }
-                    return 0
-                }).filter((it) => it.country === resp.country))
-            })
-            .catch(err => {
-                setRefreshing(false)
-            })
+                    axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
+                        .then((data) => {
+                            setUSDTTRC20(data.data.balance)
+                            setUSDTTRC20Value(data.data.value_balance)
+                            setRefreshing(false)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get USDT-TRC20 balance " + err })
+                        })
+                    return user
+                })
+                .then(resp => {
+                    setBanks2(abanks.sort((a, b) => {
+                        if (a.Name < b.Name) {
+                            return -1
+                        }
+                        if (a.Name > b.Name) {
+                            return 1
+                        }
+                        return 0
+                    }).filter((it) => it.country === resp.country))
+                })
+                .catch(err => {
+                    setRefreshing(false)
+                })
 
     }, [cleanup])
 
@@ -848,7 +960,7 @@ function Fiat({ navigation }) {
         <View style={styles.panel}>
 
             {user && user.transactions && user.transactions.length > 0 && <FlatList
-                keyExtractor={(item) => item.reference + item.name + item.amount}
+                keyExtractor={(item) => item.reference + item.name + item.amount + item.time}
                 data={user.transactions}
                 renderItem={({ item }) => (
                     <TouchableOpacity style={styles.txTouch} onPress={() => {
@@ -993,10 +1105,12 @@ function Fiat({ navigation }) {
 
                                     {/* <MaterialCommunityIcons name="currency-usd-circle-outline" size={40} color="#febf12" /> */}
 
-                                    {user.country === "Nigeria" ?
+                                    <Text style={styles.portfolioText}>Portfolio Balance</Text>
+
+                                    {user.currency === "NGN" ?
                                         <Text style={styles.text_header}>  &#x20A6; {((btc + bnb + eth + usdt + usdt_bep20 + usdt_trc20 + ltc + trx) / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
                                         :
-                                        <Text style={styles.text_header}> {user.currency} {(user.balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>}
+                                        <Text style={styles.text_header}> {user.currency} {((btc + bnb + eth + usdt + usdt_bep20 + usdt_trc20 + ltc + trx) / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>}
 
                                     {/* {user.country === "Nigeria" ?
                                         <Text style={styles.text_sub_header}> &#x20A6; {(user.ledger_balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
@@ -1175,6 +1289,9 @@ const styles = StyleSheet.create({
         fontSize: 15,
         paddingBottom: 10,
         fontFamily: "Optien",
+    },
+    portfolioText: {
+        paddingTop: 10
     },
     text_header: {
         fontWeight: 'bold',

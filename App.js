@@ -19,6 +19,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -53,6 +54,7 @@ import Password from './Screens/F-Password';
 import P2P from './Screens/p2p';
 import myListing from './Screens/myList';
 import { MaterialIcons } from '@expo/vector-icons';
+import PrefferedCurrency from './Screens/Preffered-Currency';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -437,7 +439,7 @@ export default function App() {
               )
             }} />
 
-            {/* {(country === "Nigeria" || country === "Ghana") ? <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Airtime" }} options={{
+            {(country === "Nigeria") ? <Drawer.Screen name="Buy Airtime" component={Airtime} options={{ title: "Airtime" }} options={{
               headerTitleAlign: "center",
               drawerIcon: ({ focused, size }) => (
                 <Feather
@@ -445,15 +447,15 @@ export default function App() {
                   size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
-            }} /> : null} */}
+            }} /> : null}
 
-            {/* {(country === "Nigeria") ? <Drawer.Screen name="Pay Bills" component={Bills} options={{ title: "Bills" }} options={{
+            {(country === "Nigeria") ? <Drawer.Screen name="Pay Bills" component={Bills} options={{ title: "Bills" }} options={{
               headerTitleAlign: "center",
               drawerIcon: ({ focused, size }) => (
                 <AntDesign name="filetext1" size={size}
                   color={focused ? 'lightblue' : '#ccc'} />
               )
-            }} /> : null} */}
+            }} /> : null}
 
             {/* <Drawer.Screen name="My Listing" component={myListing} options={{ title: "My Listing" }} options={{
               headerTitleAlign: "center",
@@ -464,6 +466,14 @@ export default function App() {
                   color={focused ? 'lightblue' : '#ccc'} />
               )
             }} /> */}
+
+            <Drawer.Screen name="Preffered Currency" component={PrefferedCurrency} options={{
+              title: "Currency",
+              headerTitleAlign: "center",
+              drawerIcon: ({ focused, size }) => (
+                <FontAwesome5 name="coins" size={size} color={focused ? 'lightblue' : '#ccc'} />
+              )
+            }} />
 
             {uname && uname !== "" && <Drawer.Screen name="Refferals" component={Settings} options={{
               title: "Referrals",

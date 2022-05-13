@@ -22,18 +22,18 @@ function Airtime({ navigation }) {
     const [country, setCountry] = React.useState()
     const [style, setStyle] = React.useState(styles.nums)
     const [verified, setVerified] = React.useState(false)
-    const [asset, setAsset] = React.useState("FIAT")
+    const [asset, setAsset] = React.useState("BTC")
     const [address, setAddress] = React.useState("")
     const [pKey, setPkey] = React.useState("")
-    const [btc, setBTC] = React.useState()
-    const [bnb, setBNB] = React.useState()
-    const [eth, setETH] = React.useState()
-    const [usdt, setUSDT] = React.useState()
-    const [usdt_bep20, setUSDTBEP20] = React.useState()
-    const [usdt_trc20, setUSDTTRC20] = React.useState()
-    const [ltc, setLTC] = React.useState()
-    const [trx, setTRX] = React.useState()
-    const [balance, setBalance] = React.useState()
+    const [btc, setBTC] = React.useState(0)
+    const [bnb, setBNB] = React.useState(0)
+    const [eth, setETH] = React.useState(0)
+    const [usdt, setUSDT] = React.useState(0)
+    const [usdt_bep20, setUSDTBEP20] = React.useState(0)
+    const [usdt_trc20, setUSDTTRC20] = React.useState(0)
+    const [ltc, setLTC] = React.useState(0)
+    const [trx, setTRX] = React.useState(0)
+    const [balance, setBalance] = React.useState(0)
     const [modalOpen, setModalOpen] = React.useState(true)
     const [cleanup, setCleanUp] = React.useState(0)
     const [refreshing, setRefreshing] = React.useState(false)
@@ -41,11 +41,101 @@ function Airtime({ navigation }) {
 
     useEffect(async () => {
         let id = await AsyncStorage.getItem('id').then(value => value)
+        navigation.addListener('focus', async () => {
+            axios.post('/user', { userID: id })
+                .then((data) => {
+                    setUser(data.data.response)
+                    setAsset("BTC")
+                    // setBalance(data.data.response.balance)
+                    console.log({ data: data.data.response })
+                    return data.data.response
+                })
+                .then(user => {
+                    axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
+                        .then((data) => {
+                            setBTC(data.data.balance)
+                            setBalance(data.data.balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get BTC balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
+                        .then((data) => {
+                            setLTC(data.data.balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get LTC balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
+                        .then((data) => {
+                            setBNB(data.data.balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get BNB balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
+                        .then((data) => {
+                            setETH(data.data.balance)
+                            // setRefreshing(false)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get ETH balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
+                        .then((data) => {
+                            setTRX(data.data.balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get TRX balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
+                        .then((data) => {
+                            setUSDT(data.data.balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get USDT balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
+                        .then((data) => {
+                            setUSDTBEP20(data.data.balance)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
+                        })
+
+                    axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
+                        .then((data) => {
+                            setUSDTTRC20(data.data.balance)
+                            setRefreshing(false)
+                            console.log(data.data.balance)
+                        })
+                        .catch((err) => {
+                            console.log({ Err: "Unable to get USDT-TRC20 balance " + err })
+                        })
+                })
+                .catch(err => {
+                    console.log({ Err: err })
+                })
+        })
+
         axios.post('/user', { userID: id })
             .then((data) => {
                 setUser(data.data.response)
-                setAsset("FIAT")
-                setBalance(data.data.response.balance)
+                setAsset("BTC")
+                // setBalance(data.data.response.balance)
                 console.log({ data: data.data.response })
                 return data.data.response
             })
@@ -53,7 +143,7 @@ function Airtime({ navigation }) {
                 axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
                     .then((data) => {
                         setBTC(data.data.balance)
-                        // setBalance(data.data.balance)
+                        setBalance(data.data.balance)
                         console.log(data.data.balance)
                     })
                     .catch((err) => {
@@ -128,7 +218,6 @@ function Airtime({ navigation }) {
             .catch(err => {
                 console.log({ Err: err })
             })
-
     }, [cleanup])
 
     const airAmountHandler = (val) => {
@@ -291,14 +380,15 @@ function Airtime({ navigation }) {
 
                     <ScrollView horizontal={true}>
                         <View style={styles.assets}>
-                            <TouchableOpacity style={styles.asset} onPress={() => {
+
+                            {/* <TouchableOpacity style={styles.asset} onPress={() => {
                                 setAsset("FIAT")
                                 airAmountHandler(airAmount)
                                 setBalance(user.balance)
                             }}>
                                 {asset === "FIAT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
                                 <Text>Fiat</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
 
                             <TouchableOpacity style={styles.asset} onPress={() => {
                                 setAsset("BTC")
@@ -543,7 +633,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-evenly",
         alignItems: "center",
         marginHorizontal: 20,
-        fontFamily: "Optien"
+        fontFamily: "Optien",
+        backgroundColor: "#e0dfdf",
+        padding: 5,
+        borderRadius: 10
     },
     coin: {
         display: "flex",

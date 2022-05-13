@@ -23,7 +23,7 @@ const customFonts = {
   Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf")
 };
 
-function Crypto() {
+function Crypto({ navigation }) {
 
   const [isLoaded] = useFonts(customFonts);
   const [hasPermission, setHasPermission] = useState(null)
@@ -50,24 +50,24 @@ function Crypto() {
   const [rAmount, setRAmount] = React.useState(0)
   // const [address, setAddress] = React.useState("")
   const [pKey, setPkey] = React.useState("")
-  const [btc, setBTC] = React.useState()
-  const [bnb, setBNB] = React.useState()
-  const [eth, setETH] = React.useState()
-  const [usdt, setUSDT] = React.useState()
-  const [usdt_bep20, setUSDTBEP20] = React.useState()
-  const [usdt_trc20, setUSDTTRC20] = React.useState()
-  const [ltc, setLTC] = React.useState()
-  const [trx, setTRX] = React.useState()
+  const [btc, setBTC] = React.useState(0)
+  const [bnb, setBNB] = React.useState(0)
+  const [eth, setETH] = React.useState(0)
+  const [usdt, setUSDT] = React.useState(0)
+  const [usdt_bep20, setUSDTBEP20] = React.useState(0)
+  const [usdt_trc20, setUSDTTRC20] = React.useState(0)
+  const [ltc, setLTC] = React.useState(0)
+  const [trx, setTRX] = React.useState(0)
 
   // Value
-  const [btcValue, setBTCValue] = React.useState()
-  const [bnbValue, setBNBValue] = React.useState()
-  const [ethValue, setETHValue] = React.useState()
-  const [usdtValue, setUSDTValue] = React.useState()
-  const [usdt_bep20Value, setUSDTBEP20Value] = React.useState()
-  const [usdt_trc20Value, setUSDTTRC20Value] = React.useState()
-  const [ltcValue, setLTCValue] = React.useState()
-  const [trxValue, setTRXValue] = React.useState()
+  const [btcValue, setBTCValue] = React.useState(0)
+  const [bnbValue, setBNBValue] = React.useState(0)
+  const [ethValue, setETHValue] = React.useState(0)
+  const [usdtValue, setUSDTValue] = React.useState(0)
+  const [usdt_bep20Value, setUSDTBEP20Value] = React.useState(0)
+  const [usdt_trc20Value, setUSDTTRC20Value] = React.useState(0)
+  const [ltcValue, setLTCValue] = React.useState(0)
+  const [trxValue, setTRXValue] = React.useState(0)
 
   const [value, setValue] = React.useState(0)
 
@@ -82,7 +82,7 @@ function Crypto() {
     address: "xxxxxxxxxxxxxxxxxxxxxxxx",
     image: ""
   })
-  const [gas, setGas] = React.useState("Calculating...")
+  const [gas, setGas] = React.useState("Calculating")
 
   const [amount, setAmount] = useState("")
   const [current, setCurrent] = useState({})
@@ -90,12 +90,126 @@ function Crypto() {
   // Request camera permission
   useEffect(async () => {
     let id = await AsyncStorage.getItem('id').then(value => value)
+    navigation.addListener('focus', async () => {
+      axios.post('/user', { userID: id })
+        .then((data) => {
+          setUser(data.data.response)
+          setCurrency(data.data.response.currency)
+          setAddress0(data.data.response.wallets[0])
+          setIx(0)
+          setIndex(0)
+          console.log({ data: data.data.response })
+          return data.data.response
+        })
+        .then(user => {
+          axios.post('/current', { currency: user.currency })
+            .then(data => {
+              setCurrent({
+                bnb: data.data.bnb,
+                eth: data.data.eth,
+                usdt: data.data.usdt,
+                btc: data.data.btc,
+                ltc: data.data.ltc,
+                trx: data.data.trx
+              })
+            })
+          axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
+            .then((data) => {
+              setBTC(data.data.balance)
+              setBTCValue(data.data.value_balance)
+              setBalance(data.data.balance)
+              setValue(data.data.value_balance)
+              console.log(data.data.balance)
+            })
+            .catch((err) => {
+              console.log({ Err: "Unable to get BTC balance " + err })
+            })
+
+          axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
+            .then((data) => {
+              setLTC(data.data.balance)
+              setLTCValue(data.data.value_balance)
+              console.log(data.data.balance)
+            })
+            .catch((err) => {
+              console.log({ Err: "Unable to get LTC balance " + err })
+            })
+
+          axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
+            .then((data) => {
+              setBNB(data.data.balance)
+              setBNBValue(data.data.value_balance)
+              console.log(data.data.balance)
+            })
+            .catch((err) => {
+              console.log({ Err: "Unable to get BNB balance " + err })
+            })
+
+          axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
+            .then((data) => {
+              setETH(data.data.balance)
+              setETHValue(data.data.value_balance)
+              console.log(data.data.balance)
+            })
+            .catch((err) => {
+              console.log({ Err: "Unable to get ETH balance " + err })
+            })
+
+          axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
+            .then((data) => {
+              setTRX(data.data.balance)
+              setTRXValue(data.data.value_balance)
+              console.log(data.data.balance)
+            })
+            .catch((err) => {
+              console.log({ Err: "Unable to get TRX balance " + err })
+            })
+
+          axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
+            .then((data) => {
+              setUSDT(data.data.balance)
+              setUSDTValue(data.data.value_balance)
+              console.log(data.data.balance)
+            })
+            .catch((err) => {
+              console.log({ Err: "Unable to get USDT balance " + err })
+            })
+
+          axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
+            .then((data) => {
+              setUSDTBEP20(data.data.balance)
+              setUSDTBEP20Value(data.data.value_balance)
+              console.log(data.data.balance)
+            })
+            .catch((err) => {
+              console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
+            })
+
+          axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
+            .then((data) => {
+              setUSDTTRC20(data.data.balance)
+              setUSDTTRC20Value(data.data.value_balance)
+              setRefreshing(false)
+              console.log(data.data.balance)
+            })
+            .catch((err) => {
+              console.log({ Err: "Unable to get USDT-TRC20 balance " + err })
+            })
+        })
+        .catch(err => {
+          console.log({ Err: err })
+          setRefreshing(false)
+        })
+
+    })
+
     axios.post('/user', { userID: id })
       .then((data) => {
         setUser(data.data.response)
         setCurrency(data.data.response.currency)
         setAddress0(data.data.response.wallets[0])
         setIx(0)
+        setIndex(0)
         console.log({ data: data.data.response })
         return data.data.response
       })
@@ -615,13 +729,15 @@ function Crypto() {
     return (
       <View style={styles.containerSend}>
 
-        <TouchableOpacity onPress={() => { setPage(null); setGas("Calculating...") }} style={styles.cancel}>
+        <TouchableOpacity onPress={() => { setPage(null); setGas("Calculating") }} style={styles.cancel}>
           <Ionicons name="arrow-back-sharp" size={24} color="black" />
         </TouchableOpacity>
 
         <View>
           <Text style={styles.convertTop}>Send {address.name}</Text>
+
           <Text style={styles.sendBalance}>Balance: {balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
+
           <Text style={styles.addressText}>{address.name} Address:</Text>
           <View style={styles.addressInput}>
             <TextInput
@@ -640,19 +756,20 @@ function Crypto() {
           <View style={styles.addressInput}>
             <View style={{ display: "flex", flexDirection: "row" }}>
               <Text onPress={() => {
-                if (currency == user.currency) {
-                  setCurrency("USD")
-                } else {
-                  setCurrency(user.currency)
-                }
+                // if (currency == user.currency) {
+                //   setCurrency("USD")
+                // } else {
+                //   setCurrency(user.currency)
+                // }
+                console.log(currency)
               }} style={{ fontSize: 15, fontWeight: "600", marginHorizontal: 0 }}>{currency}</Text>
-              <AntDesign onPress={() => {
+              {/* <AntDesign onPress={() => {
                 if (currency == user.currency) {
                   setCurrency("USD")
                 } else {
                   setCurrency(user.currency)
                 }
-              }} name="down" size={20} color="black" />
+              }} name="down" size={20} color="black" /> */}
             </View>
             {/* <Foundation name="dollar" size={30} color="black" /> */}
             <TextInput
@@ -665,9 +782,9 @@ function Crypto() {
             />
           </View>
 
-          <Text style={styles.txFees}>Transaction fee ({address.name}): {gas} {address.name}</Text>
+          <Text style={styles.txFees}>Tnx fee ({address.name}): {gas.toString().slice(0, 11)}... {address.name}</Text>
 
-          <Text style={styles.txFees}>Transaction fee ({user.currency}): {Number(
+          <Text style={styles.txFees}>Tnx fee ({user.currency}): {Number(
             address.name === "BTC" && current.btc * gas
             || address.name === "BNB" && current.bnb * gas
             || address.name === "LTC" && current.ltc * gas
@@ -833,16 +950,17 @@ function Crypto() {
   }
 
   return (
-    <ScrollView style={{ flex: 1 }} refreshControl={
-      <RefreshControl refreshing={refreshing}
-        onRefresh={() => {
-          setRefreshing(true)
-          setCleanUp(cleanup + 1)
+    <ImageBackground source={require('../assets/mash-up.png')} resizeMode="cover" style={styles.backgroundImage} imageStyle=
+      {{ opacity: 0.2 }}>
+      <ScrollView style={{ flex: 1 }} refreshControl={
+        <RefreshControl refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true)
+            setCleanUp(cleanup + 1)
 
-        }} />
-    }>
-      <ImageBackground source={require('../assets/mash-up.png')} resizeMode="cover" style={styles.backgroundImage} imageStyle=
-        {{ opacity: 0.2 }}>
+          }} />
+      }>
+
         <View style={styles.container}>
 
           {/* <View style={styles.container}> */}
@@ -974,7 +1092,7 @@ function Crypto() {
             <ScrollView horizontal={true}>
               <View style={styles.cryptoList}>
                 {
-                  user && user.wallets.map((item, ix) => (
+                  user && user.wallets.slice(0, 8).map((item, ix) => (
                     <TouchableOpacity horizontal={true} style={ix !== index ? styles.crypCont : styles.crypContSelected} key={item.address + item.name} onPress={() => {
                       setAddress0(item); setIx(ix); setIndex(ix)
                       if (item.name === "BTC") {
@@ -1029,8 +1147,9 @@ function Crypto() {
 
 
         </View>
-      </ImageBackground>
-    </ScrollView>
+
+      </ScrollView>
+    </ImageBackground>
   )
 }
 
@@ -1059,8 +1178,13 @@ const styles = StyleSheet.create({
     // backgroundColor: '#febf1226',
     paddingHorizontal: 10
   },
+  sendBalance: {
+    marginBottom: 10,
+    fontWeight: "bold"
+  },
   addressText: {
     marginBottom: 10,
+    fontWeight: "700",
   },
   addressInput: {
     display: "flex",
@@ -1303,7 +1427,9 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     alignSelf: "center",
     marginBottom: 20,
-    fontFamily: "Optien"
+    fontFamily: "Optien",
+    color: "#febf12",
+    fontSize: 20
   },
   convertPrice: {
     fontWeight: "600",
@@ -1355,6 +1481,7 @@ const styles = StyleSheet.create({
   txFees: {
     marginBottom: 15,
     fontWeight: "600",
+    color: "green"
   },
 });
 
