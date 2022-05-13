@@ -781,6 +781,7 @@ function Crypto({ navigation }) {
 
             />
           </View>
+          
 
           <Text style={styles.txFees}>Tnx fee ({address.name}): {gas.toString().slice(0, 11)}... {address.name}</Text>
 
