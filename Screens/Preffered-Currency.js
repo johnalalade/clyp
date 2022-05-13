@@ -161,12 +161,16 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     numsSearch: {
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,
         paddingVertical: 10,
+        fontSize: 18,
         backgroundColor: "whitesmoke",
         borderRadius: 10,
-        width: "90%",
+        width: "100%",
         marginBottom: 10,
+        height: 60,
+        borderWidth: 2,
+        borderColor: "#febf12",
     },
     txTouch: {
         display: "flex",
@@ -185,9 +189,9 @@ const styles = StyleSheet.create({
     },
     txText: {
         marginLeft: 5,
-        fontWeight: "800",
+        fontWeight: "700",
         marginVertical: 5,
-        fontFamily: "Optien",
+        fontFamily: "Prompt",
         fontSize: 17,
     },
 })

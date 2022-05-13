@@ -781,7 +781,7 @@ function Crypto({ navigation }) {
 
             />
           </View>
-          
+
 
           <Text style={styles.txFees}>Tnx fee ({address.name}): {gas.toString().slice(0, 11)}... {address.name}</Text>
 
@@ -1194,7 +1194,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     marginBottom: 40,
     borderRadius: 10,
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: "#febf12",
     paddingRight: 6
   },
@@ -1419,10 +1419,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     minWidth: 100,
-    borderRadius: 30,
     borderWidth: 5,
     borderColor: "#febf12",
-    padding: 10
+    marginHorizontal: 5,
+    backgroundColor: "#febf12",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 5,
   },
   convertTop: {
     fontWeight: '900',

@@ -390,14 +390,14 @@ function Airtime({ navigation }) {
                                 <Text>Fiat</Text>
                             </TouchableOpacity> */}
 
-                            <TouchableOpacity style={styles.asset} onPress={() => {
+                            <TouchableOpacity style={asset === "BTC" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("BTC")
                                 setAddress(user.wallets[0].address)
                                 setPkey(user.wallets[0].privateKey)
                                 airAmountHandler(airAmount)
                                 setBalance(btc)
                             }}>
-                                {asset === "BTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                
                                 <View style={styles.coin}>
                                     <Avatar.Image
                                         source={
@@ -410,14 +410,14 @@ function Airtime({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.asset} onPress={() => {
+                            <TouchableOpacity style={asset === "LTC" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("LTC")
                                 setAddress(user.wallets[1].address)
                                 setPkey(user.wallets[1].privateKey)
                                 airAmountHandler(airAmount)
                                 setBalance(ltc)
                             }}>
-                                {asset === "LTC" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                
                                 <View style={styles.coin}>
                                     <Avatar.Image
                                         source={
@@ -430,14 +430,14 @@ function Airtime({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.asset} onPress={() => {
+                            <TouchableOpacity style={asset === "BNB" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("BNB")
                                 setAddress(user.wallets[2].address)
                                 setPkey(user.wallets[2].privateKey)
                                 airAmountHandler(airAmount)
                                 setBalance(bnb)
                             }}>
-                                {asset === "BNB" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                
                                 <View style={styles.coin}>
                                     <Avatar.Image
                                         source={
@@ -450,14 +450,14 @@ function Airtime({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.asset} onPress={() => {
+                            <TouchableOpacity style={asset === "ETH" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("ETH")
                                 setAddress(user.wallets[3].address)
                                 setPkey(user.wallets[3].privateKey)
                                 airAmountHandler(airAmount)
                                 setBalance(eth)
                             }}>
-                                {asset === "ETH" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                
                                 <View style={styles.coin}>
                                     <Avatar.Image
                                         source={
@@ -470,14 +470,14 @@ function Airtime({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.asset} onPress={() => {
+                            <TouchableOpacity style={asset === "TRX" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("TRX")
                                 setAddress(user.wallets[4].address)
                                 setPkey(user.wallets[4].privateKey)
                                 airAmountHandler(airAmount)
                                 setBalance(trx)
                             }}>
-                                {asset === "TRX" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                
                                 <View style={styles.coin}>
                                     <Avatar.Image
                                         source={
@@ -490,14 +490,14 @@ function Airtime({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.asset} onPress={() => {
+                            <TouchableOpacity style={asset === "USDT" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("USDT")
                                 setAddress(user.wallets[5].address)
                                 setPkey(user.wallets[5].privateKey)
                                 airAmountHandler(airAmount)
                                 setBalance(usdt)
                             }}>
-                                {asset === "USDT" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                
                                 <View style={styles.coin}>
                                     <Avatar.Image
                                         source={
@@ -510,14 +510,14 @@ function Airtime({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.asset} onPress={() => {
+                            <TouchableOpacity style={asset === "USDT-BEP20" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("USDT-BEP20")
                                 setAddress(user.wallets[6].address)
                                 setPkey(user.wallets[6].privateKey)
                                 airAmountHandler(airAmount)
                                 setBalance(usdt_bep20)
                             }}>
-                                {asset === "USDT-BEP20" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                
                                 <View style={styles.coin}>
                                     <Avatar.Image
                                         source={
@@ -530,14 +530,14 @@ function Airtime({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.asset} onPress={() => {
+                            <TouchableOpacity style={asset === "USDT-TRC20" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("USDT-TRC20")
                                 setAddress(user.wallets[7].address)
                                 setPkey(user.wallets[7].privateKey)
                                 airAmountHandler(airAmount)
                                 setBalance(usdt_trc20)
                             }}>
-                                {asset === "USDT-TRC20" && <Ionicons name="checkmark" size={24} color="#febf12" />}
+                                
                                 <View style={styles.coin}>
                                     <Avatar.Image
                                         source={
@@ -608,9 +608,9 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         backgroundColor: "white",
         borderRadius: 10,
-        width: "90%",
+        width: "100%",
         marginBottom: 10,
-        borderWidth: 3,
+        borderWidth: 2,
         borderColor: "#febf12",
         fontWeight: "400"
     },
@@ -635,8 +635,21 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         fontFamily: "Optien",
         backgroundColor: "#e0dfdf",
-        padding: 5,
-        borderRadius: 10
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 5,
+        fontFamily: "Optien"
+    },
+    assetActive: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+        alignItems: "center",
+        marginHorizontal: 0,
+        backgroundColor: "#febf12",
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 5,
     },
     coin: {
         display: "flex",
