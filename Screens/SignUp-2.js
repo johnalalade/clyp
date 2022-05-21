@@ -13,9 +13,9 @@ import { FlatList } from "react-native-gesture-handler";
 import countries from "./countries";
 
 function SignUp2({ navigation }) {
-    const { email, phone, country, currency, rate, rate2, code } = React.useContext(AuthContext)
-    const [myCountry, setMyCountry] = React.useState("Afghanistan")
-    const [myCurrency, setCurrency] = React.useState("AFN")
+    const { email, phone, country, currency, rate, rate2, code, count } = React.useContext(AuthContext)
+    const [myCountry, setMyCountry] = React.useState("Andorra")
+    const [myCurrency, setCurrency] = React.useState("EUR")
     const [myRate, setRate] = React.useState(480)
 
     // const [countries, setCountries] = React.useState([
@@ -165,7 +165,7 @@ function SignUp2({ navigation }) {
                                 onPress={() => bs.current.snapTo(1)}
                             >
                                 <Text>
-                                    {myCountry}
+                                    {count}
                                 </Text>
 
                             </TouchableOpacity>

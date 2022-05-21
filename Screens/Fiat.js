@@ -26,6 +26,7 @@ import { useFonts } from "expo-font";
 import TipProvider from "react-native-tip";
 import { Tip } from "react-native-tip";
 import { Fontisto } from '@expo/vector-icons';
+import { Foundation } from '@expo/vector-icons';
 
 const FiatStack = createStackNavigator()
 
@@ -1121,16 +1122,17 @@ function Fiat({ navigation }) {
 
                                         <TouchableOpacity style={styles.buttonView} onPress={() => navigation.navigate("Wallets")}>
                                             <View style={styles.button}>
-                                                <MaterialIcons name="add" size={40} color="whitesmoke" />
+                                                {/* <MaterialIcons name="add" size={40} color="whitesmoke" /> */}
+                                                <Feather name="arrow-up-right" size={40} color="whitesmoke" />
                                                 {/* <Feather name="send" size={24} color="whitesmoke" /> */}
                                             </View>
                                             <Text style={styles.buttonText}>
-                                                Receive
+                                                Transact
                                             </Text>
 
                                         </TouchableOpacity>
 
-                                        <TouchableOpacity style={styles.buttonView} onPress={() => navigation.navigate("Wallets")}>
+                                        {/* <TouchableOpacity style={styles.buttonView} onPress={() => navigation.navigate("Wallets")}>
                                             <View style={styles.button}>
 
                                                 <Feather name="send" size={24} color="whitesmoke" />
@@ -1139,7 +1141,7 @@ function Fiat({ navigation }) {
                                                 Send
                                             </Text>
 
-                                        </TouchableOpacity>
+                                        </TouchableOpacity> */}
 
                                         {/* <TouchableOpacity style={styles.buttonView} onPress={() => setPage("Airtime")}>
                                 <View style={styles.button}>

@@ -1,0 +1,27 @@
+{
+  "cli": {
+    "version": ">= 0.52.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "uniconneteam@gmail.com",
+        "ascAppId": "1624498997",
+        "appleTeamId": "MM3W3XNP6N"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./pc-api-5809187420493289052-845-dc2fc0d8a501.json"
+      }
+    }
+  }
+}

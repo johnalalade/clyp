@@ -736,7 +736,7 @@ function Crypto({ navigation }) {
         <View>
           <Text style={styles.convertTop}>Send {address.name}</Text>
 
-          <Text style={styles.sendBalance}>Balance: {balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
+          <Text style={styles.sendBalance}>Balance: {user && user.currency} {balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</Text>
 
           <Text style={styles.addressText}>{address.name} Address:</Text>
           <View style={styles.addressInput}>

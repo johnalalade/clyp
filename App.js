@@ -160,8 +160,8 @@ export default function App() {
   const [password, setPassword] = React.useState("")
   const [cpassword, setCPassword] = React.useState("")
   const [username, setUsername] = React.useState("")
-  const [country, setCountry] = React.useState("Nigeria")
-  const [currency, setCurrency] = React.useState("NGN")
+  const [country, setCountry] = React.useState("Andorra")
+  const [currency, setCurrency] = React.useState("EUR")
   const [rate, setRate] = React.useState(480)
   const [rate2, setRate2] = React.useState(500)
   const [code, setCode] = React.useState("NG")
@@ -260,7 +260,7 @@ export default function App() {
         setLoading(false)
         return false
       }
-      if (data.password.length > 8) {
+      if (data.password.length < 8) {
         Alert.alert("Password too short", "Please make sure your password is 8 characters long")
         setLoading(false)
         return false
