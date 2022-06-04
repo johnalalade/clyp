@@ -71,7 +71,7 @@ function Crypto({ navigation }) {
 
   const [value, setValue] = React.useState(0)
 
-  const [balance, setBalance] = React.useState()
+  const [balance, setBalance] = React.useState(0)
   const [currency, setCurrency] = React.useState()
 
   const [user, setUser] = React.useState(null)
@@ -1093,7 +1093,7 @@ function Crypto({ navigation }) {
             <ScrollView horizontal={true}>
               <View style={styles.cryptoList}>
                 {
-                  user && user.wallets.slice(0, 8).map((item, ix) => (
+                  user && user.wallets.slice(0, 7).map((item, ix) => (
                     <TouchableOpacity horizontal={true} style={ix !== index ? styles.crypCont : styles.crypContSelected} key={item.address + item.name} onPress={() => {
                       setAddress0(item); setIx(ix); setIndex(ix)
                       if (item.name === "BTC") {

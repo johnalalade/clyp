@@ -141,16 +141,23 @@ function Settings({ navigation }) {
 
         {user && <View style={styles.refView}>
 
-          <Text style={styles.refDet}>Let your referrals login with your Clyp ID below</Text>
+          <Text style={styles.refDet}>Copy your Clyp ID and Secrete Key below</Text>
           <TouchableOpacity style={styles.refCont} onPress={() => {
             Clipboard.setString(user.clypID);
             Alert.alert("Copied", `${(user.country === "Nigeria") ? `Comrade, you've copied your Clyp ID, time to reffer...` : `Your Clyp ID has been copied Successfully`}`,)
           }}>
             <Text style={styles.id}>{user.clypID}</Text>
           </TouchableOpacity>
-          <Text style={styles.refText}>You receive 1 Tron for every person that signs up with your Clyp ID 😜</Text>
+
+          <TouchableOpacity style={styles.refCont} onPress={() => {
+            Clipboard.setString(user._id);
+            Alert.alert("Copied", `${(user.country === "Nigeria") ? `Comrade, you've copied your Secrete Key, time to reffer...` : `Your Secrete has been copied Successfully`}`,)
+          }}>
+            <Text style={styles.id}>*******</Text>
+          </TouchableOpacity>
+          {/* <Text style={styles.refText}>You receive 1 Tron for every person that signs up with your Clyp ID 😜</Text> */}
           <View>
-            <Text>Your Referrals: 0</Text>
+            {/* <Text>Your Referrals: 0</Text> */}
           </View>
         </View>
         }
@@ -179,7 +186,7 @@ function Settings({ navigation }) {
             <View style={styles.optionDet}>
 
               <FontAwesome5 name="people-arrows" size={30} color="black" />
-              <Text style={styles.optionText}>Referrals</Text>
+              <Text style={styles.optionText}>ID & Key</Text>
 
             </View>
             <Ionicons name="chevron-forward-outline" size={24} color="black" />

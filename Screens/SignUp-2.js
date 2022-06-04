@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, StatusBar, ScrollView } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import * as Animatable from 'react-native-animatable';
@@ -17,6 +17,20 @@ function SignUp2({ navigation }) {
     const [myCountry, setMyCountry] = React.useState("Andorra")
     const [myCurrency, setCurrency] = React.useState("EUR")
     const [myRate, setRate] = React.useState(480)
+    const [page, setPage] = React.useState("Main")
+    const [aCountries, setAcountries] = React.useState([])
+
+    useEffect(() => {
+        setAcountries(countries.sort((a, b) => {
+            if (a.countryName < b.countryName) {
+                return -1
+            }
+            if (a.countryName > b.countryName) {
+                return 1
+            }
+            return 0
+        }))
+    }, [])
 
     // const [countries, setCountries] = React.useState([
     //     { name: 'Nigeria', code: 'NG', currency: "NGN", rate: 500, rate2: 480  },
@@ -35,7 +49,7 @@ function SignUp2({ navigation }) {
         rate(0)
         rate2(0)
         code(val.countryCode)
-        bs.current.snapTo(2)
+        setPage("Main")
     }
 
     const renderInner = () => (
@@ -78,6 +92,28 @@ function SignUp2({ navigation }) {
     let bs = React.createRef();
     let fall = new Animated.Value(1);
 
+    if (page === "Choose") {
+        return (
+            <View style={styles.container} >
+                <View style={styles.panel}>
+
+                    
+                    <FlatList
+                        keyExtractor={(item) => item.countryCode + item.countryName}
+                        data={aCountries.filter(count => count.currencyCode !== "")}
+                        renderItem={({ item }) => (
+
+
+                            <TouchableOpacity key={item.countryCode} style={(myCountry === item.countryName) ? styles.countryTextSelected : styles.countryText} onPress={() => countryHandler(item)}><Text>{item.countryName}</Text></TouchableOpacity>
+
+                        )}
+                    />
+                    
+                </View>
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
             <BottomSheet
@@ -102,6 +138,35 @@ function SignUp2({ navigation }) {
                     style={styles.footer}
                 >
                     <ScrollView>
+                        
+                    <Text style={[styles.text_footer, {
+                            marginTop: 35
+                        }]} >Country *</Text>
+                        <View style={styles.action}>
+                            <FontAwesome name="flag-checkered" size={24} color="#05375a" />
+                            <TouchableOpacity
+                                style={styles.textInput}
+                                onPress={() => setPage("Choose")}
+                            >
+                                <Text>
+                                    {count}
+                                </Text>
+
+                            </TouchableOpacity>
+
+                            {/* {data.check_textInputChange ?
+                                <Animatable.View
+                                    animation="bounceIn"
+                                >
+                                    <Feather
+                                        name="check-circle"
+                                        color="yellow"
+                                        size={20}
+                                    />
+                                </Animatable.View>
+                                : null} */}
+                        </View>
+
                         <Text style={[styles.text_footer, {
                             marginTop: 35
                         }]}>Email *</Text>
@@ -155,33 +220,6 @@ function SignUp2({ navigation }) {
                                 : null} */}
                         </View>
 
-                        <Text style={[styles.text_footer, {
-                            marginTop: 35
-                        }]} >Country *</Text>
-                        <View style={styles.action}>
-                            <FontAwesome name="flag-checkered" size={24} color="#05375a" />
-                            <TouchableOpacity
-                                style={styles.textInput}
-                                onPress={() => bs.current.snapTo(1)}
-                            >
-                                <Text>
-                                    {count}
-                                </Text>
-
-                            </TouchableOpacity>
-
-                            {/* {data.check_textInputChange ?
-                                <Animatable.View
-                                    animation="bounceIn"
-                                >
-                                    <Feather
-                                        name="check-circle"
-                                        color="yellow"
-                                        size={20}
-                                    />
-                                </Animatable.View>
-                                : null} */}
-                        </View>
 
                         <View style={styles.textPrivate}>
                             <Text style={styles.color_textPrivate}>

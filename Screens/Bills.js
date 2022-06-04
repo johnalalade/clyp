@@ -18,7 +18,7 @@ const customFonts = {
     Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),
     Optien: require("../assets/fonts/Optien.ttf"),
     Prompt: require("../assets/fonts/Prompt-ExtraBold.ttf"),
-    Inter: require("../assets/fonts/Inter-VariableFont_slnt,wght.ttf")
+    // Inter: require("../assets/fonts/Inter-VariableFont_slnt,wght.ttf")
 };
 
 function Bills({ navigation }) {
@@ -30,7 +30,7 @@ function Bills({ navigation }) {
     const [amount, setAmount] = useState(null)
     const [customer, setCustomer] = useState("")
     const [biller, setBiller] = useState(null)
-    const [fee, setFee] = useState(null)
+    const [fee, setFee] = useState(0)
     const [bill, setBill] = useState(null)
     const [userID, setUserID] = useState(null)
     const [verified, setVerified] = React.useState(false)
@@ -66,7 +66,7 @@ function Bills({ navigation }) {
                     return data.data.response
                 })
                 .then(user => {
-                    axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
+                    axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: "NGN" })
                         .then((data) => {
                             setBTC(data.data.balance)
                             setBalance(data.data.balance)
@@ -76,7 +76,7 @@ function Bills({ navigation }) {
                             console.log({ Err: "Unable to get BTC balance " + err })
                         })
 
-                    axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
+                    axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: "NGN" })
                         .then((data) => {
                             setLTC(data.data.balance)
                             console.log(data.data.balance)
@@ -85,7 +85,7 @@ function Bills({ navigation }) {
                             console.log({ Err: "Unable to get LTC balance " + err })
                         })
 
-                    axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
+                    axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: "NGN" })
                         .then((data) => {
                             setBNB(data.data.balance)
                             console.log(data.data.balance)
@@ -94,7 +94,7 @@ function Bills({ navigation }) {
                             console.log({ Err: "Unable to get BNB balance " + err })
                         })
 
-                    axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
+                    axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: "NGN" })
                         .then((data) => {
                             setETH(data.data.balance)
                             // setRefreshing(false)
@@ -104,7 +104,7 @@ function Bills({ navigation }) {
                             console.log({ Err: "Unable to get ETH balance " + err })
                         })
 
-                    axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
+                    axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: "NGN" })
                         .then((data) => {
                             setTRX(data.data.balance)
                             console.log(data.data.balance)
@@ -113,7 +113,7 @@ function Bills({ navigation }) {
                             console.log({ Err: "Unable to get TRX balance " + err })
                         })
 
-                    axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
+                    axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: "NGN" })
                         .then((data) => {
                             setUSDT(data.data.balance)
                             console.log(data.data.balance)
@@ -122,7 +122,7 @@ function Bills({ navigation }) {
                             console.log({ Err: "Unable to get USDT balance " + err })
                         })
 
-                    axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
+                    axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: "NGN" })
                         .then((data) => {
                             setUSDTBEP20(data.data.balance)
                             console.log(data.data.balance)
@@ -131,7 +131,7 @@ function Bills({ navigation }) {
                             console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
                         })
 
-                    axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
+                    axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: "NGN" })
                         .then((data) => {
                             setUSDTTRC20(data.data.balance)
                             setRefreshing(false)
@@ -155,7 +155,7 @@ function Bills({ navigation }) {
                 return data.data.response
             })
             .then(user => {
-                axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: user.currency })
+                axios.post('/cryptobalance2', { asset: "BTC", address: user.wallets[0].address, currency: "NGN" })
                     .then((data) => {
                         setBTC(data.data.balance)
                         setBalance(data.data.balance)
@@ -165,7 +165,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get BTC balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: user.currency })
+                axios.post('/cryptobalance2', { asset: "LTC", address: user.wallets[1].address, currency: "NGN" })
                     .then((data) => {
                         setLTC(data.data.balance)
                         console.log(data.data.balance)
@@ -174,7 +174,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get LTC balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: user.currency })
+                axios.post('/cryptobalance2', { asset: "BNB", address: user.wallets[2].address, currency: "NGN" })
                     .then((data) => {
                         setBNB(data.data.balance)
                         console.log(data.data.balance)
@@ -183,7 +183,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get BNB balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: user.currency })
+                axios.post('/cryptobalance2', { asset: "ETH", address: user.wallets[3].address, currency: "NGN" })
                     .then((data) => {
                         setETH(data.data.balance)
                         // setRefreshing(false)
@@ -193,7 +193,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get ETH balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: user.currency })
+                axios.post('/cryptobalance2', { asset: "TRX", address: user.wallets[4].address, pKey: user.wallets[4].privateKey, currency: "NGN" })
                     .then((data) => {
                         setTRX(data.data.balance)
                         console.log(data.data.balance)
@@ -202,7 +202,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get TRX balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: user.currency })
+                axios.post('/cryptobalance2', { asset: "USDT", address: user.wallets[5].address, currency: "NGN" })
                     .then((data) => {
                         setUSDT(data.data.balance)
                         console.log(data.data.balance)
@@ -211,7 +211,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get USDT balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: user.currency })
+                axios.post('/cryptobalance2', { asset: "USDT-BEP20", address: user.wallets[6].address, currency: "NGN" })
                     .then((data) => {
                         setUSDTBEP20(data.data.balance)
                         console.log(data.data.balance)
@@ -220,7 +220,7 @@ function Bills({ navigation }) {
                         console.log({ Err: "Unable to get USDT-BEP20 balance " + err })
                     })
 
-                axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: user.currency })
+                axios.post('/cryptobalance2', { asset: "USDT-TRC20", address: user.wallets[7].address, pKey: user.wallets[7].privateKey, currency: "NGN" })
                     .then((data) => {
                         setUSDTTRC20(data.data.balance)
                         setRefreshing(false)
@@ -237,7 +237,7 @@ function Bills({ navigation }) {
     }, [cleanup])
 
     const billSelectHandler = (val) => {
-        setAmount(val.amount)
+        val.amount === 0 ? null : setAmount(val.amount)
         setBiller(val.name)
         setFee(val.fee)
         setBill(val)
@@ -276,7 +276,7 @@ function Bills({ navigation }) {
             asset: asset,
             address: address,
             private_key: pKey,
-            currency: user.currency
+            currency: "NGN"
         }
         setLoading(true)
 
@@ -479,10 +479,9 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Cables & Entertainment</Text>
 
-                    {user && user.currency === "NGN" ?
+                    {user &&
                         <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
-                        :
-                        <Text style={styles.balance}>Balance: {user && user.currency} {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
+
                     }
 
                     <Text style={styles.billText}>Option: </Text>
@@ -493,7 +492,7 @@ function Bills({ navigation }) {
                         }}
                             style={styles.billView}>
 
-                            <Text style={styles.nums}>{bill ? `${bill.name} (${bill.amount})` : null}</Text>
+                            <Text style={styles.nums}>{bill ? `${bill.name} (NGN ${bill.amount})` : null}</Text>
                         </TouchableOpacity>
                         <AntDesign onPress={() => {
                             setPrev("Cables"); setPage("cables_pick");
@@ -666,7 +665,7 @@ function Bills({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={asset === "USDT-TRC20" ? styles.assetActive : styles.asset} onPress={() => {
+                            {/* <TouchableOpacity style={asset === "USDT-TRC20" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("USDT-TRC20")
                                 setAddress(user.wallets[7].address)
                                 setPkey(user.wallets[7].privateKey)
@@ -683,7 +682,7 @@ function Bills({ navigation }) {
                                     />
                                     <Text>USDT-TRC20</Text>
                                 </View>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
 
                         </View>
                     </ScrollView>
@@ -751,10 +750,9 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Data Bundles</Text>
 
-                    {user && user.currency === "NGN" ?
+                    {user &&
                         <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
-                        :
-                        <Text style={styles.balance}>Balance: {user && user.currency} {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
+
                     }
 
                     <Text style={styles.billText}>Option: </Text>
@@ -765,7 +763,7 @@ function Bills({ navigation }) {
                         }}
                             style={styles.billView}>
 
-                            <Text style={styles.nums}>{bill ? `${bill.name} (${bill.amount})` : null}</Text>
+                            <Text style={styles.nums}>{bill ? `${bill.name} (NGN ${bill.amount})` : null}</Text>
                         </TouchableOpacity>
                         <AntDesign onPress={() => {
                             setPrev("Cables"); setPage("cables_pick");
@@ -940,7 +938,7 @@ function Bills({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={asset === "USDT-TRC20" ? styles.assetActive : styles.asset} onPress={() => {
+                            {/* <TouchableOpacity style={asset === "USDT-TRC20" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("USDT-TRC20")
                                 setAddress(user.wallets[7].address)
                                 setPkey(user.wallets[7].privateKey)
@@ -957,7 +955,7 @@ function Bills({ navigation }) {
                                     />
                                     <Text>USDT-TRC20</Text>
                                 </View>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
 
                         </View>
                     </ScrollView>
@@ -1025,10 +1023,9 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Power & Utilities</Text>
 
-                    {user && user.currency === "NGN" ?
+                    {user &&
                         <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
-                        :
-                        <Text style={styles.balance}>Balance: {user && user.currency} {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
+
                     }
 
                     <Text style={styles.billText}>Option: </Text>
@@ -1038,7 +1035,7 @@ function Bills({ navigation }) {
                             setPrev("power"); setPage("power_pick");
                         }} style={styles.billView}>
 
-                            <Text style={styles.nums}>{bill ? `${bill.name} (${bill.amount})` : null}</Text>
+                            <Text style={styles.nums}>{bill ? `${bill.name}` : null}</Text>
                         </TouchableOpacity>
                         <AntDesign onPress={() => {
                             setPrev("Cables"); setPage("cables_pick");
@@ -1062,6 +1059,18 @@ function Bills({ navigation }) {
                     <View style={styles.withdrawView}>
 
                         <Text style={styles.nums}>{acc_name}</Text>
+                    </View>
+
+                    <Text style={styles.billText}>Amount (NGN): </Text>
+                    <View style={styles.billView}>
+
+                        <TextInput
+                            style={styles.nums}
+                            placeholder="200"
+                            onChangeText={(val) => setAmount(val)}
+                            keyboardType="numeric"
+                            returnKeyType="done"
+                        />
                     </View>
 
                     <Text style={styles.fee}>Fee: &#x20A6; {bill ? bill.fee : null}</Text>
@@ -1212,7 +1221,7 @@ function Bills({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={asset === "USDT-TRC20" ? styles.assetActive : styles.asset} onPress={() => {
+                            {/* <TouchableOpacity style={asset === "USDT-TRC20" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("USDT-TRC20")
                                 setAddress(user.wallets[7].address)
                                 setPkey(user.wallets[7].privateKey)
@@ -1229,7 +1238,7 @@ function Bills({ navigation }) {
                                     />
                                     <Text>USDT-TRC20</Text>
                                 </View>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
 
                         </View>
                     </ScrollView>
@@ -1274,9 +1283,9 @@ function Bills({ navigation }) {
 
                             <View>
                                 {user.country === "Nigeria" ?
-                                    <Text style={styles.txText}>{item.name} (&#x20A6; {item.amount})</Text>
+                                    <Text style={styles.txText}>{item.name} </Text>
                                     :
-                                    <Text style={styles.txText}>{item.name} ({user.currency} {item.amount})</Text>
+                                    <Text style={styles.txText}>{item.name}</Text>
                                 }
                             </View>
 
@@ -1298,10 +1307,9 @@ function Bills({ navigation }) {
 
                     <Text style={styles.convertTop}>Pay for Internet Subscription</Text>
 
-                    {user && user.currency === "NGN" ?
+                    {user &&
                         <Text style={styles.balance}>Balance: &#x20A6; {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
-                        :
-                        <Text style={styles.balance}>Balance: {user && user.currency} {(balance / 1).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} </Text>
+
                     }
 
                     <Text style={styles.billText}>Option: </Text>
@@ -1311,7 +1319,7 @@ function Bills({ navigation }) {
                             setPrev("internet"); setPage("internet_pick");
                         }} style={styles.billView}>
 
-                            <Text style={styles.nums}>{bill ? `${bill.name} (${bill.amount})` : null}</Text>
+                            <Text style={styles.nums}>{bill ? `${bill.name} (NGN ${bill.amount})` : null}</Text>
                         </TouchableOpacity>
                         <AntDesign onPress={() => {
                             setPrev("Cables"); setPage("cables_pick");
@@ -1484,7 +1492,7 @@ function Bills({ navigation }) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={asset === "USDT-TRC20" ? styles.assetActive : styles.asset} onPress={() => {
+                            {/* <TouchableOpacity style={asset === "USDT-TRC20" ? styles.assetActive : styles.asset} onPress={() => {
                                 setAsset("USDT-TRC20")
                                 setAddress(user.wallets[7].address)
                                 setPkey(user.wallets[7].privateKey)
@@ -1501,7 +1509,7 @@ function Bills({ navigation }) {
                                     />
                                     <Text>USDT-TRC20</Text>
                                 </View>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
 
                         </View>
                     </ScrollView>
@@ -1773,7 +1781,7 @@ const styles = StyleSheet.create({
         fontFamily: "Optien",
         color: "#333333",
         fontSize: 14,
-        fontFamily: "Inter",
+        
         fontWeight: "400"
     },
     avt: {
